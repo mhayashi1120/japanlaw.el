@@ -700,6 +700,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defvar laws-mode-map
   (let ((map (make-sparse-keymap)))
+    (suppress-keymap map)
     ;; laws-anchor-clickable
     (define-key map [mouse-2] 'laws-push-mouse-2)
     (define-key map [follow-link] 'mouse-face)
