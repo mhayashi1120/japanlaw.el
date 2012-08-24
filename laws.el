@@ -2920,8 +2920,10 @@ Openedの場合、ファイルを閉じる。"
 ;;
 ;; Index mode
 ;;
+;;;###autoload
 (defalias 'laws 'laws-index)
 
+;;;###autoload
 (defun laws-index ()
   "法令データにアクセスするためのインターフェイス。"
   (interactive)
