@@ -1,4 +1,4 @@
-;;; laws.el ---
+;;; laws.el --- -*- Coding: utf-8 -*-
 
 ;; Copyright (C) 2007, 2008  Kazushi NODA
 
@@ -59,12 +59,12 @@
 ;; User variables
 ;;
 (defcustom laws-line-space nil
-  "*Ë¡Îá¥Õ¥¡¥¤¥ë¤Î¹Ô´Ö¡£"
+  "*æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã®è¡Œé–“ã€‚"
   :type 'integer
   :group 'laws)
 
 (defcustom laws-index-initial-mode 'Index
-  "`laws-index-mode'¤Î½é´ü¥â¡¼¥É¡£¼¡¤Î¤¦¤Á¤Ò¤È¤ÄÁªÂò¤Ç¤­¤ë¡£
+  "`laws-index-mode'ã®åˆæœŸãƒ¢ãƒ¼ãƒ‰ã€‚æ¬¡ã®ã†ã¡ã²ã¨ã¤é¸æŠã§ãã‚‹ã€‚
 Opened Recent Search Bookmark Index Directory Abbrev"
   :group 'laws
   :type '(choice
@@ -78,22 +78,22 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	  (symbol :tag "Abbrev" :value Abbrev)))
 
 (defcustom laws-recent-max 100
-  "ºÇ¶á³«¤¤¤¿¥Õ¥¡¥¤¥ë¤ÎÍúÎò¤Î¥ê¥¹¥È`laws-recent-alist'¤ÎºÇÂç¿ô¡£"
+  "æœ€è¿‘é–‹ã„ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®å±¥æ­´ã®ãƒªã‚¹ãƒˆ`laws-recent-alist'ã®æœ€å¤§æ•°ã€‚"
   :type 'integer
   :group 'laws)
 
 (defcustom laws-use-index-header-line t
-  "¥Ø¥Ã¥À¥é¥¤¥ó¤òÉ½¼¨¤¹¤ë¡£"
+  "ãƒ˜ãƒƒãƒ€ãƒ©ã‚¤ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹ã€‚"
   :type 'boolean
   :group 'laws)
 
 (defcustom laws-coding-system-for-write 'euc-jp-unix
-  "Ë¡Îá¥Õ¥¡¥¤¥ë¤ÎÊ¸»ú¥³¡¼¥É¡£"
+  "æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ã€‚"
   :type 'symbol
   :group 'laws)
 
 (defcustom laws-window-height 15
-  "»²¾È¾òÊ¸¤òÉ½¼¨¤¹¤ë¥¦¥£¥ó¥É¥¦¤Î¹â¤µ¡£"
+  "å‚ç…§æ¡æ–‡ã‚’è¡¨ç¤ºã™ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é«˜ã•ã€‚"
   :type 'integer
   :group 'laws)
 
@@ -103,17 +103,17 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :group 'laws)
 
 (defcustom laws-anchor-clickable nil
-  "Ë¡ÎáÆâ¤Î¥¢¥ó¥«¡¼¤ò¥¯¥ê¥Ã¥«¥Ö¥ë¤Ë¤¹¤ë¡£"
+  "æ³•ä»¤å†…ã®ã‚¢ãƒ³ã‚«ãƒ¼ã‚’ã‚¯ãƒªãƒƒã‚«ãƒ–ãƒ«ã«ã™ã‚‹ã€‚"
   :type 'boolean
   :group 'laws)
 
 (defcustom laws-use-iswitchb nil
-  "`laws-index-goto-folder'¤Ç`iswitchb'¤ò»È¤¦¡£migemo¤Èiswitchb¤ÎÀßÄê¤¬É¬Í×¡£"
+  "`laws-index-goto-folder'ã§`iswitchb'ã‚’ä½¿ã†ã€‚migemoã¨iswitchbã®è¨­å®šãŒå¿…è¦ã€‚"
   :type 'boolean
   :group 'laws)
 
 (defcustom laws-iswitchb-initial-list 'download
-  "`laws-iswitchb'¤Ç¤Î¸¡º÷ÂĞ¾İ¤ÎË¡Îá¥ê¥¹¥È¤Î½é´üÃÍ¡£"
+  "`laws-iswitchb'ã§ã®æ¤œç´¢å¯¾è±¡ã®æ³•ä»¤ãƒªã‚¹ãƒˆã®åˆæœŸå€¤ã€‚"
   :group 'laws
   :type '(choice
 	  (symbol :tag "download" :value download)
@@ -121,143 +121,143 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	  (symbol :tag "all" :value all)))
 
 (defcustom laws-max-mini-window-height max-mini-window-height
-  "`laws-iswitchb'¤Î¥ß¥Ë¥¦¥¤¥ó¥É¥¦¤ÎºÇÂç¹â¤µ¡£"
+  "`laws-iswitchb'ã®ãƒŸãƒ‹ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã®æœ€å¤§é«˜ã•ã€‚"
   :type 'number
   :group 'laws)
 
 (defcustom laws-online-mode t
-  "¥ª¥ó¥é¥¤¥ó¥â¡¼¥É¤Çµ¯Æ°¤¹¤ë¡£"
+  "ã‚ªãƒ³ãƒ©ã‚¤ãƒ³ãƒ¢ãƒ¼ãƒ‰ã§èµ·å‹•ã™ã‚‹ã€‚"
   :type 'boolean
   :group 'laws)
 
 (defcustom laws-excluded-law-names
-  '("¼Ò²ñÊİ¸±Ï«Ì³»ÎË¡"
-    "ÅÚÃÏ²È²°Ä´ºº»ÎË¡"
-    "¹ÔÀ¯½ñ»ÎË¡"
-    "»ÊË¡½ñ»ÎË¡"
-    "ÀÇÍı»ÎË¡"
-    "ÊÛ¸î»ÎË¡"
-    "Ä´ºº»ÎË¡")
-  "Ë¡ÎáÌ¾¤ÈË¡¿ÍÌ¾¤¬½ÅÊ£¤¹¤ëË¡ÎáÌ¾¤Î¥ê¥¹¥È¡£Ë¡¤ÎÊ¸¸À¤ÎÃæ¤Ë¸½¤ï¤ì¤ë
- ¡Ö¡ÁË¡¿Í¡×¤òÃå¿§¤·¤Ê¤¤¡£"
+  '("ç¤¾ä¼šä¿é™ºåŠ´å‹™å£«æ³•"
+    "åœŸåœ°å®¶å±‹èª¿æŸ»å£«æ³•"
+    "è¡Œæ”¿æ›¸å£«æ³•"
+    "å¸æ³•æ›¸å£«æ³•"
+    "ç¨ç†å£«æ³•"
+    "å¼è­·å£«æ³•"
+    "èª¿æŸ»å£«æ³•")
+  "æ³•ä»¤åã¨æ³•äººåãŒé‡è¤‡ã™ã‚‹æ³•ä»¤åã®ãƒªã‚¹ãƒˆã€‚æ³•ã®æ–‡è¨€ã®ä¸­ã«ç¾ã‚ã‚Œã‚‹
+ ã€Œã€œæ³•äººã€ã‚’ç€è‰²ã—ãªã„ã€‚"
   :type 'list
   :group 'laws)
 
 (defcustom laws-unentry-names
-  '(("·ûË¡" . "ÆüËÜ¹ñ·ûË¡"))
-  "Ë¡¤ÎÊ¸¸À¤ÎÃæ¤Ç»È¤ï¤ì¤ë¤¬¡¢Î¬¾ÎË¡ÎáÌ¾¤Ë¤âÅĞÏ¿Ë¡ÎáÌ¾¤Ë¤â´Ş¤Ş¤ì¤Ê
-¤¤Ë¡ÎáÌ¾¤Î¥¢¥ê¥¹¥È¡£"
+  '(("æ†²æ³•" . "æ—¥æœ¬å›½æ†²æ³•"))
+  "æ³•ã®æ–‡è¨€ã®ä¸­ã§ä½¿ã‚ã‚Œã‚‹ãŒã€ç•¥ç§°æ³•ä»¤åã«ã‚‚ç™»éŒ²æ³•ä»¤åã«ã‚‚å«ã¾ã‚Œãª
+ã„æ³•ä»¤åã®ã‚¢ãƒªã‚¹ãƒˆã€‚"
   :type 'alist
   :group 'laws)
 
 (defcustom laws-local-names-plist
-  '(("ÉÔÆ°»ºÅĞµ­Îá" :Ë¡ "ÉÔÆ°»ºÅĞµ­Ë¡" :µ¬Â§ "ÉÔÆ°»ºÅĞµ­µ¬Â§"))
-  "¤¢¤ëË¡Îá¥Õ¥¡¥¤¥ë¤ÎÃæ¤Ç¤Î¡ÖË¡¡×¡¦¡Öµ¬Â§¡×¡¦¡ÖÎá¡×¤Ê¤É¤ò»Ø¤·¼¨¤¹Ë¡ÎáÌ¾¡£
-ÀèÆ¬¤ÎÍ×ÁÇ¤¬Ë¡Îá¥Õ¥¡¥¤¥ë¤ÎË¡ÎáÌ¾¡£¾å¤ÎÎã¤Ç¤Ï¡¢¡ÖÉÔÆ°»ºÅĞµ­Îá¡×¤ÎÃæ¤Ç¡¢
- ¡ÖË¡¡×¤Ï¡ÖÉÔÆ°»ºÅĞµ­Ë¡¡×¤ò»Ø¤·¡¢¡Öµ¬Â§¡×¤Ï¡ÖÉÔÆ°»ºÅĞµ­µ¬Â§¡×¤ò»Ø¤¹¡£
-Ë¡Ê¸¤ÎÃæ¤Ç¡¢`¡Ê°Ê²¼¡ÖË¡¡×¤È¤¤¤¦¡£¡Ë'¤Î¤è¤¦¤Ëµ­½Ò¤µ¤ì¤Æ¤¤¤ë¤Î¤Ç¡¢
-¤³¤³¤ÇÀßÄê¤»¤º¤È¤âÂĞ±ş²ÄÇ½¤À¤¬¡¢ÀßÄê¤µ¤ì¤Æ¤¤¤ì¤ĞÍ¥Àè¤·¤ÆÅ¬ÍÑ¤µ¤ì¤ë¡£
-¥¿¥°¤Ï`laws-local-name-list'¤ËÅĞÏ¿¤µ¤ì¤Æ¤¤¤ëÌ¾¾Î¤òÍøÍÑ¤¹¤ë¡£"
+  '(("ä¸å‹•ç”£ç™»è¨˜ä»¤" :æ³• "ä¸å‹•ç”£ç™»è¨˜æ³•" :è¦å‰‡ "ä¸å‹•ç”£ç™»è¨˜è¦å‰‡"))
+  "ã‚ã‚‹æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¸­ã§ã®ã€Œæ³•ã€ãƒ»ã€Œè¦å‰‡ã€ãƒ»ã€Œä»¤ã€ãªã©ã‚’æŒ‡ã—ç¤ºã™æ³•ä»¤åã€‚
+å…ˆé ­ã®è¦ç´ ãŒæ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã®æ³•ä»¤åã€‚ä¸Šã®ä¾‹ã§ã¯ã€ã€Œä¸å‹•ç”£ç™»è¨˜ä»¤ã€ã®ä¸­ã§ã€
+ ã€Œæ³•ã€ã¯ã€Œä¸å‹•ç”£ç™»è¨˜æ³•ã€ã‚’æŒ‡ã—ã€ã€Œè¦å‰‡ã€ã¯ã€Œä¸å‹•ç”£ç™»è¨˜è¦å‰‡ã€ã‚’æŒ‡ã™ã€‚
+æ³•æ–‡ã®ä¸­ã§ã€`ï¼ˆä»¥ä¸‹ã€Œæ³•ã€ã¨ã„ã†ã€‚ï¼‰'ã®ã‚ˆã†ã«è¨˜è¿°ã•ã‚Œã¦ã„ã‚‹ã®ã§ã€
+ã“ã“ã§è¨­å®šã›ãšã¨ã‚‚å¯¾å¿œå¯èƒ½ã ãŒã€è¨­å®šã•ã‚Œã¦ã„ã‚Œã°å„ªå…ˆã—ã¦é©ç”¨ã•ã‚Œã‚‹ã€‚
+ã‚¿ã‚°ã¯`laws-local-name-list'ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹åç§°ã‚’åˆ©ç”¨ã™ã‚‹ã€‚"
   :type 'list
   :group 'laws)
 
 ;; Path names
 (defcustom laws-path (expand-file-name "~/.laws.d")
-  "Ë¡Îá¥Ç¡¼¥¿Äó¶¡¥·¥¹¥Æ¥à¤«¤é¼èÆÀ¤·¤¿¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¡¢Ë¡Îá¥Ç¡¼
-¥¿Åù¤ÎÊİÂ¸Àè¥Ñ¥¹¡£"
+  "æ³•ä»¤ãƒ‡ãƒ¼ã‚¿æä¾›ã‚·ã‚¹ãƒ†ãƒ ã‹ã‚‰å–å¾—ã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã€æ³•ä»¤ãƒ‡ãƒ¼
+ã‚¿ç­‰ã®ä¿å­˜å…ˆãƒ‘ã‚¹ã€‚"
   :type 'directory
   :group 'laws)
 
 (defcustom laws-htmldata-directory "htmldata"
-  "Ë¡Îá¥Ç¡¼¥¿Å¬ÍÑ¥·¥¹¥Æ¥à¤«¤é¥À¥¦¥ó¥í¡¼¥É¤·¤¿htmldata¤ÎÊİÂ¸Àè¥Ç¥£¥ì¥¯¥È¥ê
-¤Î¿Æ¥Ç¥£¥ì¥¯¥È¥êÌ¾¡£"
+  "æ³•ä»¤ãƒ‡ãƒ¼ã‚¿é©ç”¨ã‚·ã‚¹ãƒ†ãƒ ã‹ã‚‰ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ãŸhtmldataã®ä¿å­˜å…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+ã®è¦ªãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªåã€‚"
   :type 'string
   :group 'laws)
 
 (defcustom laws-htmldata-path (concat laws-path "/" laws-htmldata-directory)
-  "Ë¡Îá¥Ç¡¼¥¿Å¬ÍÑ¥·¥¹¥Æ¥à¤«¤é¥À¥¦¥ó¥í¡¼¥É¤·¤¿htmldata¤ÎÊİÂ¸Àè¥Ç¥£¥ì¥¯¥È¥ê
-¤Î¿Æ¥Ç¥£¥ì¥¯¥È¥ê¤Î¥Ñ¥¹Ì¾¡£"
+  "æ³•ä»¤ãƒ‡ãƒ¼ã‚¿é©ç”¨ã‚·ã‚¹ãƒ†ãƒ ã‹ã‚‰ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ãŸhtmldataã®ä¿å­˜å…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+ã®è¦ªãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‘ã‚¹åã€‚"
   :type 'directory
   :group 'laws)
 
 (defcustom laws-egov-url "http://law.e-gov.go.jp/"
-  "Ë¡Îá¥Ç¡¼¥¿Äó¶¡¥·¥¹¥Æ¥à¤ÎURL¡£"
+  "æ³•ä»¤ãƒ‡ãƒ¼ã‚¿æä¾›ã‚·ã‚¹ãƒ†ãƒ ã®URLã€‚"
   :type 'directory
   :group 'laws)
 
 (defcustom laws-data-path (concat laws-path "/data")
-  "w3m¤Çdump¤·¤¿Ë¡Îá¥Õ¥¡¥¤¥ë¤ÎÊİÂ¸Àè¥Ç¥£¥ì¥¯¥È¥ê¤Î¿Æ¥Ç¥£¥ì¥¯¥È¥ê¤Î¥Ñ¥¹Ì¾¡£"
+  "w3mã§dumpã—ãŸæ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜å…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®è¦ªãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‘ã‚¹åã€‚"
   :type 'directory
   :group 'laws)
 
 (defcustom laws-temp-path (concat laws-path "/tmp")
-  "w3m¤Çdump¤¹¤ë°ì»ş¥Õ¥¡¥¤¥ë¤ÎÊİÂ¸Àè¥Ç¥£¥ì¥¯¥È¥ê¤Î¥Ñ¥¹Ì¾¡£"
+  "w3mã§dumpã™ã‚‹ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜å…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‘ã‚¹åã€‚"
   :type 'directory
   :group 'laws)
 
 (defcustom laws-extention ".law"
-  "Ë¡Îá¥Ç¡¼¥¿¥Õ¥¡¥¤¥ë¤Î³ÈÄ¥»Ò¡£`auto-mode-alist'¤ËÄÉ²Ã¤µ¤ì¤ë¡£"
+  "æ³•ä»¤ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®æ‹¡å¼µå­ã€‚`auto-mode-alist'ã«è¿½åŠ ã•ã‚Œã‚‹ã€‚"
   :type 'string
   :group 'laws)
 
 (defcustom laws-index-file (concat laws-path "/.index")
-  "»ö¹àÊÌ¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¤Î¥Õ¥¡¥¤¥ëÌ¾¡£"
+  "äº‹é …åˆ¥ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«åã€‚"
   :type 'file
   :group 'laws)
 
 (defcustom laws-abbrev-file (concat laws-path "/.abbrev")
-  "Î¬¾ÎË¡ÎáÌ¾¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¤Î¥Õ¥¡¥¤¥ëÌ¾¡£"
+  "ç•¥ç§°æ³•ä»¤åã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«åã€‚"
   :type 'file
   :group 'laws)
 
 (defcustom laws-bookmark-file (concat laws-path "/.bookmark")
-  "¥Ö¥Ã¥¯¥Ş¡¼¥¯¤ÎÊİÂ¸Àè¥Õ¥¡¥¤¥ëÌ¾¡£"
+  "ãƒ–ãƒƒã‚¯ãƒãƒ¼ã‚¯ã®ä¿å­˜å…ˆãƒ•ã‚¡ã‚¤ãƒ«åã€‚"
   :type 'file
   :group 'laws)
 
 (defcustom laws-recent-file (concat laws-path "/.recent")
-  "ºÇ¶á³«¤¤¤¿¥Õ¥¡¥¤¥ë¤Î¥ê¥¹¥È¤ÎÊİÂ¸Àè¥Õ¥¡¥¤¥ëÌ¾"
+  "æœ€è¿‘é–‹ã„ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒªã‚¹ãƒˆã®ä¿å­˜å…ˆãƒ•ã‚¡ã‚¤ãƒ«å"
   :type 'file
   :group 'laws)
 
 ;; Buffer name
 (defcustom laws-use-buffer-law-name t
-  "t¤Ê¤é¥Ğ¥Ã¥Õ¥¡Ì¾¤òË¡ÎáÌ¾¤È¤¹¤ë¡£nil¤Ê¤éÊÑ¹¹¤·¤Ê¤¤¡£"
+  "tãªã‚‰ãƒãƒƒãƒ•ã‚¡åã‚’æ³•ä»¤åã¨ã™ã‚‹ã€‚nilãªã‚‰å¤‰æ›´ã—ãªã„ã€‚"
   :type 'boolean
   :group 'laws)
 
 (defcustom laws-name-suffix ".."
-  "¥Ğ¥Ã¥Õ¥¡Ì¾¤ò½Ì¾®¤¹¤ë¾ì¹ç¤ÎSUFFIX¡£"
+  "ãƒãƒƒãƒ•ã‚¡åã‚’ç¸®å°ã™ã‚‹å ´åˆã®SUFFIXã€‚"
   :type 'string
   :group 'laws)
 
 (defcustom laws-name-length 20
-  "¥Ğ¥Ã¥Õ¥¡Ì¾(Ë¡ÎáÌ¾)¤ÎºÇÂçÄ¹¡£"
+  "ãƒãƒƒãƒ•ã‚¡å(æ³•ä»¤å)ã®æœ€å¤§é•·ã€‚"
   :type 'integer
   :group 'laws)
 
 ;; w3m
 (defcustom laws-w3m-dump-cols 5000
-  "w3m¤Çdump¤¹¤ë¤È¤­¤Î¥«¥é¥à¿ô¡£"
+  "w3mã§dumpã™ã‚‹ã¨ãã®ã‚«ãƒ©ãƒ æ•°ã€‚"
   :type 'integer
   :group 'laws)
 
 (defcustom laws-table-pixel 550
-  "w3m¤Çdump¤¹¤ë¤È¤­¤Î¥Æ¡¼¥Ö¥ë¤Î¥Ô¥¯¥»¥ë¿ô¡£"
+  "w3mã§dumpã™ã‚‹ã¨ãã®ãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒ”ã‚¯ã‚»ãƒ«æ•°ã€‚"
   :type 'integer
   :group 'laws)
 
 ;; paren
-(defcustom laws-compose-paren-char "¡ô"
-  "`compose-region'¤Ç³ç¸Ì¤òÉÔ²Ä»ë¤Ë¤¹¤ë¾ì¹ç¡¢ÂåÂØ¤Î1Ê¸»ú¡£
-¤³¤³¤Ç»ØÄê¤¹¤ëÊ¸»ú¤¬ÂĞ±ş³ç¸Ì¤ÎÂå¤ï¤ê¤ëÉ½¼¨¤µ¤ì¤ë¡£"
+(defcustom laws-compose-paren-char "ï¼ƒ"
+  "`compose-region'ã§æ‹¬å¼§ã‚’ä¸å¯è¦–ã«ã™ã‚‹å ´åˆã€ä»£æ›¿ã®1æ–‡å­—ã€‚
+ã“ã“ã§æŒ‡å®šã™ã‚‹æ–‡å­—ãŒå¯¾å¿œæ‹¬å¼§ã®ä»£ã‚ã‚Šã‚‹è¡¨ç¤ºã•ã‚Œã‚‹ã€‚"
   :type 'string
   :group 'laws)
 
 ;; 
 ;; font-lock-keyword-face
 ;; 
-;; °Ê²¼¡¢defcustom¤µ¤ì¤Æ¤¤¤ë`laws-*-face'¤ÎÃÍ(¥·¥ó¥Ü¥ëÌ¾)¤òÂ¾¤ËÊÑ¹¹¤·¤Ê¤¤¤³¤È¡£
+;; ä»¥ä¸‹ã€defcustomã•ã‚Œã¦ã„ã‚‹`laws-*-face'ã®å€¤(ã‚·ãƒ³ãƒœãƒ«å)ã‚’ä»–ã«å¤‰æ›´ã—ãªã„ã“ã¨ã€‚
 (defvar laws-index-flag-face 'laws-index-flag-face
   "Face name to use for open or close flag of laws index mode.")
 
@@ -661,40 +661,40 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "For laws-display-toggle.")
 
 ;; Parentheses
-(defvar laws-parens "¡Ê.+¡Ë")
+(defvar laws-parens "ï¼ˆ.+ï¼‰")
 
 (defvar laws-paren-exclude-regexp
-  "¡Ê\\([£°-£¹]+\\|[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\|[£é]+\\)¡Ë")
+  "ï¼ˆ\\([ï¼-ï¼™]+\\|[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\|[ï½‰]+\\)ï¼‰")
 
 (defvar laws-paren-overlays)
 
-;; Ë¡¡¢Îá¡¢µ¬Â§¡¢¿·Ë¡¡¢µìË¡Åù¤Ø¤ÎÂĞ±ş
+;; æ³•ã€ä»¤ã€è¦å‰‡ã€æ–°æ³•ã€æ—§æ³•ç­‰ã¸ã®å¯¾å¿œ
 (defvar laws-local-name-list
-  '("Ë¡" "¿·Ë¡" "µìË¡" "µ¬Â§" "¿·µ¬Â§" "µìµ¬Â§" "Îá" "¿·Îá" "µìÎá" "¿·ºÙÂ§" "µìºÙÂ§" "ÉíÂ§" "Ë¡ÉíÂ§" "µ¬Â§ÉíÂ§")
+  '("æ³•" "æ–°æ³•" "æ—§æ³•" "è¦å‰‡" "æ–°è¦å‰‡" "æ—§è¦å‰‡" "ä»¤" "æ–°ä»¤" "æ—§ä»¤" "æ–°ç´°å‰‡" "æ—§ç´°å‰‡" "é™„å‰‡" "æ³•é™„å‰‡" "è¦å‰‡é™„å‰‡")
   "")
 
 ;; outline
 (defvar laws-heading-regexp
-  (let ((number "[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]"))
-    (concat "^¡¡*"
-	    "\\(Âè" number "+ÊÔ"
-	    "\\|Âè" number "+¾Ï\\([¤Î¥Î]" number "\\)*"
-	    "\\|Âè" number "+Àá\\([¤Î¥Î]" number "\\)*"
-	    "\\|Âè" number "+´¾\\([¤Î¥Î]" number "\\)*"
-	    "\\|Âè" number "+ÌÜ\\([¤Î¥Î]" number "\\)*"
-	    "\\|Éí¡¡?Â§\\)"))
+  (let ((number "[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]"))
+    (concat "^ã€€*"
+	    "\\(ç¬¬" number "+ç·¨"
+	    "\\|ç¬¬" number "+ç« \\([ã®ãƒ]" number "\\)*"
+	    "\\|ç¬¬" number "+ç¯€\\([ã®ãƒ]" number "\\)*"
+	    "\\|ç¬¬" number "+æ¬¾\\([ã®ãƒ]" number "\\)*"
+	    "\\|ç¬¬" number "+ç›®\\([ã®ãƒ]" number "\\)*"
+	    "\\|é™„ã€€?å‰‡\\)"))
   "\
-Èó¥¢¥¦¥È¥é¥¤¥ó¥Ø¥Ã¥À¤ò´Ş¤à¸«½Ğ¤·¤ÎÀµµ¬É½¸½¡£
-ÌÜ¼¡ÉôÊ¬¤ÎÈó¥¢¥¦¥È¥é¥¤¥ó¥Ø¥Ã¥À¤Î¸«½Ğ¤·¤¬¹ÔÆ¬¤«¤é»Ï¤Ş¤ë¾ì¹ç¤Ë¤Ï¡¢¥¢¥¦¥È
-¥é¥¤¥ó¥Ø¥Ã¥À`outline-regexp'¤Ç¤â¤¢¤ë¤Î¤Ç¡¢¸«½Ğ-ËÜÊ¸´Ö¤Î°ÜÆ°¤¬µ¡Ç½¤·¤Ê¤¤¡£
-¤½¤Î¤¿¤á¡¢¾¯¤Ê¤¯¤È¤â1¸Ä¤ÎÁ´³Ñ¶õÇò¤¬É¬Í×¡£¤³¤ì¤Ï¼êºî¶È¤ÇÁŞÆş¤¹¤ëÉ¬Í×¤¬
-¤¢¤ë¡£")
+éã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ãƒ˜ãƒƒãƒ€ã‚’å«ã‚€è¦‹å‡ºã—ã®æ­£è¦è¡¨ç¾ã€‚
+ç›®æ¬¡éƒ¨åˆ†ã®éã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ãƒ˜ãƒƒãƒ€ã®è¦‹å‡ºã—ãŒè¡Œé ­ã‹ã‚‰å§‹ã¾ã‚‹å ´åˆã«ã¯ã€ã‚¢ã‚¦ãƒˆ
+ãƒ©ã‚¤ãƒ³ãƒ˜ãƒƒãƒ€`outline-regexp'ã§ã‚‚ã‚ã‚‹ã®ã§ã€è¦‹å‡º-æœ¬æ–‡é–“ã®ç§»å‹•ãŒæ©Ÿèƒ½ã—ãªã„ã€‚
+ãã®ãŸã‚ã€å°‘ãªãã¨ã‚‚1å€‹ã®å…¨è§’ç©ºç™½ãŒå¿…è¦ã€‚ã“ã‚Œã¯æ‰‹ä½œæ¥­ã§æŒ¿å…¥ã™ã‚‹å¿…è¦ãŒ
+ã‚ã‚‹ã€‚")
 
 (defvar laws-supplementary-level 6
-  "ÉíÂ§¤Î¥¢¥¦¥È¥é¥¤¥ó¥ì¥Ù¥ë")
+  "é™„å‰‡ã®ã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ãƒ¬ãƒ™ãƒ«")
 
 ;; laws-mode
-(defvar laws-mishikou-list)		;¥í¡¼¥«¥ëÊÑ¿ô
+(defvar laws-mishikou-list)		;ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°
 
 (defvar laws-mode-name "Laws")
 
@@ -769,10 +769,10 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;; laws-index-mode
 (defvar laws-index-mode-name "Laws"
-  "`laws-index-mode'¤Î¥â¡¼¥ÉÌ¾¡£")
+  "`laws-index-mode'ã®ãƒ¢ãƒ¼ãƒ‰åã€‚")
 
 (defvar laws-index-buffer "*Laws*"
-  "`laws-index-mode'¤Î¥Ğ¥Ã¥Õ¥¡Ì¾¡£")
+  "`laws-index-mode'ã®ãƒãƒƒãƒ•ã‚¡åã€‚")
 
 (defvar laws-index-header-items
   '("Opened"
@@ -782,9 +782,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     "Index"
     "Directory"
     "Abbrev")
-  "`laws-index-mode'¤Î¥Ø¥Ã¥À¥é¥¤¥ó¤Î¥â¡¼¥É¤òÉ½¤ï¤¹¹àÌÜ¡£")
+  "`laws-index-mode'ã®ãƒ˜ãƒƒãƒ€ãƒ©ã‚¤ãƒ³ã®ãƒ¢ãƒ¼ãƒ‰ã‚’è¡¨ã‚ã™é …ç›®ã€‚")
 
-;; ¸ÄÊÌ¤Î¥â¡¼¥É¤Î¾õÂÖ¤òÊİÂ¸¤¹¤ë¥°¥í¡¼¥Ğ¥ëÊÑ¿ô¡£
+;; å€‹åˆ¥ã®ãƒ¢ãƒ¼ãƒ‰ã®çŠ¶æ…‹ã‚’ä¿å­˜ã™ã‚‹ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã€‚
 (defvar laws-recent-alist nil)
 (defvar laws-bookmark-alist nil)
 (defvar laws-opened-alist nil)
@@ -794,21 +794,21 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar laws-abbrev nil)
 (defvar laws-abbrev-alist nil)
 
-;; ¸ÄÊÌ¤Î¥â¡¼¥É¤Î¾õÂÖ¤òÊİÂ¸¤¹¤ë¥í¡¼¥«¥ëÊÑ¿ô¡£
+;; å€‹åˆ¥ã®ãƒ¢ãƒ¼ãƒ‰ã®çŠ¶æ…‹ã‚’ä¿å­˜ã™ã‚‹ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ã€‚
 (defvar laws-index-local-mode)
 (defvar laws-index-conf)
 (defvar laws-names-alist)
 (defvar laws-search-alist)
 (defvar laws-index-alist)
 (defvar laws-directory-alist)
-;; Search¥â¡¼¥É¤Ç¥Ï¥¤¥é¥¤¥È¤Î¤¿¤á¤Îoverlay¤òÊİ»ı¤¹¤ë¥í¡¼¥«¥ëÊÑ¿ô¡£
+;; Searchãƒ¢ãƒ¼ãƒ‰ã§ãƒã‚¤ãƒ©ã‚¤ãƒˆã®ãŸã‚ã®overlayã‚’ä¿æŒã™ã‚‹ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ã€‚
 (defvar laws-index-search-overlaies)
 
 ;; iswitchb
-(defvar laws-names-list nil "iswitchb¤Î¤¿¤á¤ÎÊä´°¥ê¥¹¥È")
+(defvar laws-names-list nil "iswitchbã®ãŸã‚ã®è£œå®Œãƒªã‚¹ãƒˆ")
 
 (defvar laws-iswitchb-present-list nil
-  "`laws-iswitchb'¤Î¸½ºß¤Î¸¡º÷ÂĞ¾İ¤ÎË¡Îá¥ê¥¹¥È¡£")
+  "`laws-iswitchb'ã®ç¾åœ¨ã®æ¤œç´¢å¯¾è±¡ã®æ³•ä»¤ãƒªã‚¹ãƒˆã€‚")
 
 ;; w3m
 (defvar laws-w3m-dump-command
@@ -816,7 +816,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;; laws-index
 (defun laws-set-face-invisible (n)
-  "ÉÔ²Ä»ë¤Î¥×¥í¥Ñ¥Æ¥£¤òÀßÄê¤¹¤ë¥Õ¥©¡¼¥à¤òÊÖ¤¹¡£"
+  "ä¸å¯è¦–ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®šã™ã‚‹ãƒ•ã‚©ãƒ¼ãƒ ã‚’è¿”ã™ã€‚"
   `(,n (progn (put-text-property
 	       (match-beginning ,n) (match-end ,n)
 	       'invisible t)
@@ -904,7 +904,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	    ,(laws-set-face-invisible 7))
 
 	  ;;
-	  ;; Ë¡ÎáÌ¾
+	  ;; æ³•ä»¤å
 	  ;;
 	  `("^\\((\"\\) \\{2,\\}\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\".+)\\)$"
 	    ,(laws-set-face-invisible 1)
@@ -916,7 +916,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	    ,(laws-set-mouse-face-1 5)
 	    ,(laws-set-face-invisible 6))
 	  ))
-  "`laws-index-mode'¤Î¤¿¤á¤Î`font-lock-keywords'")
+  "`laws-index-mode'ã®ãŸã‚ã®`font-lock-keywords'")
 
 (defvar laws-index-mode-map
   (let ((map (make-sparse-keymap)))
@@ -951,67 +951,67 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 ;;    (define-key map "\C-c\C-b" 'laws-iswitchb)
     (define-key map "?" 'laws-index-help)
     map)
-  "`laws-index-mode'¤Î¥­¡¼¥Ş¥Ã¥×¤òÊÖ¤¹¡£")
+  "`laws-index-mode'ã®ã‚­ãƒ¼ãƒãƒƒãƒ—ã‚’è¿”ã™ã€‚")
 
 ;; Regexp
 (defvar laws-volume-face-regexp
-  "\\(^[ ¡¡]*Âè.+ÊÔ¡¡[^¡Ê¡Ë\n]*\\)")
+  "\\(^[ ã€€]*ç¬¬.+ç·¨ã€€[^ï¼ˆï¼‰\n]*\\)")
 
 (defvar laws-chapter-face-regexp "\
-\\(^[ ¡¡]*Âè.+¾Ï\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]\\)*¡¡[^¡Ê¡Ë\n]+\\)")
+\\(^[ ã€€]*ç¬¬.+ç« \\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]\\)*ã€€[^ï¼ˆï¼‰\n]+\\)")
 
 (defvar laws-section-face-regexp "\
-\\(^[ ¡¡]*Âè.+Àá\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]\\)*¡¡[^¡Ê¡Ë\n]+\\)")
+\\(^[ ã€€]*ç¬¬.+ç¯€\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]\\)*ã€€[^ï¼ˆï¼‰\n]+\\)")
 
 (defvar laws-subsection-face-regexp "\
-\\(^[ ¡¡]*Âè.+´¾\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]\\)*¡¡[^¡Ê¡Ë\n]+\\)")
+\\(^[ ã€€]*ç¬¬.+æ¬¾\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]\\)*ã€€[^ï¼ˆï¼‰\n]+\\)")
 
 (defvar laws-subsection2-face-regexp "\
-^\\([ ¡¡]*Âè.+ÌÜ\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]\\)*¡¡[^¡Ê¡Ë\n]+\\)")
+^\\([ ã€€]*ç¬¬.+ç›®\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]\\)*ã€€[^ï¼ˆï¼‰\n]+\\)")
 
-(defvar laws-article-subitem3-face-regexp "^\\(¡Ê[£°-£¹]+¡Ë\\|([0-9]+)\\)¡¡")
+(defvar laws-article-subitem3-face-regexp "^\\(ï¼ˆ[ï¼-ï¼™]+ï¼‰\\|([0-9]+)\\)ã€€")
 
-(defvar laws-comment-face-regexp "^[ ¡¡]*\\(¡Ê\\cj+¡Ë\\|(\\cj+) \\)$")
+(defvar laws-comment-face-regexp "^[ ã€€]*\\(ï¼ˆ\\cj+ï¼‰\\|(\\cj+) \\)$")
 
-(defvar laws-article-subitem4-face-regexp "^¡Ê£é+¡Ë¡¡")
+(defvar laws-article-subitem4-face-regexp "^ï¼ˆï½‰+ï¼‰ã€€")
 
 (defvar laws-supplementary-face-regexp
-  "^\\([¡¡ ]*Éí¡¡?Â§.*$\\)")
+  "^\\([ã€€ ]*é™„ã€€?å‰‡.*$\\)")
 
-(defvar laws-article-subitem2-face-regexp "^\\cK¡¡")
+(defvar laws-article-subitem2-face-regexp "^\\cKã€€")
 
 (defvar laws-article-number-face-regexp "\
-\\(^Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½É´Àé]+¾ò\\([¥Î¤Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½É´]+\\)*\\)[ ¡¡]*")
+\\(^ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒ]+æ¡\\([ãƒã®][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾]+\\)*\\)[ ã€€]*")
 
 (defvar laws-article-paragraph-face-regexp "\
-\\(^\\([¡û¢ş]\\)?\\([£°-£¹]+\\|[0-9]+\\)\\)[ ¡¡]*")
+\\(^\\([â—‹â—¯]\\)?\\([ï¼-ï¼™]+\\|[0-9]+\\)\\)[ ã€€]*")
 
 (defvar laws-article-item-face-regexp "\
-\\(^[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\)*\\)[ ¡¡]*")
+\\(^[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\)*\\)[ ã€€]*")
 
 (defvar laws-anchor-name-face-regexp2 "\
-\\([^Æ±]\\(\\([¿·µì]?\\(ÉíÂ§\\|Ë¡ÉíÂ§\\|µ¬Â§ÉíÂ§\\|ºÙÂ§\\|Ë¡\\|µ¬Â§\\|Îá\\)\\)\
-\\(\\(Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½É´Àé]+¾ò\\)\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\)*\
-\\(Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+¹à\\)*\
-\\(Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+¹æ\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\)*\\)*\\)\\)\\)")
+\\([^åŒ]\\(\\([æ–°æ—§]?\\(é™„å‰‡\\|æ³•é™„å‰‡\\|è¦å‰‡é™„å‰‡\\|ç´°å‰‡\\|æ³•\\|è¦å‰‡\\|ä»¤\\)\\)\
+\\(\\(ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒ]+æ¡\\)\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\)*\
+\\(ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+é …\\)*\
+\\(ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+å·\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\)*\\)*\\)\\)\\)")
 
 (defvar laws-anchor-article-face-regexp3 "\
-.\\(\\(Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½É´Àé]+¾ò\\)\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\)*\
-\\(Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+¹à\\)*\
-\\(Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+¹æ\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\)*\\)*\\)")
+.\\(\\(ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒ]+æ¡\\)\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\)*\
+\\(ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+é …\\)*\
+\\(ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+å·\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\)*\\)*\\)")
 
 (defvar laws-article-regexp
-  "^Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½É´Àé]+¾ò\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\)\\{0,3\\}"
-  "¾ò¿ô¤ÎÀµµ¬É½¸½¡£")
+  "^ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒ]+æ¡\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\)\\{0,3\\}"
+  "æ¡æ•°ã®æ­£è¦è¡¨ç¾ã€‚")
 
 (defvar laws-paragraph-regexp
-  (concat "^[¡û¢ş]?\\(" laws-article-regexp "\\|[£°-£¹]\\|[0-9]\\)\\{1,2\\}")
-  "¹à¿ô¤ÎÀµµ¬É½¸½¡£")
+  (concat "^[â—‹â—¯]?\\(" laws-article-regexp "\\|[ï¼-ï¼™]\\|[0-9]\\)\\{1,2\\}")
+  "é …æ•°ã®æ­£è¦è¡¨ç¾ã€‚")
 
 ;; font-lock-keywords
 (defvar laws-font-lock-keywords)
 (defvar laws-font-lock-keywords-0
-  (list `(,(concat "\\(" (regexp-opt laws-excluded-law-names) "\\)[^¿Í]")
+  (list `(,(concat "\\(" (regexp-opt laws-excluded-law-names) "\\)[^äºº]")
 	   (1 laws-anchor-name-face nil))))
 
 (defvar laws-font-lock-keywords-1
@@ -1023,10 +1023,10 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	`(,laws-article-number-face-regexp 1 laws-article-number-face)
 	`(,laws-anchor-name-face-regexp2 3 laws-anchor-name-face)
 	`(,laws-anchor-name-face-regexp2 4 laws-anchor-name-face)
-	'("Æ±Ë¡" 0 laws-anchor-name-face)
+	'("åŒæ³•" 0 laws-anchor-name-face)
 	`(,laws-anchor-article-face-regexp3 1 laws-anchor-article-face)
 	`(,laws-anchor-article-face-regexp3 ,(laws-set-mouse-face-2 1))
-	`("Æ±Ë¡" ,(laws-set-mouse-face-2 0))
+	`("åŒæ³•" ,(laws-set-mouse-face-2 0))
 	`(,laws-article-paragraph-face-regexp 1 laws-article-paragraph-face)
 	`(,laws-article-item-face-regexp 1 laws-article-item-face)
 	`(,laws-article-subitem2-face-regexp 0 laws-article-subitem2-face)
@@ -1042,7 +1042,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	  (delete x laws-font-lock-keywords-1))
 	(list `(,laws-anchor-name-face-regexp2 ,(laws-set-mouse-face-2 2))
 	      `(,laws-anchor-article-face-regexp3 ,(laws-set-mouse-face-2 1))
-	      `("Æ±Ë¡" ,(laws-set-mouse-face-2 0)))))
+	      `("åŒæ³•" ,(laws-set-mouse-face-2 0)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 ;;; laws-data
@@ -1057,10 +1057,10 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   (unless laws-online-mode
     (laws-online-mode-message #'error))
   (labels ((make-index (file new-alist-func old-alist-func)
-	     ;; ¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¤òÀ¸À®¤¹¤ë´Ø¿ô¡£FILE¤Ë¡¢NEW-ALIST-FUNC¤Î
-	     ;; ÊÖ¤¹ALIST¤ò½ĞÎÏ¤¹¤ë¡£ALIST¤¬OLD-ALIST-FUNC¤ÎÊÖ¤¹ÃÍ¤ÈÆ±¤¸¤Ê¤é
-	     ;; ½ĞÎÏ¤·¤Ê¤¤¡£½ĞÎÏ¤¹¤ë¾ì¹ç¡¢ÈÖ¹æÉÕ¤­¥Ğ¥Ã¥¯¥¢¥Ã¥×¥Õ¥¡¥¤¥ë¤òÀ¸À®
-	     ;; ¤¹¤ë¡£Ìá¤êÃÍ¤Ï½ĞÎÏ¤·¤¿¾ì¹ç¤ÏT¤òÊÖ¤·¡¢½ĞÎÏ¤·¤Ê¤±¤ì¤ĞNIL¤òÊÖ¤¹¡£
+	     ;; ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆã™ã‚‹é–¢æ•°ã€‚FILEã«ã€NEW-ALIST-FUNCã®
+	     ;; è¿”ã™ALISTã‚’å‡ºåŠ›ã™ã‚‹ã€‚ALISTãŒOLD-ALIST-FUNCã®è¿”ã™å€¤ã¨åŒã˜ãªã‚‰
+	     ;; å‡ºåŠ›ã—ãªã„ã€‚å‡ºåŠ›ã™ã‚‹å ´åˆã€ç•ªå·ä»˜ããƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆ
+	     ;; ã™ã‚‹ã€‚æˆ»ã‚Šå€¤ã¯å‡ºåŠ›ã—ãŸå ´åˆã¯Tã‚’è¿”ã—ã€å‡ºåŠ›ã—ãªã‘ã‚Œã°NILã‚’è¿”ã™ã€‚
 	     (let ((alist (funcall new-alist-func)))
 	       (if (equal alist (funcall old-alist-func))
 		   nil
@@ -1070,8 +1070,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 		   (message "Wrote %s" file))
 		 t))))
     (let (index-updatedp abbrev-updatedp)
-      ;; index¥Õ¥¡¥¤¥ë¤¬Â¸ºß¤·¤Ê¤¤¾ì¹ç
-      ;; ºÆ¼èÆÀ¤·¤Æ¹¹¿·¤µ¤ì¤¿¾ì¹ç
+      ;; indexãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆ
+      ;; å†å–å¾—ã—ã¦æ›´æ–°ã•ã‚ŒãŸå ´åˆ
       (when (or regenerate (not (file-exists-p laws-index-file)))
 	(if (not (y-or-n-p "Make index files? "))
 	    (if regenerate
@@ -1081,8 +1081,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	  (setq index-updatedp
 		(make-index laws-index-file #'laws-get-index #'laws-alist))
 	  (message "Process has completed.")))
-      ;; abbrev¥Õ¥¡¥¤¥ë¤¬Â¸ºß¤·¤Ê¤¤¾ì¹ç
-      ;; ºÆ¼èÆÀ¤·¤Æ¹¹¿·¤µ¤ì¤¿¾ì¹ç
+      ;; abbrevãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆ
+      ;; å†å–å¾—ã—ã¦æ›´æ–°ã•ã‚ŒãŸå ´åˆ
       (when (or regenerate (not (file-exists-p laws-abbrev-file)))
 	(laws-make-directory laws-path)
 	(setq abbrev-updatedp
@@ -1093,7 +1093,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
       (cons index-updatedp abbrev-updatedp))))
 
 (defun laws-url-retrieve (url)
-  "URL¤òGET¤¹¤ë¡£"
+  "URLã‚’GETã™ã‚‹ã€‚"
   (save-current-buffer
     (with-current-buffer
 	(condition-case err
@@ -1107,21 +1107,21 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	(current-buffer)))))
 
 (defun laws-get-dirname (id)
-  "GET¤·¤¿ID¤ÎÊİÂ¸Àè¥Ç¥£¥ì¥¯¥È¥ê¤òÊÖ¤¹¡£"
+  "GETã—ãŸIDã®ä¿å­˜å…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’è¿”ã™ã€‚"
   (concat laws-htmldata-path "/" (upcase (substring id 0 3))))
 
 (defvar laws-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
-  "Ë¡Îá¥Ç¡¼¥¿Äó¶¡¥·¥¹¥Æ¥à¤Îcgi¤ÎURL¡£")
+  "æ³•ä»¤ãƒ‡ãƒ¼ã‚¿æä¾›ã‚·ã‚¹ãƒ†ãƒ ã®cgiã®URLã€‚")
 
 (defun laws-get-index ()
-  "»ö¹àÊÌÊ¬Îàº÷°ú¤òGET¤·¤Æ¡¢Ë¡ÎáÌ¾¤ÈID¤Îalist¤Î¥ê¥¹¥È¤òÀ¸À®¤·¤ÆÊÖ¤¹¡£"
+  "äº‹é …åˆ¥åˆ†é¡ç´¢å¼•ã‚’GETã—ã¦ã€æ³•ä»¤åã¨IDã®alistã®ãƒªã‚¹ãƒˆã‚’ç”Ÿæˆã—ã¦è¿”ã™ã€‚"
   (labels ((split (m)
 	     (save-match-data
 	       ;; htmldata
-	       ;; 1. Ë¡ÎáÌ¾Ê¸»úÎó¤ÎËöÈø¤¬È¾³Ñ¶õÇò¤Î¾ì¹ç¤¬¤¢¤ë¡£
-	       ;; 2. ¡Ê¡Ë¤¬Ê£¿ô¤Î¾ì¹ç¤¬¤¢¤ë¤¬¡¢0¸Ä¤Î¾ì¹ç¤Ï¤Ê¤¤¡£
+	       ;; 1. æ³•ä»¤åæ–‡å­—åˆ—ã®æœ«å°¾ãŒåŠè§’ç©ºç™½ã®å ´åˆãŒã‚ã‚‹ã€‚
+	       ;; 2. ï¼ˆï¼‰ãŒè¤‡æ•°ã®å ´åˆãŒã‚ã‚‹ãŒã€0å€‹ã®å ´åˆã¯ãªã„ã€‚
 	       (let ((s (replace-regexp-in-string "[\r\n\t]+" "" m)))
-		 (when (string-match "^\\(.+?\\)\\(¡¡¾¶\\)?\\(¡Ê.+?¡Ë+\\) *$" s)
+		 (when (string-match "^\\(.+?\\)\\(ã€€æŠ„\\)?\\(ï¼ˆ.+?ï¼‰+\\) *$" s)
 		   (cons (match-string 1 s) (concat (match-string 2 s)
 						    (match-string 3 s))))))))
     (save-current-buffer
@@ -1144,7 +1144,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON")
 
 (defun laws-make-abbrev-index ()
-  "Î¬¾ÎË¡ÎáÌ¾¤òGET¤·¤Æ¡¢Ï¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹¡£"
+  "ç•¥ç§°æ³•ä»¤åã‚’GETã—ã¦ã€é€£æƒ³ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚"
   (with-current-buffer (laws-url-retrieve laws-ryaku-url)
     (let ((rx-a "<A NAME=\"[0-9]+\"><B>\\(.+?\\)</B>")
 	  (rx-b "<B>\\(.+?\\)</B>")
@@ -1181,7 +1181,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	(nreverse result-a)))))
 
 (defun laws-request-uri-list ()
-  "URL¥ê¥¹¥È"
+  "URLãƒªã‚¹ãƒˆ"
   (let ((ls nil))
     (dotimes (i 50 (nreverse ls))
       (push
@@ -1200,32 +1200,32 @@ Opened Recent Search Bookmark Index Directory Abbrev"
        ls))))
 
 (defun laws-jikoubetsu-index-alist ()
-  "»ö¹àÊÌº÷°ú"
-  '((1 . "·ûË¡")	(2 . "¹ñ²ñ")
-    (3 . "¹ÔÀ¯ÁÈ¿¥")	(4 . "¹ñ²È¸øÌ³°÷")
-    (5 . "¹ÔÀ¯¼êÂ³")	(6 . "Åı·×")
-    (7 . "ÃÏÊı¼«¼£")	(8 . "ÃÏÊıºâÀ¯")
-    (9 . "»ÊË¡")	(10 . "Ì±»ö")
-    (11 . "·º»ö")	(12 . "·Ù»¡")
-    (13 . "¾ÃËÉ")	(14 . "¹ñÅÚ³«È¯")
-    (15 . "ÅÚÃÏ")	(16 . "ÅÔ»Ô·×²è")
-    (17 . "Æ»Ï©")	(18 . "²ÏÀî")
-    (19 . "ºÒ³²ÂĞºö")	(20 . "·úÃÛ¡¦½»Âğ")
-    (21 . "ºâÌ³ÄÌÂ§")	(22 . "¹ñÍ­ºâ»º")
-    (23 . "¹ñÀÇ")	(24 . "ÀìÇä¡¦»ö¶È")
-    (25 . "¹ñºÄ")	(26 . "¶µ°é")
-    (27 . "Ê¸²½")	(28 . "»º¶ÈÄÌÂ§")
-    (29 . "ÇÀ¶È")	(30 . "ÎÓ¶È")
-    (31 . "¿å»º¶È")	(32 . "¹Û¶È")
-    (33 . "¹©¶È")	(34 . "¾¦¶È")
-    (35 . "¶âÍ»¡¦Êİ¸±")	(36 . "³°¹ñ°ÙÂØ¡¦ËÇ°×")
-    (37 . "Î¦±¿")	(38 . "³¤±¿")
-    (39 . "¹Ò¶õ")	(40 . "²ßÊª±¿Á÷")
-    (41 . "´Ñ¸÷")	(42 . "Í¹Ì³")
-    (43 . "ÅÅµ¤ÄÌ¿®")	(44 . "Ï«Æ¯")
-    (45 . "´Ä¶­ÊİÁ´")	(46 . "¸üÀ¸")
-    (47 . "¼Ò²ñÊ¡»ã")	(48 . "¼Ò²ñÊİ¸±")
-    (49 . "ËÉ±Ò")	(50 . "³°»ö")))
+  "äº‹é …åˆ¥ç´¢å¼•"
+  '((1 . "æ†²æ³•")	(2 . "å›½ä¼š")
+    (3 . "è¡Œæ”¿çµ„ç¹”")	(4 . "å›½å®¶å…¬å‹™å“¡")
+    (5 . "è¡Œæ”¿æ‰‹ç¶š")	(6 . "çµ±è¨ˆ")
+    (7 . "åœ°æ–¹è‡ªæ²»")	(8 . "åœ°æ–¹è²¡æ”¿")
+    (9 . "å¸æ³•")	(10 . "æ°‘äº‹")
+    (11 . "åˆ‘äº‹")	(12 . "è­¦å¯Ÿ")
+    (13 . "æ¶ˆé˜²")	(14 . "å›½åœŸé–‹ç™º")
+    (15 . "åœŸåœ°")	(16 . "éƒ½å¸‚è¨ˆç”»")
+    (17 . "é“è·¯")	(18 . "æ²³å·")
+    (19 . "ç½å®³å¯¾ç­–")	(20 . "å»ºç¯‰ãƒ»ä½å®…")
+    (21 . "è²¡å‹™é€šå‰‡")	(22 . "å›½æœ‰è²¡ç”£")
+    (23 . "å›½ç¨")	(24 . "å°‚å£²ãƒ»äº‹æ¥­")
+    (25 . "å›½å‚µ")	(26 . "æ•™è‚²")
+    (27 . "æ–‡åŒ–")	(28 . "ç”£æ¥­é€šå‰‡")
+    (29 . "è¾²æ¥­")	(30 . "æ—æ¥­")
+    (31 . "æ°´ç”£æ¥­")	(32 . "é‰±æ¥­")
+    (33 . "å·¥æ¥­")	(34 . "å•†æ¥­")
+    (35 . "é‡‘èãƒ»ä¿é™º")	(36 . "å¤–å›½ç‚ºæ›¿ãƒ»è²¿æ˜“")
+    (37 . "é™¸é‹")	(38 . "æµ·é‹")
+    (39 . "èˆªç©º")	(40 . "è²¨ç‰©é‹é€")
+    (41 . "è¦³å…‰")	(42 . "éƒµå‹™")
+    (43 . "é›»æ°—é€šä¿¡")	(44 . "åŠ´åƒ")
+    (45 . "ç’°å¢ƒä¿å…¨")	(46 . "åšç”Ÿ")
+    (47 . "ç¤¾ä¼šç¦ç¥‰")	(48 . "ç¤¾ä¼šä¿é™º")
+    (49 . "é˜²è¡›")	(50 . "å¤–äº‹")))
 
 (defun laws-make-jikoubetsu-index ()
   (let ((strs nil)
@@ -1236,13 +1236,13 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	(push (cons
 	       (match-string-no-properties 1)
 	       (replace-regexp-in-string
-		"[ ¡¡]+" "" (match-string-no-properties 2)))
+		"[ ã€€]+" "" (match-string-no-properties 2)))
 	      strs)))
     (sort strs (lambda (x y)
 		 (< (string-to-number (car x)) (string-to-number (car y)))))))
 
 (defun laws-make-stags-alist ()
-  "¹ÔÆ¬¤«¤éÁ°Êı¤Ë¸¡º÷¤·¤Æ¡¢¥İ¥¤¥ó¥È¹ÔÆâ¤ÎS¼°¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£"
+  "è¡Œé ­ã‹ã‚‰å‰æ–¹ã«æ¤œç´¢ã—ã¦ã€ãƒã‚¤ãƒ³ãƒˆè¡Œå†…ã®Så¼ã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚"
   (save-excursion
     (save-match-data
       (let ((result nil)
@@ -1253,7 +1253,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	result))))
 
 (defun laws-in-stag-p (pos)
-  "¥İ¥¤¥ó¥ÈPOS¤¬¥¿¥°¤ÎÃæ¤Ë¤¢¤ì¤Ğt¤ò¡¢¤Ê¤±¤ì¤Ğnil¤òÊÖ¤¹¡£"
+  "ãƒã‚¤ãƒ³ãƒˆPOSãŒã‚¿ã‚°ã®ä¸­ã«ã‚ã‚Œã°tã‚’ã€ãªã‘ã‚Œã°nilã‚’è¿”ã™ã€‚"
   (let ((ls (laws-make-stags-alist)))
     (block nil
       (while ls
@@ -1264,7 +1264,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	    (pop ls)))))))
 
 (defun laws-duplicate-names (ls)
-  "½ÅÊ£¤¹¤ëË¡ÎáÌ¾¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£"
+  "é‡è¤‡ã™ã‚‹æ³•ä»¤åã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚"
   (do ((xs (cdr ls) (cdr xs))
        (name (caar ls) (caar xs))
        (result nil))
@@ -1275,7 +1275,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	(push name result)))))
 
 (defun laws-replace-table-value (&optional table-pixel)
-  "GET¤·¤¿html¤Î¥¿¥°¤òÃÖ´¹¤¹¤ë¡£"
+  "GETã—ãŸhtmlã®ã‚¿ã‚°ã‚’ç½®æ›ã™ã‚‹ã€‚"
   (let ((case-fold-search t)
 	(pixel (or table-pixel laws-table-pixel)))
     (labels ((match (rx s) (save-match-data (string-match rx s))))
@@ -1283,16 +1283,16 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	(replace-match
 	 (let ((s (match-string 0)))
 	   (cond ((match "<DIV ALIGN=\"right\">" s)
-		  ;; ËÁÆ¬¤Î±¦´ó¤»¤Î¥Æ¡¼¥Ö¥ë¤òº¸´ó¤»¤Ë¡£
+		  ;; å†’é ­ã®å³å¯„ã›ã®ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’å·¦å¯„ã›ã«ã€‚
 		  "<DIV ALIGN=\"left\">")
 		 ((match "TABLE WIDTH" s)
-		  ;; ËÁÆ¬¤Î¥Æ¡¼¥Ö¥ë¤ÎÉı¤ò»ØÄê¡£
+		  ;; å†’é ­ã®ãƒ†ãƒ¼ãƒ–ãƒ«ã®å¹…ã‚’æŒ‡å®šã€‚
 		  (format "<TABLE WIDTH=%S BORDER=%S>" pixel 0))
-		 (t ;; ½ĞÎÏ¤µ¤ì¤ë·ÓÀşÉ½¤ÎÉı¤ò»ØÄê¡£
+		 (t ;; å‡ºåŠ›ã•ã‚Œã‚‹ç½«ç·šè¡¨ã®å¹…ã‚’æŒ‡å®šã€‚
 		  (format "<TABLE WIDTH=%S BORDER>" pixel)))))))))
 
 (defun laws-load-index (index)
-  "¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¤òread¤·¤Æ¥ê¥¹¥È¤òÊÖ¤¹¡£"
+  "ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’readã—ã¦ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚"
   (with-temp-buffer
     (insert-file-contents index)
     (do ((xs (read (current-buffer)) (cdr xs))
@@ -1303,7 +1303,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	(push (cons (car (caar ys)) (cdar ys)) acc)))))
 
 (defun laws-extract-name ()
-  "html ¤«¤éË¡ÎáÌ¾¤ò¼èÆÀ¤·¤Æ¡¢Ê¸»úÎóÄ¹¤Î¾®¤µ¤¤½ç¤Ç¥½¡¼¥È¤µ¤ì¤¿¥ê¥¹¥È¤òÊÖ¤¹¡£"
+  "html ã‹ã‚‰æ³•ä»¤åã‚’å–å¾—ã—ã¦ã€æ–‡å­—åˆ—é•·ã®å°ã•ã„é †ã§ã‚½ãƒ¼ãƒˆã•ã‚ŒãŸãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚"
   (let ((result nil)
 	(case-fold-search t)
 	(rx "<A HREF=.+?REF_NAME=\\([^&]+\\)&ANCHOR_F=&ANCHOR_T="))
@@ -1311,7 +1311,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (sort (delete-dups result) (lambda (x y) (< (length x) (length y))))))
 
 (defun laws-detect-coding-region (start end priority-list)
-  ;; `w3m-detect-coding-region'(w3m-fsf.el)¤Î´Ø¿ôÌ¾¤Î¤ßÊÑ¹¹¡£
+  ;; `w3m-detect-coding-region'(w3m-fsf.el)ã®é–¢æ•°åã®ã¿å¤‰æ›´ã€‚
   "Detect coding system of the text in the region between START and END.
 Return the first possible coding system.
 
@@ -1325,7 +1325,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 
 
 (defun laws-url-decode-string (str &optional coding)
-  ;; `w3m-url-decode-string'(w3m.el)¤ÎxemacsÂĞ±ş¤ò½ü¤¤¤¿Â¾¡¢´Ø¿ôÌ¾¤òÊÑ¹¹¡£
+  ;; `w3m-url-decode-string'(w3m.el)ã®xemacså¯¾å¿œã‚’é™¤ã„ãŸä»–ã€é–¢æ•°åã‚’å¤‰æ›´ã€‚
   (let ((start 0)
 	(buf))
     (while (string-match "+\\|%\\(0D%0A\\|\\([0-9a-fA-F][0-9a-fA-F]\\)\\)"
@@ -1350,27 +1350,27 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
      str (or coding 'iso-8859-1 'iso-2022-7bit 'iso-2022-7bit))))
 
 (defun laws-make-substitution-alist (ls index)
-  "ÃÖ´¹ÍÑ¤Îalist \(\(\"Ë¡ÎáÌ¾\" . \"path\"\) ...\) ¤òÊÖ¤¹¡£"
+  "ç½®æ›ç”¨ã®alist \(\(\"æ³•ä»¤å\" . \"path\"\) ...\) ã‚’è¿”ã™ã€‚"
   (do ((ls ls (cdr ls))
        (acc nil (acons (car ls) (cdr (assoc (car ls) index)) acc)))
       ((null ls) acc)))
 
 (defun laws-expand-htmldata-url (id)
-  "ID(¤Î¥Õ¥¡¥¤¥ëÌ¾ÉôÊ¬`M29HO089'¤Ê¤É¤Î·Á¼°)¤«¤é¡¢Ë¡ÎáÌ¾¤ÎURL¤òÊÖ¤¹¡£"
+  "ID(ã®ãƒ•ã‚¡ã‚¤ãƒ«åéƒ¨åˆ†`M29HO089'ãªã©ã®å½¢å¼)ã‹ã‚‰ã€æ³•ä»¤åã®URLã‚’è¿”ã™ã€‚"
   (if (> 3 (length id))
       ""
     (concat laws-egov-url laws-htmldata-directory "/"
 	    (upcase (substring id 0 3)) "/" (upcase id) ".html")))
 
 (defun laws-expand-htmldata-file (id)
-  "ID(¤Î¥Õ¥¡¥¤¥ëÌ¾ÉôÊ¬)¤«¤é¡¢GET¤·¤¿HTML¤ÎÊİÂ¸Àè¥Ñ¥¹¥Õ¥¡¥¤¥ë¤òÊÖ¤¹¡£"
+  "ID(ã®ãƒ•ã‚¡ã‚¤ãƒ«åéƒ¨åˆ†)ã‹ã‚‰ã€GETã—ãŸHTMLã®ä¿å­˜å…ˆãƒ‘ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¿”ã™ã€‚"
   (if (> 3 (length id))
       ""
     (concat laws-htmldata-path "/"
 	    (upcase (substring id 0 3)) "/" (upcase id) ".html")))
 
 (defun laws-expand-data-file (id)
-  "ID(¤Î¥Õ¥¡¥¤¥ëÌ¾ÉôÊ¬)¤«¤é¡¢¥À¥ó¥×¤·¤¿¥Ç¡¼¥¿¤ÎÊİÂ¸Àè¥Ñ¥¹¥Õ¥¡¥¤¥ëÌ¾¤òÊÖ¤¹¡£"
+  "ID(ã®ãƒ•ã‚¡ã‚¤ãƒ«åéƒ¨åˆ†)ã‹ã‚‰ã€ãƒ€ãƒ³ãƒ—ã—ãŸãƒ‡ãƒ¼ã‚¿ã®ä¿å­˜å…ˆãƒ‘ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¿”ã™ã€‚"
   (if (> 3 (length id))
       ""
     (concat laws-data-path "/"
@@ -1390,9 +1390,9 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     (make-directory dir 'parent)))
 
 (defun laws-htmldata-retrieve (id force)
-  "ID¤ÎHTML¥Ç¡¼¥¿¤¬Â¸ºß¤·¤Ê¤¤¾ì¹ç¤È¡¢FORCE¤¬Èónil¤Î¾ì¹ç¤Ë¼èÆÀ¤¹¤ë¡£ºÇ¸å
-¤Ë¼èÆÀ¤·¤¿»ş¤«¤éÊÑ¹¹¤¬¤¢¤Ã¤¿¾ì¹ç¡¢ÈÖ¹æÉÕ¤­¥Ğ¥Ã¥¯¥¢¥Ã¥×¥Õ¥¡¥¤¥ë¤òÀ¸À®¤¹¤ë¡£
-ÊİÂ¸Àè¤Îhtml¤Î¥Ñ¥¹¥Õ¥¡¥¤¥ëÌ¾¤òÊÖ¤¹¡£"
+  "IDã®HTMLãƒ‡ãƒ¼ã‚¿ãŒå­˜åœ¨ã—ãªã„å ´åˆã¨ã€FORCEãŒénilã®å ´åˆã«å–å¾—ã™ã‚‹ã€‚æœ€å¾Œ
+ã«å–å¾—ã—ãŸæ™‚ã‹ã‚‰å¤‰æ›´ãŒã‚ã£ãŸå ´åˆã€ç•ªå·ä»˜ããƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆã™ã‚‹ã€‚
+ä¿å­˜å…ˆã®htmlã®ãƒ‘ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¿”ã™ã€‚"
   (let ((html-path (laws-expand-htmldata-file id))
 	(file (laws-expand-data-file id)))
     (when (or force (not (file-exists-p html-path)))
@@ -1407,9 +1407,9 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 			   (replace-regexp-in-string
 			    "<.+?>\\|\r\n" ""
 			    (buffer-substring (point) (point-max))))))
-	  ;; ¥Õ¥¡¥¤¥ë¤¬Â¸ºß¤·¤Ê¤¤¾ì¹ç¤È¡¢¼èÆÀ¤·¤¿¥Ç¡¼¥¿¤ÈÊİÂ¸¤µ¤ì¤Æ¤¤¤ë¥Ç¡¼¥¿
-	  ;; ¤òÈæ³Ó¤·¡¢¥Ç¡¼¥¿¤¬¹¹¿·¤µ¤ì¤¿¾ì¹ç¡¢¥Ğ¥Ã¥¯¥¢¥Ã¥×¤È½ĞÎÏ¤ò¹Ô¤¦¡£
-	  ;; ¹¹¿·¤µ¤ì¤Æ¤¤¤Ê¤±¤ì¤Ğ¥á¥Ã¥»¡¼¥¸¤ò½Ğ¤¹¡£
+	  ;; ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆã¨ã€å–å¾—ã—ãŸãƒ‡ãƒ¼ã‚¿ã¨ä¿å­˜ã•ã‚Œã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿
+	  ;; ã‚’æ¯”è¼ƒã—ã€ãƒ‡ãƒ¼ã‚¿ãŒæ›´æ–°ã•ã‚ŒãŸå ´åˆã€ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã¨å‡ºåŠ›ã‚’è¡Œã†ã€‚
+	  ;; æ›´æ–°ã•ã‚Œã¦ã„ãªã‘ã‚Œã°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºã™ã€‚
 	  (let (s1 e1 s2 e2)
 	    (re-search-forward "^$" nil t)
 	    (forward-line 1)
@@ -1425,16 +1425,16 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 		(progn
 		  (message "File `%s.html' not changed from last retrieving." id)
 		  (sit-for 2))
-	      (when (file-exists-p file) (delete-file file)) ;¥Æ¥­¥¹¥È¤Îºï½ü
-	      (laws-make-directory (laws-get-dirname id))    ;¥Ç¥£¥ì¥¯¥È¥ê
-	      (laws-make-backup-file html-path)		     ;¥Ğ¥Ã¥¯¥¢¥Ã¥×
+	      (when (file-exists-p file) (delete-file file)) ;ãƒ†ã‚­ã‚¹ãƒˆã®å‰Šé™¤
+	      (laws-make-directory (laws-get-dirname id))    ;ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+	      (laws-make-backup-file html-path)		     ;ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—
 	      (write-region-as-coding-system 'japanese-shift-jis-dos
 		(point) (point-max) html-path)))
 	  (kill-buffer buffer))))
     html-path))
 
 (defun laws-make-images-list ()
-  "htmldata¤«¤é²èÁü¥Ç¡¼¥¿¤Î¥Ñ¥¹¥ê¥¹¥È¤ò¼èÆÀ¤·¤ÆÊÖ¤¹¡£"
+  "htmldataã‹ã‚‰ç”»åƒãƒ‡ãƒ¼ã‚¿ã®ãƒ‘ã‚¹ãƒªã‚¹ãƒˆã‚’å–å¾—ã—ã¦è¿”ã™ã€‚"
   (save-excursion
     (goto-char (point-min))
     (let ((result nil)
@@ -1478,7 +1478,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (pop images))))
 
 (defun laws-html-get-h-path ()
-  "htmldata¤«¤éH-PATH¤òÃê½Ğ¤¹¤ë¡£"
+  "htmldataã‹ã‚‰H-PATHã‚’æŠ½å‡ºã™ã‚‹ã€‚"
   (let ((case-fold-search t)
 	(h-path nil))
     (save-excursion
@@ -1496,7 +1496,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (defun laws-replace-zspc ()
   (goto-char (point-min))
   (while (search-forward "  " nil t)
-    (replace-match "¡¡")))
+    (replace-match "ã€€")))
 
 (defun laws-make-font-lock-regexp-in-buffer (h-path)
   ;; laws-name-search-in-buffer
@@ -1522,14 +1522,14 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   (if (or force (not (file-exists-p out)))
       (let ((regexps (laws-make-font-lock-regexp-in-buffer h-path)))
 	(with-temp-file out
-	  ;; Àµµ¬É½¸½Ê¸»úÎó¡¢ËÁÆ¬¤ÎÌ¤»Ü¹ÔË¡ÎáÅù¤È¤½¤Î»²¾ÈÀèURL¤Îcons¡¢image¤¬
-	  ;; ´Ş¤Ş¤ì¤Æ¤¤¤ë¤«¤É¤¦¤«¡£
+	  ;; æ­£è¦è¡¨ç¾æ–‡å­—åˆ—ã€å†’é ­ã®æœªæ–½è¡Œæ³•ä»¤ç­‰ã¨ãã®å‚ç…§å…ˆURLã®consã€imageãŒ
+	  ;; å«ã¾ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ã€‚
 	  (insert ";;; `laws-mode' laws-font-lock-keywords-2 file.\n")
 	  (insert (format "%S" (list regexps h-path iimagep)))
 	  (message "Wrote %s" out)))))
 
 (defun laws-read-init-file ()
-  ;; À¸À®¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¾ğÊó¤òÆÉ¤ß¹ş¤à¡£
+  ;; ç”Ÿæˆã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±ã‚’èª­ã¿è¾¼ã‚€ã€‚
   (let ((file (laws-expand-init-file
 	       (file-name-sans-extension
 		(file-name-nondirectory (buffer-file-name))))))
@@ -1541,15 +1541,15 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       nil)))
 
 (defun laws-make-data (id &optional force)
-  "html¥Ç¡¼¥¿¤òw3m¤Ç¥À¥ó¥×¤¹¤ë¡£FORCE¤¬Èónil¤Ê¤éID¤òGET¡¢nil¤Ê¤é´û
-¤ËGET¤·¤¿HTML¤òÂĞ¾İ¤È¤¹¤ë¡£¤Ş¤¿¡¢font-lock¤Î¤¿¤á¤Î¥¿¥°¤ÎËä¤á¹ş¤ßÅù
-¤Î²Ã¹©¤ò¹Ô¤Ê¤¦¡£
-À¸À®¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¤ÎÌ¾Á°¤òÊÖ¤¹¡£"
+  "htmlãƒ‡ãƒ¼ã‚¿ã‚’w3mã§ãƒ€ãƒ³ãƒ—ã™ã‚‹ã€‚FORCEãŒénilãªã‚‰IDã‚’GETã€nilãªã‚‰æ—¢
+ã«GETã—ãŸHTMLã‚’å¯¾è±¡ã¨ã™ã‚‹ã€‚ã¾ãŸã€font-lockã®ãŸã‚ã®ã‚¿ã‚°ã®åŸ‹ã‚è¾¼ã¿ç­‰
+ã®åŠ å·¥ã‚’è¡Œãªã†ã€‚
+ç”Ÿæˆã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã‚’è¿”ã™ã€‚"
   (unless laws-online-mode
     (laws-online-mode-message #'error))
   (message "Getting file and converting...")
   (let ((temp (concat laws-temp-path "/temp.html"))
-	;; htmldata ¤ò¼èÆÀ¡£
+	;; htmldata ã‚’å–å¾—ã€‚
 	(html (laws-htmldata-retrieve id nil))
 	(file (laws-expand-data-file id))
 	(regfile (laws-expand-init-file id))
@@ -1557,46 +1557,46 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	alist images h-path)
     (with-temp-file temp
       (laws-make-directory (file-name-directory temp))
-      ;; ¥Ğ¥Ã¥Õ¥¡¤Ëhtml¤ò¼èÆÀ¤¹¤ë¡£
+      ;; ãƒãƒƒãƒ•ã‚¡ã«htmlã‚’å–å¾—ã™ã‚‹ã€‚
       (message "Getting htmldata...")
       (insert-file-contents-as-raw-text html)
       (message (concat (current-message) " done."))
-      ;; ¥¤¥á¡¼¥¸¥Ç¡¼¥¿¤Î¼èÆÀ¡£
+      ;; ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿ã®å–å¾—ã€‚
       (setq images (laws-make-images-list))
       (when (and force images)
 	(message "Getting images...")
 	(laws-images-retrieve images)
 	(message "Getting images... done."))
-      ;; `H_PATH'¤Î¼èÆÀ¡£
+      ;; `H_PATH'ã®å–å¾—ã€‚
       (setq h-path (laws-html-get-h-path))
-      ;; html¥¿¥°¤ÎÃÖ´¹¡£¥Æ¥ó¥İ¥é¥ê¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤¹¡£
-      ;; ¥Æ¥ó¥İ¥é¥ê¥Õ¥¡¥¤¥ë¤Ïºï½ü¤»¤º¤Ë»Ä¤¹¡£
+      ;; htmlã‚¿ã‚°ã®ç½®æ›ã€‚ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™ã€‚
+      ;; ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã¯å‰Šé™¤ã›ãšã«æ®‹ã™ã€‚
       (goto-char (point-min))
       (message "Replacing tag's value in htmldata...")
       (laws-replace-table-value)
-      ;; ¥¤¥á¡¼¥¸¤òÃÖ´¹¤¹¤ë¡£
+      ;; ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ç½®æ›ã™ã‚‹ã€‚
       (when images (laws-replace-image-tags images))
       )
     (message (concat (current-message) " done."))
-    ;; ¥Æ¥ó¥İ¥é¥ê¥Õ¥¡¥¤¥ë¤òÂĞ¾İ¤Ëw3m¤Ç¥À¥ó¥×¤¹¤ë¡£
+    ;; ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã‚’å¯¾è±¡ã«w3mã§ãƒ€ãƒ³ãƒ—ã™ã‚‹ã€‚
     (with-temp-file file
       (laws-make-directory (file-name-directory file))
       (message "Extracting data from htmldata...")
       (laws-w3m-dump
        (funcall laws-w3m-dump-command laws-w3m-dump-cols) temp)
       (message (concat (current-message) " done."))
-      ;; È¾³Ñ¶õÇò2¸Ä¤òÁ´³Ñ¶õÇò¤ËÃÖ´¹¤¹¤ë¡£
+      ;; åŠè§’ç©ºç™½2å€‹ã‚’å…¨è§’ç©ºç™½ã«ç½®æ›ã™ã‚‹ã€‚
       (message "Replacing spaces...")
       (save-excursion (laws-replace-zspc))
       (message (concat (current-message) " done."))
-      ;; ¥Ğ¥Ã¥Õ¥¡Æâ¤ÎË¡ÎáÌ¾¤ò¼èÆÀ¤·¡¢Àµµ¬É½¸½¤òÀ¸À®¤¹¤ë¡£
+      ;; ãƒãƒƒãƒ•ã‚¡å†…ã®æ³•ä»¤åã‚’å–å¾—ã—ã€æ­£è¦è¡¨ç¾ã‚’ç”Ÿæˆã™ã‚‹ã€‚
       (message "Scanning law names...")
-      ;; ¾ğÊó¤ò½ñ¤­¹ş¤à¡£
+      ;; æƒ…å ±ã‚’æ›¸ãè¾¼ã‚€ã€‚
       (laws-write-init-file regfile h-path (if images t nil) force)
       (message (concat (current-message) " done."))
       (message "Scanning law names...done")
       (message "Getting file and converting...done")
-      ;; À¸À®¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¤ÎÌ¾Á°¤òÊÖ¤¹¡£
+      ;; ç”Ÿæˆã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã‚’è¿”ã™ã€‚
       file)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
@@ -1607,7 +1607,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;; Header line
 ;;
 (defun laws-index-mode-header-line-keymap (mode)
-  "¥Ø¥Ã¥À¥é¥¤¥ó¤Î¥­¡¼¥Ş¥Ã¥×¤òÊÖ¤¹¡£"
+  "ãƒ˜ãƒƒãƒ€ãƒ©ã‚¤ãƒ³ã®ã‚­ãƒ¼ãƒãƒƒãƒ—ã‚’è¿”ã™ã€‚"
   (let ((map (make-sparse-keymap)))
     (define-key map [header-line mouse-1]
       `(lambda (e) (interactive "e")
@@ -1616,7 +1616,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     map))
 
 (defun laws-index-header-line-format (mode)
-  "`laws-index-mode'¤Î¡£`header-line-format'"
+  "`laws-index-mode'ã®ã€‚`header-line-format'"
   (labels ((spc (n)
 	     (propertize " " 'display `(space :width (,n)))))
     (concat " "
@@ -1646,16 +1646,16 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	     laws-index-header-items ""))))
 
 (defun laws-index-update ()
-  "¸½ºß¤Î¥â¡¼¥É¤ÎÉ½¼¨¤ò¹¹¿·¤¹¤ë¡£
-¹¹¿·¤¹¤ë¤Î¤Ï¡¢Opened,Recent,Bookmark¤Î¾ì¹ç¡£¤½¤ì°Ê³°¤Î¥â¡¼¥É¤Ç¤Ï¹¹¿·¤·¤Ê¤¤¡£"
+  "ç¾åœ¨ã®ãƒ¢ãƒ¼ãƒ‰ã®è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
+æ›´æ–°ã™ã‚‹ã®ã¯ã€Opened,Recent,Bookmarkã®å ´åˆã€‚ãã‚Œä»¥å¤–ã®ãƒ¢ãƒ¼ãƒ‰ã§ã¯æ›´æ–°ã—ãªã„ã€‚"
   (interactive)
   (when (memq laws-index-local-mode '(Opened Recent Bookmark))
     (laws-index-goto-mode laws-index-local-mode 'update)
     (message "Updating %s...done" laws-index-local-mode)))
 
 (defun laws-index-goto-mode (mode &optional update)
-  "`laws-index-mode'¤Î³Æ¡¢¸ÄÊÌ¤Î¥â¡¼¥É`laws-index-local-mode'¤ËÁ«°Ü¤¹¤ë¡£
-MODE¤¬¸½ºß¤ÎMODE¤ÈÆ±¤¸¾ì¹ç¡¢nil¤òÊÖ¤¹(see. `laws-index-search')¡£"
+  "`laws-index-mode'ã®å„ã€å€‹åˆ¥ã®ãƒ¢ãƒ¼ãƒ‰`laws-index-local-mode'ã«é·ç§»ã™ã‚‹ã€‚
+MODEãŒç¾åœ¨ã®MODEã¨åŒã˜å ´åˆã€nilã‚’è¿”ã™(see. `laws-index-search')ã€‚"
   (laws-index-set-mode-conf)
   (let ((name (lambda (mode)
 		(format "%s:%s" laws-index-mode-name mode))))
@@ -1672,7 +1672,7 @@ MODE¤¬¸½ºß¤ÎMODE¤ÈÆ±¤¸¾ì¹ç¡¢nil¤òÊÖ¤¹(see. `laws-index-search')¡£"
 
 ;; Buffer configuration
 (defun laws-index-set-mode-conf ()
-  "¸½ºß¤Î¥Ğ¥Ã¥Õ¥¡¤Î¾ğÊó¤òÊİÂ¸¤¹¤ë¡£"
+  "ç¾åœ¨ã®ãƒãƒƒãƒ•ã‚¡ã®æƒ…å ±ã‚’ä¿å­˜ã™ã‚‹ã€‚"
   (setq laws-index-conf
 	(delete (assoc laws-index-local-mode laws-index-conf)
 		laws-index-conf))
@@ -1682,7 +1682,7 @@ MODE¤¬¸½ºß¤ÎMODE¤ÈÆ±¤¸¾ì¹ç¡¢nil¤òÊÖ¤¹(see. `laws-index-search')¡£"
 	laws-index-conf))
 
 (defun laws-index-restore-mode-conf ()
-  "°ÊÁ°¤Î¥Ğ¥Ã¥Õ¥¡¤Î¾õÂÖ¤òÉü¸µ¤¹¤ë¡£"
+  "ä»¥å‰ã®ãƒãƒƒãƒ•ã‚¡ã®çŠ¶æ…‹ã‚’å¾©å…ƒã™ã‚‹ã€‚"
   (let ((cel (assoc laws-index-local-mode laws-index-conf)))
     (when cel
       (destructuring-bind (mode line start)
@@ -1695,7 +1695,7 @@ MODE¤¬¸½ºß¤ÎMODE¤ÈÆ±¤¸¾ì¹ç¡¢nil¤òÊÖ¤¹(see. `laws-index-search')¡£"
 ;; Common
 ;;
 (defmacro laws-with-buffer-read-only (&rest forms)
-  "¥Ğ¥Ã¥Õ¥¡¤ÎÌ¤ÊÔ½¸¤È¥ê¡¼¥É¥ª¥ó¥ê¡¼¾õÂÖ¤òÊİ»ı¤·¤ÆFORMS¤òÉ¾²Á¤¹¤ë¡£"
+  "ãƒãƒƒãƒ•ã‚¡ã®æœªç·¨é›†ã¨ãƒªãƒ¼ãƒ‰ã‚ªãƒ³ãƒªãƒ¼çŠ¶æ…‹ã‚’ä¿æŒã—ã¦FORMSã‚’è©•ä¾¡ã™ã‚‹ã€‚"
   '(unless (eq major-mode 'laws-index-mode)
     (error "ERROR: major-mode is not laws-index-mode."))
   `(progn
@@ -1707,15 +1707,15 @@ MODE¤¬¸½ºß¤ÎMODE¤ÈÆ±¤¸¾ì¹ç¡¢nil¤òÊÖ¤¹(see. `laws-index-search')¡£"
 	 (set-buffer-modified-p nil)))))
 
 (defsubst laws-read ()
-  "¥Ğ¥Ã¥Õ¥¡¤Îinvisible¤ÊS¼°¤òread¤¹¤ë¡£"
+  "ãƒãƒƒãƒ•ã‚¡ã®invisibleãªSå¼ã‚’readã™ã‚‹ã€‚"
   (save-excursion
     (forward-line 0)
     (read (current-buffer))))
 
 (defsubst laws-get-values (&optional pointer)
-  "¥Ğ¥Ã¥Õ¥¡¤Îinvisible¤ÊS¼°¤Î¥Ç¡¼¥¿¤ò¥ê¥¹¥È¤ÇÊÖ¤¹¡£
-´Ø¿ôPOINTER¤¬Í¿¤¨¤é¤ì¤ì¤Ğ¡¢POINTER¤¬»Ø¤¹ÃÍ¤òÊÖ¤¹¡£
-\(laws-read\)¤Î¥¨¥é¡¼¤òÇÄÂª¤·¤¿¤énil¤òÊÖ¤¹¡£"
+  "ãƒãƒƒãƒ•ã‚¡ã®invisibleãªSå¼ã®ãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚¹ãƒˆã§è¿”ã™ã€‚
+é–¢æ•°POINTERãŒä¸ãˆã‚‰ã‚Œã‚Œã°ã€POINTERãŒæŒ‡ã™å€¤ã‚’è¿”ã™ã€‚
+\(laws-read\)ã®ã‚¨ãƒ©ãƒ¼ã‚’æŠŠæ‰ã—ãŸã‚‰nilã‚’è¿”ã™ã€‚"
   (condition-case err
       (destructuring-bind (flag name . id) (laws-read)
 	(if (functionp pointer)
@@ -1724,14 +1724,14 @@ MODE¤¬¸½ºß¤ÎMODE¤ÈÆ±¤¸¾ì¹ç¡¢nil¤òÊÖ¤¹(see. `laws-index-search')¡£"
     (error nil)))
 
 (defsubst laws-any-function (funcs)
-  "FUNCS¤ÎÃæ¤Ç½é¤á¤ËÈónil¤òÊÖ¤·¤¿´Ø¿ô¤òÊÖ¤¹¡£
-FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
+  "FUNCSã®ä¸­ã§åˆã‚ã«énilã‚’è¿”ã—ãŸé–¢æ•°ã‚’è¿”ã™ã€‚
+FUNCSã¯å¼•æ•°ã‚’å–ã‚‰ãªã„é–¢æ•°ã®ãƒªã‚¹ãƒˆã€‚"
   (block nil
     (mapc (lambda (f) (and (funcall f) (return f)))
 	  funcs)))
 
 (defun laws:filter (pred ls)
-  "PRED¤òÅ¬ÍÑ¤·¤¿·ë²Ìt¤òÊÖ¤·¤¿Í×ÁÇ¤ò½¸¤á¤ë¡£"
+  "PREDã‚’é©ç”¨ã—ãŸçµæœtã‚’è¿”ã—ãŸè¦ç´ ã‚’é›†ã‚ã‚‹ã€‚"
   (do ((xs ls (cdr xs))
        (acc nil (if (funcall pred (car xs)) (cons (car xs) acc) acc)))
       ((null xs) (nreverse acc))))
@@ -1762,9 +1762,9 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 
 ;; Common
 
-;; ¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¤ÎÆâÍÆ¤òÊİ»ı¤¹¤ë¥í¡¼¥«¥ëÊÑ¿ô¡£
+;; ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã®å†…å®¹ã‚’ä¿æŒã™ã‚‹ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ã€‚
 (defun laws-alist ()
-  "¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¤ò¥í¡¼¥É¤¹¤ë´Ø¿ô¡£"
+  "ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹é–¢æ•°ã€‚"
   (or laws-alist
       (and (file-exists-p laws-index-file)
 	   (setq laws-alist
@@ -1772,9 +1772,9 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 		   (insert-file-contents laws-index-file)
 		   (read (current-buffer)))))))
 
-;; Î¬¾ÎË¡ÎáÌ¾¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¤ÎÆâÍÆ¤òÊİ»ı¤¹¤ë¥í¡¼¥«¥ëÊÑ¿ô¡£
+;; ç•¥ç§°æ³•ä»¤åã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã®å†…å®¹ã‚’ä¿æŒã™ã‚‹ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ã€‚
 (defun laws-abbrev ()
-  "Î¬¾ÎË¡ÎáÌ¾¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¤ò¥í¡¼¥É¤¹¤ë´Ø¿ô¡£"
+  "ç•¥ç§°æ³•ä»¤åã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹é–¢æ•°ã€‚"
   (or laws-abbrev
       (and (file-exists-p laws-abbrev-file)
 	   (setq laws-abbrev
@@ -1803,9 +1803,9 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
   laws-search-alist)
 
 ;; Index
-;; `laws-alist'¤«¤éÀ¸À®¤·¤¿¡¢`laws-index'¤ÎIndex¥â¡¼¥É¤ÇÍøÍÑ¤¹¤ëÏ¢ÁÛ¥ê¥¹¥È¡£
+;; `laws-alist'ã‹ã‚‰ç”Ÿæˆã—ãŸã€`laws-index'ã®Indexãƒ¢ãƒ¼ãƒ‰ã§åˆ©ç”¨ã™ã‚‹é€£æƒ³ãƒªã‚¹ãƒˆã€‚
 (defun laws-index-alist ()
-  "`laws-index-alist'¤òÀ¸À®¤¹¤ë´Ø¿ô¡£"
+  "`laws-index-alist'ã‚’ç”Ÿæˆã™ã‚‹é–¢æ•°ã€‚"
   (or laws-index-alist
       (setq laws-index-alist
 	    (do ((xs (laws-alist) (cdr xs))
@@ -1822,9 +1822,9 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 		    result)))))
 
 ;; Directory
-;; `laws-alist'¤«¤éÀ¸À®¤·¤¿¡¢`laws-index'¤ÎDirectory¥â¡¼¥É¤ÇÍøÍÑ¤¹¤ëÏ¢ÁÛ¥ê¥¹¥È¡£
+;; `laws-alist'ã‹ã‚‰ç”Ÿæˆã—ãŸã€`laws-index'ã®Directoryãƒ¢ãƒ¼ãƒ‰ã§åˆ©ç”¨ã™ã‚‹é€£æƒ³ãƒªã‚¹ãƒˆã€‚
 (defun laws-directory-alist ()
-  "`laws-directory-alist'¤òÀ¸À®¤¹¤ë´Ø¿ô¡£"
+  "`laws-directory-alist'ã‚’ç”Ÿæˆã™ã‚‹é–¢æ•°ã€‚"
   (or laws-directory-alist
       (setq laws-directory-alist
 	    (let ((dirs (do ((xs (laws-alist) (cdr xs))
@@ -1843,7 +1843,7 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 						  (cdar ys)))
 				      result)))))))
 	      (let* ((s0 (make-string 2 0))
-		     ;; dirs¤ò¥½¡¼¥È¤¹¤ëÈæ³Ó´Ø¿ô
+		     ;; dirsã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹æ¯”è¼ƒé–¢æ•°
 		     (compfun (lambda (x y)
 				(let ((s1 (aref (car x) 0))
 				      (s2 (aref (car y) 0)))
@@ -1866,7 +1866,7 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 					  ((or (= s1 ?S)
 					       (= s2 ?S)) nil)
 					  (t t)))))))
-		;; Æ±¤¸Ç¯¿ô¤ÎÍ×ÁÇ¤ò½¸¤á¤ë¡£
+		;; åŒã˜å¹´æ•°ã®è¦ç´ ã‚’é›†ã‚ã‚‹ã€‚
 		(let ((result nil)
 		      (ls (sort dirs compfun)))
 		  (while ls
@@ -1882,9 +1882,9 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 		  (nreverse result)))))))
 
 ;; Abbrev
-;; `laws-abbrev'¤«¤éÀ¸À®¤·¤¿¡¢`laws-index'¤ÎAbbrev¥â¡¼¥É¤ÇÍøÍÑ¤¹¤ëÏ¢ÁÛ¥ê¥¹¥È¡£
+;; `laws-abbrev'ã‹ã‚‰ç”Ÿæˆã—ãŸã€`laws-index'ã®Abbrevãƒ¢ãƒ¼ãƒ‰ã§åˆ©ç”¨ã™ã‚‹é€£æƒ³ãƒªã‚¹ãƒˆã€‚
 (defun laws-abbrev-alist ()
-  "`laws-abbrev-alist'¤òÀ¸À®¤¹¤ë´Ø¿ô¡£"
+  "`laws-abbrev-alist'ã‚’ç”Ÿæˆã™ã‚‹é–¢æ•°ã€‚"
   (or laws-abbrev-alist
       (setq
        laws-abbrev-alist
@@ -1908,7 +1908,7 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 
 ;; Bookmark
 (defun laws-bookmark-alist ()
-  "¥Ö¥Ã¥¯¥Ş¡¼¥¯¤ÎÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
+  "ãƒ–ãƒƒã‚¯ãƒãƒ¼ã‚¯ã®é€£æƒ³ãƒªã‚¹ãƒˆã‚’è¿”ã™é–¢æ•°ã€‚"
   (or laws-bookmark-alist
       (and (file-exists-p laws-bookmark-file)
 	   (setq laws-bookmark-alist
@@ -1917,8 +1917,8 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 		   (read (current-buffer)))))))
 
 (defun laws-bookmark-save ()
-  "¥Ö¥Ã¥¯¥Ş¡¼¥¯¥Õ¥¡¥¤¥ë:`laws-bookmark-file'¤Ë
-`laws-bookmark-alist'¤ò½ĞÎÏ¤¹¤ë¡£ÊÑ¹¹¤¬¤Ê¤«¤Ã¤¿¾ì¹ç¤Ï½ĞÎÏ¤·¤Ê¤¤¡£"
+  "ãƒ–ãƒƒã‚¯ãƒãƒ¼ã‚¯ãƒ•ã‚¡ã‚¤ãƒ«:`laws-bookmark-file'ã«
+`laws-bookmark-alist'ã‚’å‡ºåŠ›ã™ã‚‹ã€‚å¤‰æ›´ãŒãªã‹ã£ãŸå ´åˆã¯å‡ºåŠ›ã—ãªã„ã€‚"
   (ignore-errors
     (when (and laws-bookmark-file
 	       (file-exists-p (file-name-directory laws-bookmark-file)))
@@ -1964,9 +1964,9 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 ;; Opened
 
 (defun laws-opened-alist ()
-  "¸½ºß³«¤¤¤Æ¤¤¤ëË¡Îá¥Ç¡¼¥¿¤ÎÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹¡£"
-  ;; Ë¡Îá¥Ç¡¼¥¿¤«¤É¤¦¤«¤Ï¡¢¥Ñ¥¹¥Õ¥¡¥¤¥ëÌ¾¤¬Ë¡Îá¥Ç¡¼¥¿¤Î¥Ñ¥¹¥Õ¥¡¥¤¥ëÌ¾¤ÈÅù¤·¤¤
-  ;; ¤«¤É¤¦¤«¤ÇÈ½Äê¡£¥Ç¥£¥ì¥¯¥È¥ê¤ÏÂçÊ¸»ú¡¢url¤Ï¾®Ê¸»ú¡£
+  "ç¾åœ¨é–‹ã„ã¦ã„ã‚‹æ³•ä»¤ãƒ‡ãƒ¼ã‚¿ã®é€£æƒ³ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚"
+  ;; æ³•ä»¤ãƒ‡ãƒ¼ã‚¿ã‹ã©ã†ã‹ã¯ã€ãƒ‘ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«åãŒæ³•ä»¤ãƒ‡ãƒ¼ã‚¿ã®ãƒ‘ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«åã¨ç­‰ã—ã„
+  ;; ã‹ã©ã†ã‹ã§åˆ¤å®šã€‚ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¯å¤§æ–‡å­—ã€urlã¯å°æ–‡å­—ã€‚
   (laws-make-alist-from-name
    (lambda ()
      (labels ((nameof (file) (laws-file-sans-name file)))
@@ -1979,7 +1979,7 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 
 ;; Recent
 (defun laws-recent-alist ()
-  "ºÇ¶á³«¤¤¤¿¥Õ¥¡¥¤¥ë¤ÎÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹¡£"
+  "æœ€è¿‘é–‹ã„ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®é€£æƒ³ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚"
   (or laws-recent-alist
       (and (file-exists-p laws-recent-file)
 	   (setq laws-recent-alist
@@ -1999,8 +1999,8 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 			 (- (length laws-recent-alist) laws-recent-max))))))))
 
 (defun laws-recent-save ()
-  "ºÇ¶á³«¤¤¤¿Ë¡Îá¥Õ¥¡¥¤¥ë: `laws-recent-file'¤Ë
-`laws-recent-alist'¤ò½ĞÎÏ¤¹¤ë¡£ÊÑ¹¹¤¬¤Ê¤«¤Ã¤¿¾ì¹ç¤Ï½ĞÎÏ¤·¤Ê¤¤¡£"
+  "æœ€è¿‘é–‹ã„ãŸæ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«: `laws-recent-file'ã«
+`laws-recent-alist'ã‚’å‡ºåŠ›ã™ã‚‹ã€‚å¤‰æ›´ãŒãªã‹ã£ãŸå ´åˆã¯å‡ºåŠ›ã—ãªã„ã€‚"
   (ignore-errors
     (when (and laws-recent-file
 	       (file-exists-p (file-name-directory laws-recent-file)))
@@ -2019,7 +2019,7 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 ;; Insert contents
 ;;
 (defun laws-index-insert-contents (mode)
-  "³Æ¥â¡¼¥É¤´¤È¤Ë¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤òÊ¬´ô¤¹¤ë¡£"
+  "å„ãƒ¢ãƒ¼ãƒ‰ã”ã¨ã«ãƒ„ãƒªãƒ¼ã®æŒ¿å…¥å‡¦ç†ã‚’åˆ†å²ã™ã‚‹ã€‚"
   ;;(laws-save-)
   (laws-with-buffer-read-only (erase-buffer))
   (case mode
@@ -2033,8 +2033,8 @@ FUNCS¤Ï°ú¿ô¤ò¼è¤é¤Ê¤¤´Ø¿ô¤Î¥ê¥¹¥È¡£"
 
 ;; Common
 (defun laws-make-alist-from-name (lfunc)
-  "NAME(\"M29HO089\"¤Î¤è¤¦¤Ê·Á¼°)¤«¤éË¡ÎáÌ¾¤ÈNAME¤ÎÏ¢ÁÛ¥ê¥¹¥È¤òÀ¸À®¤¹¤ë´Ø¿ô¡£
-LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
+  "NAME(\"M29HO089\"ã®ã‚ˆã†ãªå½¢å¼)ã‹ã‚‰æ³•ä»¤åã¨NAMEã®é€£æƒ³ãƒªã‚¹ãƒˆã‚’ç”Ÿæˆã™ã‚‹é–¢æ•°ã€‚
+LFUNCã¯ã€NAMEã‹ã‚‰ãªã‚‹ãƒªã‚¹ãƒˆã‚’è¿”ã™é–¢æ•°ã€‚"
   (mapcar (lambda (name)
 	    (or (block nil
 		  (do ((xs (laws-alist) (cdr xs)))
@@ -2043,11 +2043,11 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
 		      (when cell
 			(return (cons (concat (caar cell) (cdar cell))
 				      (cdr cell)))))))
-		(cons "Ì¤ÅĞÏ¿Ë¡Îá" name)))
+		(cons "æœªç™»éŒ²æ³•ä»¤" name)))
 	  (funcall lfunc)))
 
 (defun laws-index-insert-alist-function (func)
-  "Index,Directory¤Ç¡¢¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
+  "Index,Directoryã§ã€ãƒ„ãƒªãƒ¼ã®æŒ¿å…¥å‡¦ç†ã‚’ã™ã‚‹é–¢æ•°ã€‚"
   (let ((alist (funcall func)))
     (case laws-index-local-mode
       ((Index Directory)
@@ -2100,9 +2100,9 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
   (unless (null alist)
     (let* ((cell (car alist))
 	   (opened (cadr cell)))
-      ;; ¸¡º÷¼°
+      ;; æ¤œç´¢å¼
       (insert (format "%S\n" `(,(if opened "-" "+") ,(car cell))))
-      ;; ´°Á´°ìÃ×,Î¬¾ÎË¡ÎáÌ¾¸¡º÷,Ë¡ÎáÌ¾¸¡º÷·ë²Ì¤òºÆµ¢Åª¤ËÁŞÆş
+      ;; å®Œå…¨ä¸€è‡´,ç•¥ç§°æ³•ä»¤åæ¤œç´¢,æ³•ä»¤åæ¤œç´¢çµæœã‚’å†å¸°çš„ã«æŒ¿å…¥
       (labels
 	  ((rec (ls)
 	     (unless (null ls)
@@ -2150,17 +2150,17 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
 
 ;; Index
 (defun laws-index-insert-index ()
-  "Index¤Ç¡¢¥Ğ¥Ã¥Õ¥¡¤Ë¥Ä¥ê¡¼¤òÁŞÆş¤¹¤ë¡£"
+  "Indexã§ã€ãƒãƒƒãƒ•ã‚¡ã«ãƒ„ãƒªãƒ¼ã‚’æŒ¿å…¥ã™ã‚‹ã€‚"
   (laws-index-insert-alist-function #'laws-index-alist))
 
 ;; Directory
 (defun laws-index-insert-directory ()
-  "Directory¤Ç¡¢¥Ğ¥Ã¥Õ¥¡¤Ë¥Ä¥ê¡¼¤òÁŞÆş¤¹¤ë¡£"
+  "Directoryã§ã€ãƒãƒƒãƒ•ã‚¡ã«ãƒ„ãƒªãƒ¼ã‚’æŒ¿å…¥ã™ã‚‹ã€‚"
   (laws-index-insert-alist-function #'laws-directory-alist))
 
 ;; Abbrev
 (defun laws-index-insert-abbrev ()
-  "Abbrev¤Ç¡¢¥Ğ¥Ã¥Õ¥¡¤Ë¥Ä¥ê¡¼¤òÁŞÆş¤¹¤ë¡£"
+  "Abbrevã§ã€ãƒãƒƒãƒ•ã‚¡ã«ãƒ„ãƒªãƒ¼ã‚’æŒ¿å…¥ã™ã‚‹ã€‚"
   (laws-index-insert-alist-function #'laws-abbrev-alist))
 
 ;;
@@ -2176,35 +2176,35 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
       -1)))
 
 (defsubst laws-index-folder-level-0 ()
-  "folder¤Î³¬ÁØ¤¬ºÇ¾å°Ì¤Ê¤éÈónil¤òÊÖ¤¹¡£"
+  "folderã®éšå±¤ãŒæœ€ä¸Šä½ãªã‚‰énilã‚’è¿”ã™ã€‚"
   (zerop (laws-index-folder-level)))
 
 (defsubst laws-index-folder-level-1 ()
-  "folder¤Î³¬ÁØ¤¬1ÈÖÌÜ¤Ê¤éÈónil¤òÊÖ¤¹¡£"
+  "folderã®éšå±¤ãŒ1ç•ªç›®ãªã‚‰énilã‚’è¿”ã™ã€‚"
   (= (laws-index-folder-level) 1))
 
 (defsubst laws-index-folder-level-2 ()
-  "¥Õ¥©¥ë¥À¤Î³¬ÁØ¤¬2ÈÖÌÜ¤Ê¤éÈónil¤òÊÖ¤¹¡£"
+  "ãƒ•ã‚©ãƒ«ãƒ€ã®éšå±¤ãŒ2ç•ªç›®ãªã‚‰énilã‚’è¿”ã™ã€‚"
   (= (laws-index-folder-level) 2))
 
 (defsubst laws-index-folder-level-3 ()
-  "¥Õ¥©¥ë¥À¤Î³¬ÁØ¤¬3ÈÖÌÜ¤Ê¤éÈónil¤òÊÖ¤¹¡£"
+  "ãƒ•ã‚©ãƒ«ãƒ€ã®éšå±¤ãŒ3ç•ªç›®ãªã‚‰énilã‚’è¿”ã™ã€‚"
   (= (laws-index-folder-level) 3))
 
 (defsubst laws-index-not-folder-p ()
-  "¥¢¥¤¥Æ¥à¤¬¥Õ¥©¥ë¥À¤Ç¤Ê¤¤¤È¤­¿¿¤òÊÖ¤¹¡£"
+  "ã‚¢ã‚¤ãƒ†ãƒ ãŒãƒ•ã‚©ãƒ«ãƒ€ã§ãªã„ã¨ãçœŸã‚’è¿”ã™ã€‚"
   (and (not (laws-index-folder-level-0))
        (not (laws-index-folder-level-1))
        (not (laws-index-folder-level-2))))
 
 (defsubst laws-index-folder-open-p ()
-  "folder¤¬³«¤¤¤Æ¤¤¤ì¤ĞÈónil¤ò¡¢ÊÄ¤¸¤Æ¤¤¤ì¤Ğnil¤òÊÖ¤¹¡£"
+  "folderãŒé–‹ã„ã¦ã„ã‚Œã°énilã‚’ã€é–‰ã˜ã¦ã„ã‚Œã°nilã‚’è¿”ã™ã€‚"
   (save-excursion
     (forward-line 0)
     (and (re-search-forward "\" *-\"" (line-end-position) t) t)))
 
 (defun laws-index-open-or-close ()
-  "¥Õ¥©¥ë¥À¤Ê¤é³«ÊÄ¤·¡¢Ë¡Îá¤Ê¤é¤½¤ÎË¡Îá¤ò³«¤¯¥³¥Ş¥ó¥É¡£"
+  "ãƒ•ã‚©ãƒ«ãƒ€ãªã‚‰é–‹é–‰ã—ã€æ³•ä»¤ãªã‚‰ãã®æ³•ä»¤ã‚’é–‹ãã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive)
   (apply #'funcall
 	 (let ((mode laws-index-local-mode))
@@ -2216,11 +2216,11 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
 	     (Index		`(laws-index-index-oc))
 	     (Directory		`(laws-index-directory-oc))
 	     (Abbrev		`(laws-index-abbrev-oc)))))
-  ;; ³«¤¤¤¿¾ì¹ç¡¢¼¡¤¬¼Â¹Ô¤µ¤ì¤ë¤Î¤ÏÌäÂê¤«¡£
+  ;; é–‹ã„ãŸå ´åˆã€æ¬¡ãŒå®Ÿè¡Œã•ã‚Œã‚‹ã®ã¯å•é¡Œã‹ã€‚
   (laws-index-move-to-column))
 
 (defun laws-index-browse-at-point ()
-  ;; ¥á¥Ë¥å¡¼¥³¥Ş¥ó¥É
+  ;; ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚³ãƒãƒ³ãƒ‰
   (interactive)
   (let ((id (car (nth 2 (laws-get-values)))))
     (if id
@@ -2228,7 +2228,7 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
       (message "No url at point."))))
 
 (defun laws-index-mouse-open-or-close (event)
-  "¥Ş¥¦¥¹¤Ç¥Õ¥©¥ë¥À¤Î³«ÊÄ¡¢Ë¡Îá¤ò³«¤¯¥³¥Ş¥ó¥É¡£"
+  "ãƒã‚¦ã‚¹ã§ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã€æ³•ä»¤ã‚’é–‹ãã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive "e")
   (set-buffer (window-buffer (posn-window (event-end event))))
   (goto-char (posn-point (event-end event)))
@@ -2236,8 +2236,8 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
   (when (laws-index-folder-level-0) (recenter 0)))
 
 (defun laws-retrieve-index ()
-  "¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë¤ò¼èÆÀ¤·Ä¾¤¹¡£ºÇ¸å¤Ë¼èÆÀ¤·¤Æ¤«¤é¹¹¿·¤¬¤¢¤Ã
-¤¿¾ì¹ç¡¢ÈÖ¹æÉÕ¤­¥Ğ¥Ã¥¯¥¢¥Ã¥×¤òÀ¸À®¤¹¤ë¡£"
+  "ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å–å¾—ã—ç›´ã™ã€‚æœ€å¾Œã«å–å¾—ã—ã¦ã‹ã‚‰æ›´æ–°ãŒã‚ã£
+ãŸå ´åˆã€ç•ªå·ä»˜ããƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‚’ç”Ÿæˆã™ã‚‹ã€‚"
   (interactive)
   (unless (eq major-mode 'laws-index-mode)
     (error "Try in laws-index-mode."))
@@ -2260,8 +2260,8 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
     (message (mapconcat 'identity msg "  "))))
 
 (defun laws-retrieve-html ()
-  "¥İ¥¤¥ó¥È°ÌÃÖ¤ÎHTML¥Ç¡¼¥¿¤òºÆ¼èÆÀ¡£ºÇ¸å¤Ë¼èÆÀ¤·¤Æ¤«¤é¹¹¿·¤¬¤¢¤Ã
-¤¿¾ì¹ç¡¢ÈÖ¹æÉÕ¤­¥Ğ¥Ã¥¯¥¢¥Ã¥×¤òÀ¸À®¤¹¤ë¡£"
+  "ãƒã‚¤ãƒ³ãƒˆä½ç½®ã®HTMLãƒ‡ãƒ¼ã‚¿ã‚’å†å–å¾—ã€‚æœ€å¾Œã«å–å¾—ã—ã¦ã‹ã‚‰æ›´æ–°ãŒã‚ã£
+ãŸå ´åˆã€ç•ªå·ä»˜ããƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‚’ç”Ÿæˆã™ã‚‹ã€‚"
   (interactive)
   (let ((id (cond ((eq major-mode 'laws-index-mode)
 		   (car (nth 2 (laws-get-values))))
@@ -2277,13 +2277,13 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
 	(laws-htmldata-retrieve id 'force)
 	(let ((buffer (get-file-buffer file)))
 	  (when (and buffer
-		     ;; ¹¹¿·¤µ¤ì¤¿¾ì¹ç => nil
+		     ;; æ›´æ–°ã•ã‚ŒãŸå ´åˆ => nil
 		     (not (verify-visited-file-modtime buffer)))
 	    (kill-buffer buffer)))
 	(laws-open-file id)))))
 
 (defun laws-index-open-all ()
-  "`Index'¤Ç¡¢¤¹¤Ù¤Æ¤Î¥Õ¥©¥ë¥À¤ò³«¤¯¥³¥Ş¥ó¥É¡£"
+  "`Index'ã§ã€ã™ã¹ã¦ã®ãƒ•ã‚©ãƒ«ãƒ€ã‚’é–‹ãã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive)
   (apply #'funcall
 	 (let ((mode laws-index-local-mode))
@@ -2298,7 +2298,7 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
 	     (t (error "Not supported."))))))
 
 (defun laws-index-close-all ()
-  "`Index'¤Ç¡¢¤¹¤Ù¤Æ¤Î¥Õ¥©¥ë¥À¤òÊÄ¤¸¤ë¥³¥Ş¥ó¥É¡£"
+  "`Index'ã§ã€ã™ã¹ã¦ã®ãƒ•ã‚©ãƒ«ãƒ€ã‚’é–‰ã˜ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive)
   (apply #'funcall
 	 (let ((mode laws-index-local-mode))
@@ -2313,14 +2313,14 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
 	     (t (error "Not supported."))))))
 
 (defun laws-index-folder-toggle-state ()
-  "¥Õ¥©¥ë¥À¤Î³«ÊÄ¥Õ¥é¥°¤ò¥È¥°¥ë¤¹¤ë¡£"
+  "ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ãƒ•ãƒ©ã‚°ã‚’ãƒˆã‚°ãƒ«ã™ã‚‹ã€‚"
   (forward-line 0)
   (when (re-search-forward "[+-]" (line-end-position) t)
     (replace-match
      (string (+ (- ?- (string-to-char (match-string 0))) ?+)))))
 
 (defun laws-index-upper-level ()
-  "¤Ò¤È¤Ä¾å¤Î³¬ÁØ¤Ë°ÜÆ°¤¹¤ë¥³¥Ş¥ó¥É¡£"
+  "ã²ã¨ã¤ä¸Šã®éšå±¤ã«ç§»å‹•ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive)
   (let ((level (laws-index-folder-level)))
     (when (> level 0)
@@ -2330,14 +2330,14 @@ LFUNC¤Ï¡¢NAME¤«¤é¤Ê¤ë¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
 
 ;; Index and Directory
 (defun laws-index-set-alist (name opened func)
-  "Ï¢ÁÛ¥ê¥¹¥È¤Î¥­¡¼¤¬NAME¤Î¥Õ¥©¥ë¥À¤Î³«ÊÄ¥Õ¥é¥°¤ò(not opened)¤Ë¥»¥Ã¥È¤¹¤ë¡£
-FUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
+  "é€£æƒ³ãƒªã‚¹ãƒˆã®ã‚­ãƒ¼ãŒNAMEã®ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ãƒ•ãƒ©ã‚°ã‚’(not opened)ã«ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
+FUNCã¯é€£æƒ³ãƒªã‚¹ãƒˆã‚’è¿”ã™é–¢æ•°ã€‚"
   (let ((cell (cdr (assoc name (funcall func)))))
     (setcar cell (not opened))
     (cdr cell)))
 
 (defun laws-index-folder (name opened func)
-  "`Index'¤È`Directory'¤Ç¡¢¥Õ¥©¥ë¥À¤Î³«ÊÄ¤ò½èÍı¤¹¤ë´Ø¿ô¡£"
+  "`Index'ã¨`Directory'ã§ã€ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã‚’å‡¦ç†ã™ã‚‹é–¢æ•°ã€‚"
   (let ((cell (laws-index-set-alist name opened func)))
     (if opened
 	(laws-with-buffer-read-only
@@ -2373,7 +2373,7 @@ FUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
     (laws-recent-add)))
 
 (defun laws-index-index-oc-function (func)
-  "`Index',`Directory'¤Ç¡¢¥Õ¥©¥ë¥À¤Ê¤é³«ÊÄ¤ò¤·Ë¡ÎáÌ¾¤Ê¤é³«¤¯¡£"
+  "`Index',`Directory'ã§ã€ãƒ•ã‚©ãƒ«ãƒ€ãªã‚‰é–‹é–‰ã‚’ã—æ³•ä»¤åãªã‚‰é–‹ãã€‚"
   (let* ((values (laws-get-values))
 	 (name (cadr values))
 	 (id (car (nth 2 values))))
@@ -2387,8 +2387,8 @@ FUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
 	(laws-open-file id)))))
 
 (defun laws-index-index-oc-all-function (open afunc ifunc)
-  "`Index',`Directory'¤Ç¡¢¤¹¤Ù¤Æ¤Î¥Õ¥©¥ë¥À¤Î³«ÊÄ¤ò¤¹¤ë¡£
-AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
+  "`Index',`Directory'ã§ã€ã™ã¹ã¦ã®ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã‚’ã™ã‚‹ã€‚
+AFUNCã¯é€£æƒ³ãƒªã‚¹ãƒˆã‚’è¿”ã™é–¢æ•°ã€‚IFUNCã¯ãƒ„ãƒªãƒ¼ã®æŒ¿å…¥å‡¦ç†ã‚’ã™ã‚‹é–¢æ•°ã€‚"
   (save-excursion
     (do ((alist (funcall afunc) (cdr alist)))
 	((null alist))
@@ -2401,7 +2401,7 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
 ;; Recent
 
 (defun laws-index-search-oc ()
-  "`Search'¤Ç¡¢¥Õ¥©¥ë¥À¤Ê¤é³«ÊÄ¤ò¤·¡¢Ë¡ÎáÌ¾¤Ê¤é³«¤¯¡£"
+  "`Search'ã§ã€ãƒ•ã‚©ãƒ«ãƒ€ãªã‚‰é–‹é–‰ã‚’ã—ã€æ³•ä»¤åãªã‚‰é–‹ãã€‚"
   (let ((name (laws-get-values #'cadr))
 	(keys nil))
     (unless name (error "Not a law data."))
@@ -2416,8 +2416,8 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
 	 cell keys name (laws-index-folder-open-p))))))
 
 (defun laws-index-set-search-alist (cell keys name opened)
-  "`laws-search-alist'¤ÎCELL¤ÎÃæ¤Ç¥­¡¼¤¬NAME¤Î¥Õ¥©¥ë¥À¤Î³«ÊÄ¥Õ¥é¥°
-¤ò(not opened)¤ËÊÑ¹¹¤·¤Æ¥Ğ¥Ã¥Õ¥¡¤ò¹¹¿·¤¹¤ë¡£"
+  "`laws-search-alist'ã®CELLã®ä¸­ã§ã‚­ãƒ¼ãŒNAMEã®ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ãƒ•ãƒ©ã‚°
+ã‚’(not opened)ã«å¤‰æ›´ã—ã¦ãƒãƒƒãƒ•ã‚¡ã‚’æ›´æ–°ã™ã‚‹ã€‚"
   (case (length keys)
     (0 (setcar (cdr cell) (not opened)))
     (1 (setcar (cdr (assoc name cell)) (not opened)))
@@ -2433,44 +2433,44 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
 
 ;; Opened
 (defun laws-index-opened-oc ()
-  "`Opened'¤Ç¡¢Ë¡Îá¥Õ¥¡¥¤¥ë¤ËÀÚ¤êÂØ¤¨¤ë¡£"
+  "`Opened'ã§ã€æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã«åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚"
   (laws-index-index-oc-function #'laws-opened-alist))
 
 ;; Recent
 (defun laws-index-recent-oc ()
-  "`Recent'¤Ç¡¢Ë¡Îá¥Õ¥¡¥¤¥ë¤ËÀÚ¤êÂØ¤¨¤ë¡£"
+  "`Recent'ã§ã€æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã«åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚"
   (laws-index-index-oc-function
    (lambda () (laws-make-alist-from-name #'laws-recent-alist))))
 
 ;; Bookmark
 (defun laws-index-bookmark-oc ()
-  "`Bookmark'¤Ç¡¢Ë¡Îá¥Õ¥¡¥¤¥ë¤ò³«¤¯¡£"
+  "`Bookmark'ã§ã€æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚"
   (laws-index-index-oc-function
    (lambda () (laws-make-alist-from-name #'laws-bookmark-alist))))
 
 ;; Index
 (defun laws-index-index-oc ()
-  "`Index'¤Ç¡¢¥Õ¥©¥ë¥À¤Î³«ÊÄ¤ò¤¹¤ë¡£"
+  "`Index'ã§ã€ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã‚’ã™ã‚‹ã€‚"
   (laws-index-index-oc-function #'laws-index-alist))
 
 (defun laws-index-index-oc-all (open)
-  "`Index'¤Ç¡¢¤¹¤Ù¤Æ¤Î¥Õ¥©¥ë¥À¤Î³«ÊÄ¤ò¤¹¤ë¡£"
+  "`Index'ã§ã€ã™ã¹ã¦ã®ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã‚’ã™ã‚‹ã€‚"
   (laws-index-index-oc-all-function
    open #'laws-index-alist #'laws-index-insert-index))
 
 ;; Directory
 (defun laws-index-directory-oc ()
-  "`Directory'¤Ç¡¢¥Õ¥©¥ë¥À¤Î³«ÊÄ¤ò¤¹¤ë¡£"
+  "`Directory'ã§ã€ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã‚’ã™ã‚‹ã€‚"
   (laws-index-index-oc-function #'laws-directory-alist))
 
 (defun laws-index-directory-oc-all (open)
-  "`Directory'¤Ç¡¢¤¹¤Ù¤Æ¤Î¥Õ¥©¥ë¥À¤Î³«ÊÄ¤ò¤¹¤ë¡£"
+  "`Directory'ã§ã€ã™ã¹ã¦ã®ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã‚’ã™ã‚‹ã€‚"
   (laws-index-index-oc-all-function
    open #'laws-directory-alist #'laws-index-insert-directory))
 
 ;; Abbrev
 (defun laws-index-set-abbrev-alist (name opened)
-  "`laws-abbrev-alist'¤Î¥Õ¥©¥ë¥À¤Î³«ÊÄ¥Õ¥é¥°¤ò¥»¥Ã¥È¤¹¤ë´Ø¿ô¡£"
+  "`laws-abbrev-alist'ã®ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°ã€‚"
   (cond ((laws-index-folder-level-1)
 	 ;; sub folder
 	 (save-excursion
@@ -2487,7 +2487,7 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
 	   (cdr cell)))))
 
 (defun laws-index-abbrev-folder (name opened sub)
-  "`Abbrev'¤Ç¡¢¥Õ¥©¥ë¥À¤Î³«ÊÄ¤ò½èÍı¤¹¤ë´Ø¿ô¡£"
+  "`Abbrev'ã§ã€ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã‚’å‡¦ç†ã™ã‚‹é–¢æ•°ã€‚"
   (let ((cell (laws-index-set-abbrev-alist name opened)))
     (unless (> (laws-index-folder-level) 1)
       (if opened
@@ -2524,7 +2524,7 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
 	 (laws-index-upper-level))))))
 
 (defun laws-index-abbrev-oc ()
-  "`Abbrev'¤Ç¡¢¥Õ¥©¥ë¥À¤Ê¤é³«ÊÄ¤·Ë¡Îá¤Ê¤é³«¤¯¡£"
+  "`Abbrev'ã§ã€ãƒ•ã‚©ãƒ«ãƒ€ãªã‚‰é–‹é–‰ã—æ³•ä»¤ãªã‚‰é–‹ãã€‚"
   (let* ((values (laws-get-values))
 	 (name (cadr values))
 	 (id (nth 2 values)))
@@ -2536,7 +2536,7 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
       (laws-open-file (car id)))))
 
 (defun laws-index-abbrev-oc-all (open)
-  "`Abbrev'¤Ç¡¢¤¹¤Ù¤Æ¤Î¥Õ¥©¥ë¥À¤Î³«ÊÄ¤ò¤¹¤ë¡£"
+  "`Abbrev'ã§ã€ã™ã¹ã¦ã®ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã‚’ã™ã‚‹ã€‚"
   (laws-index-index-oc-all-function
    open #'laws-abbrev-alist #'laws-index-insert-abbrev))
 
@@ -2544,24 +2544,24 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
 ;; Search
 ;;
 (defalias 'laws-search 'laws-index-search
-  "Ë¡ÎáÌ¾(Î¬¾ÎË¡ÎáÌ¾¤ò´Ş¤à)¤ò¸¡º÷¤¹¤ë¥³¥Ş¥ó¥É¡£°ú¿ôÉÕ¤­¤Ç¼Â¹Ô¤·¤¿
-¾ì¹ç¤Ï¡¢°ÊÁ°¤Î¸¡º÷·ë²Ì¤ò½é´ü²½¤·¤Ê¤¤¡£")
+  "æ³•ä»¤å(ç•¥ç§°æ³•ä»¤åã‚’å«ã‚€)ã‚’æ¤œç´¢ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚å¼•æ•°ä»˜ãã§å®Ÿè¡Œã—ãŸ
+å ´åˆã¯ã€ä»¥å‰ã®æ¤œç´¢çµæœã‚’åˆæœŸåŒ–ã—ãªã„ã€‚")
 
 (defun laws-index-search (rx &optional noclear)
-  "Ë¡ÎáÌ¾(Î¬¾ÎË¡ÎáÌ¾¤ò´Ş¤à)¤ò¸¡º÷¤¹¤ë¥³¥Ş¥ó¥É¡£°ú¿ôÉÕ¤­¤Ç¼Â¹Ô¤·¤¿
-¾ì¹ç¤Ï¡¢°ÊÁ°¤Î¸¡º÷·ë²Ì¤ò½é´ü²½¤·¤Ê¤¤¡£"
+  "æ³•ä»¤å(ç•¥ç§°æ³•ä»¤åã‚’å«ã‚€)ã‚’æ¤œç´¢ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚å¼•æ•°ä»˜ãã§å®Ÿè¡Œã—ãŸ
+å ´åˆã¯ã€ä»¥å‰ã®æ¤œç´¢çµæœã‚’åˆæœŸåŒ–ã—ãªã„ã€‚"
   (interactive (laws-index-search-interactive))
   (labels
       ((display-result (rx names abbreves complete noclear)
 	 (unless noclear (setq laws-search-alist nil))
 	 ;; t: opened flag
 	 (push
-	  (list (format "¸¡º÷¼° `%s'" rx) t
-		`(,(format "Ë¡ÎáÌ¾´°Á´°ìÃ× ³ºÅö·ï¿ô %d" (length complete)) t ,@complete)
-		`(,(format "Î¬¾ÎË¡ÎáÌ¾¸¡º÷ ³ºÅö·ï¿ô %d" (length abbreves)) t ,@abbreves)
-		`(,(format "Ë¡ÎáÌ¾¸¡º÷ ³ºÅö·ï¿ô %d" (length names)) t ,@names))
+	  (list (format "æ¤œç´¢å¼ `%s'" rx) t
+		`(,(format "æ³•ä»¤åå®Œå…¨ä¸€è‡´ è©²å½“ä»¶æ•° %d" (length complete)) t ,@complete)
+		`(,(format "ç•¥ç§°æ³•ä»¤åæ¤œç´¢ è©²å½“ä»¶æ•° %d" (length abbreves)) t ,@abbreves)
+		`(,(format "æ³•ä»¤åæ¤œç´¢ è©²å½“ä»¶æ•° %d" (length names)) t ,@names))
 	  laws-search-alist)
-	 ;; ¥Ğ¥Ã¥Õ¥¡¹¹¿·
+	 ;; ãƒãƒƒãƒ•ã‚¡æ›´æ–°
 	 ;; laws-index-goto-mode: Return nil if same local-mode.
 	 (unless (laws-index-goto-mode 'Search)
 	   (laws-with-buffer-read-only (erase-buffer))
@@ -2569,43 +2569,43 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
     (let ((complete nil))
       (message "Searching...")
       (display-result
-       ;; ¸¡º÷¼°
+       ;; æ¤œç´¢å¼
        rx
-       ;; Ë¡ÎáÌ¾¸¡º÷
+       ;; æ³•ä»¤åæ¤œç´¢
        (do ((xs (car (laws-names-alist)) (cdr xs))
 	    (names-search nil))
 	   ((null xs) names-search)
 	 (let ((name (car (caar xs)))
 	       (name2 (cdr (caar xs))))
-	   ;; Ì±Ë¡¡ÊÌ±Ë¡Âè°ìÊÔÂèÆóÊÔÂè»°ÊÔ¡Ë¡ÊÌÀ¼£Æó½½¶åÇ¯»Í·îÆó½½¼·ÆüË¡Î§ÂèÈ¬½½¶å¹æ¡Ë
-	   ;; ¤Î¤¦¤Á¡¢³ç¸Ì¤ò½ü¤¤¤¿ÉôÊ¬¤Î¸¡º÷¡£
+	   ;; æ°‘æ³•ï¼ˆæ°‘æ³•ç¬¬ä¸€ç·¨ç¬¬äºŒç·¨ç¬¬ä¸‰ç·¨ï¼‰ï¼ˆæ˜æ²»äºŒåä¹å¹´å››æœˆäºŒåä¸ƒæ—¥æ³•å¾‹ç¬¬å…«åä¹å·ï¼‰
+	   ;; ã®ã†ã¡ã€æ‹¬å¼§ã‚’é™¤ã„ãŸéƒ¨åˆ†ã®æ¤œç´¢ã€‚
 	   (when (string-match rx name)
 	     (let ((match (cons (concat name (cdr (caar xs))) (cdar xs))))
 	       (if (string= name rx)
-		   ;; ´°Á´°ìÃ×(Ì±Ë¡¤Ê¤ÉÊ£¿ô¥Ş¥Ã¥Á¤¹¤ë¾ì¹ç¤¬¤¢¤ë)
+		   ;; å®Œå…¨ä¸€è‡´(æ°‘æ³•ãªã©è¤‡æ•°ãƒãƒƒãƒã™ã‚‹å ´åˆãŒã‚ã‚‹)
 		   (push match complete)
-		 ;; °ìÉô°ìÃ×
-		 ;; ´°Á´°ìÃ×¡¢¤Ş¤¿´û¤Ë°ìÉô°ìÃ×¤Ë´Ş¤Ş¤ì¤ë¾ì¹ç¤Ï¡¢cons¤·¤Ê¤¤¡£
+		 ;; ä¸€éƒ¨ä¸€è‡´
+		 ;; å®Œå…¨ä¸€è‡´ã€ã¾ãŸæ—¢ã«ä¸€éƒ¨ä¸€è‡´ã«å«ã¾ã‚Œã‚‹å ´åˆã¯ã€consã—ãªã„ã€‚
 		 (unless (or (member match names-search)
 			     (member match complete))
 		   (push match names-search)))))
-	   ;; ¸åÈ¾¤Î³ç¸ÌÉôÊ¬¤Î¸¡º÷(³ç¸ÌÆâ¤â¸¡º÷ÂĞ¾İ¤ËÆş¤ì¤ë)¡£
-	   ;; ´°Á´°ìÃ×¡¢¤Ş¤¿´û¤Ë°ìÉô°ìÃ×¤Ë´Ş¤Ş¤ì¤ë¾ì¹ç¤Ï¡¢cons¤·¤Ê¤¤¡£
+	   ;; å¾ŒåŠã®æ‹¬å¼§éƒ¨åˆ†ã®æ¤œç´¢(æ‹¬å¼§å†…ã‚‚æ¤œç´¢å¯¾è±¡ã«å…¥ã‚Œã‚‹)ã€‚
+	   ;; å®Œå…¨ä¸€è‡´ã€ã¾ãŸæ—¢ã«ä¸€éƒ¨ä¸€è‡´ã«å«ã¾ã‚Œã‚‹å ´åˆã¯ã€consã—ãªã„ã€‚
 	   (when (string-match rx name2)
 	     (let ((match (cons (concat name (cdr (caar xs))) (cdar xs))))
 	       (unless (or (member match names-search)
 			   (member match complete))
 		 (push match names-search))))))
-       ;; Î¬¾ÎË¡ÎáÌ¾¸¡º÷
+       ;; ç•¥ç§°æ³•ä»¤åæ¤œç´¢
        (do ((xs (cdr (laws-names-alist)) (cdr xs))
 	    (abbrev-search nil))
 	   ((null xs) abbrev-search)
 	 (when (string-match rx (caar xs))
 	   ;; nil: closed flag
 	   (push (cons (caar xs) (cons nil (cdar xs))) abbrev-search)))
-       ;; ´°Á´°ìÃ×
+       ;; å®Œå…¨ä¸€è‡´
        complete
-       ;; °ÊÁ°¤Î¸¡º÷·ë²Ì¤Î½é´ü²½¡£
+       ;; ä»¥å‰ã®æ¤œç´¢çµæœã®åˆæœŸåŒ–ã€‚
        noclear)
       (message (concat (current-message) "done")))))
 
@@ -2620,23 +2620,23 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
       (if (get-buffer laws-index-buffer)
 	  (switch-to-buffer laws-index-buffer)
 	(laws-index)))
-    (when (assoc (format "¸¡º÷¼° `%s'" rx) laws-search-alist)
+    (when (assoc (format "æ¤œç´¢å¼ `%s'" rx) laws-search-alist)
       (error "`%s' is retrieved." rx))
     (list rx current-prefix-arg)))
 
-;; Search¥â¡¼¥É¤Ç¸¡º÷·ë²Ì¤ò¥Ï¥¤¥é¥¤¥È¤¹¤ë
+;; Searchãƒ¢ãƒ¼ãƒ‰ã§æ¤œç´¢çµæœã‚’ãƒã‚¤ãƒ©ã‚¤ãƒˆã™ã‚‹
 (defun laws-index-highlight-search-buffer ()
   (labels ((put-overlay ()
 	     (let ((rx (and (re-search-forward
 			     "`\\(.+?\\)'" (line-end-position) t)
 			    (match-string 1))))
-	       ;; ¸¡º÷¼°
+	       ;; æ¤œç´¢å¼
 	       (overlay-put
 		(car (push (make-overlay (match-beginning 1)
 					 (match-end 1))
 			   laws-index-search-overlaies))
 		'face '(:foreground "red"))
-	       ;; ¸¡º÷·ë²Ì
+	       ;; æ¤œç´¢çµæœ
 	       (forward-line 1)
 	       (while (and (/= (laws-index-folder-level) 0)
 			   (not (eobp)))
@@ -2667,8 +2667,8 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
 ;; Bookmark
 ;;
 (defun laws-index-bookmark-add ()
-  "¥Ö¥Ã¥¯¥Ş¡¼¥¯¤ËË¡ÎáÌ¾¤òÄÉ²Ã¤¹¤ë¥³¥Ş¥ó¥É¡£
-¥Õ¥¡¥¤¥ë:`laws-bookmark-file'¤Ë½ñ¤­½Ğ¤¹¡£"
+  "ãƒ–ãƒƒã‚¯ãƒãƒ¼ã‚¯ã«æ³•ä»¤åã‚’è¿½åŠ ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚
+ãƒ•ã‚¡ã‚¤ãƒ«:`laws-bookmark-file'ã«æ›¸ãå‡ºã™ã€‚"
   (interactive)
   (unless (eq laws-index-local-mode 'Bookmark)
     (condition-case err
@@ -2682,7 +2682,7 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
       (error nil))))
 
 (defun laws-index-put-deletion-flag ()
-  "Bookmark,Opened,Recent¤Çºï½ü¥Ş¡¼¥¯¤òÉÕ¤±¤ë¡£"
+  "Bookmark,Opened,Recentã§å‰Šé™¤ãƒãƒ¼ã‚¯ã‚’ä»˜ã‘ã‚‹ã€‚"
   (interactive)
   (when (member laws-index-local-mode '(Opened Recent Bookmark))
     (laws-with-buffer-read-only
@@ -2696,8 +2696,8 @@ AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£IFUNC¤Ï¥Ä¥ê¡¼¤ÎÁŞÆş½èÍı¤ò¤¹¤ë´Ø¿ô¡£"
     (laws-index-move-to-column)))
 
 (defun laws-index-get-cells (&optional marks)
-  "¥Ğ¥Ã¥Õ¥¡¤«¤é¥Ö¥Ã¥¯¥Ş¡¼¥¯¤Î³Æ¹àÌÜ¤ò¼èÆÀ¤·¤ÆÊÖ¤¹¡£
-MARKS¤¬Èónil¤Ê¤éºï½ü¥Ş¡¼¥¯¤¬ÉÕ¤¤¤¿¹àÌÜ¤Î¤ß¡£"
+  "ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰ãƒ–ãƒƒã‚¯ãƒãƒ¼ã‚¯ã®å„é …ç›®ã‚’å–å¾—ã—ã¦è¿”ã™ã€‚
+MARKSãŒénilãªã‚‰å‰Šé™¤ãƒãƒ¼ã‚¯ãŒä»˜ã„ãŸé …ç›®ã®ã¿ã€‚"
   (save-excursion
     (let ((result nil))
       (goto-char (point-min))
@@ -2707,9 +2707,9 @@ MARKS¤¬Èónil¤Ê¤éºï½ü¥Ş¡¼¥¯¤¬ÉÕ¤¤¤¿¹àÌÜ¤Î¤ß¡£"
       (nreverse result))))
 
 (defun laws-index-do-delete-marks ()
-  "Bookmark,Opened,Recent¤Ç¡¢ºï½ü¥Ş¡¼¥¯`D'¤¬ÉÕ¤¤¤¿¹àÌÜ¤òºï½ü¤¹¤ë¡£
-Bookmark¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë:`laws-bookmark-file'¤Ë½ñ¤­½Ğ¤¹¡£
-Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
+  "Bookmark,Opened,Recentã§ã€å‰Šé™¤ãƒãƒ¼ã‚¯`D'ãŒä»˜ã„ãŸé …ç›®ã‚’å‰Šé™¤ã™ã‚‹ã€‚
+Bookmarkã®å ´åˆã€ãƒ•ã‚¡ã‚¤ãƒ«:`laws-bookmark-file'ã«æ›¸ãå‡ºã™ã€‚
+Openedã®å ´åˆã€ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹ã€‚"
   (interactive)
   (labels ((delalist (alist &optional form)
 	     ;; ALIST is a symbol. Return a function.
@@ -2742,12 +2742,12 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
        (laws-index-insert-recent)))))
 
 (defun laws-index-bookmark-move-up ()
-  "¹àÌÜ¤ò1¹Ô¾å¤Ë°ÜÆ°¤¹¤ë¡£"
+  "é …ç›®ã‚’1è¡Œä¸Šã«ç§»å‹•ã™ã‚‹ã€‚"
   (interactive)
   (laws-index-bookmark-move-down t))
 
 (defun laws-index-bookmark-move-down (&optional up)
-  "¹àÌÜ¤ò1¹Ô²¼¤Ë°ÜÆ°¤¹¤ë¡£"
+  "é …ç›®ã‚’1è¡Œä¸‹ã«ç§»å‹•ã™ã‚‹ã€‚"
   (interactive)
   (when (eq laws-index-local-mode 'Bookmark)
     (laws-with-buffer-read-only
@@ -2766,13 +2766,13 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 ;; Scroll commands
 ;;
 (defun laws-index-move-to-column ()
-  "¥Õ¥©¥ë¥À¤Î³«ÊÄ¤òÉ½¤ï¤¹¥Ş¡¼¥¯°ÌÃÖ¤Ë°ÜÆ°¤¹¤ë´Ø¿ô¡£"
+  "ãƒ•ã‚©ãƒ«ãƒ€ã®é–‹é–‰ã‚’è¡¨ã‚ã™ãƒãƒ¼ã‚¯ä½ç½®ã«ç§»å‹•ã™ã‚‹é–¢æ•°ã€‚"
   (forward-line 0)
   (re-search-forward "[+-]" nil t)
   (ignore-errors (backward-char 1)))
 
 (defun laws-index-previous-line (n)
-  "Á°¤Î¹Ô¤Ë°ÜÆ°¤¹¤ë¥³¥Ş¥ó¥É¡£"
+  "å‰ã®è¡Œã«ç§»å‹•ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive "p")
   (let ((p (point)))
     (if (> 0 (forward-line (- n)))
@@ -2780,33 +2780,33 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
       (laws-index-move-to-column))))
 
 (defun laws-index-next-line (n)
-  "¼¡¤Î¹Ô¤Ë°ÜÆ°¤¹¤ë¥³¥Ş¥ó¥É¡£"
+  "æ¬¡ã®è¡Œã«ç§»å‹•ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive "p")
   (forward-line n)
   (when (eobp) (forward-line -1))
   (laws-index-move-to-column))
 
 (defun laws-index-scroll-up-line (n)
-  "N¹ÔÁ°Êı¤Ë¥¹¥¯¥í¡¼¥ë¤¹¤ë¥³¥Ş¥ó¥É¡£"
+  "Nè¡Œå‰æ–¹ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive "p")
   (ignore-errors
     (scroll-up n)
     (laws-index-move-to-column)))
 
 (defun laws-index-scroll-down-line (n)
-  "N¹Ô¸åÊı¤Ë¥¹¥¯¥í¡¼¥ë¤¹¤ë¥³¥Ş¥ó¥É¡£"
+  "Nè¡Œå¾Œæ–¹ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive "p")
   (ignore-errors
     (scroll-down n)
     (laws-index-move-to-column)))
 
 (defun laws-index-previous-folder ()
-  "¥İ¥¤¥ó¥È¤ÈÆ±¤¸¥ì¥Ù¥ë¤ÎÁ°¤Î¥Õ¥©¥ë¥À¤Ë°ÜÆ°¤¹¤ë¡£"
+  "ãƒã‚¤ãƒ³ãƒˆã¨åŒã˜ãƒ¬ãƒ™ãƒ«ã®å‰ã®ãƒ•ã‚©ãƒ«ãƒ€ã«ç§»å‹•ã™ã‚‹ã€‚"
   (interactive)
   (laws-index-next-folder t))
 
 (defun laws-index-next-folder (&optional previous)
-  "¥İ¥¤¥ó¥È¤ÈÆ±¤¸¥ì¥Ù¥ë¤Î¼¡¤Î¥Õ¥©¥ë¥À¤Ë°ÜÆ°¤¹¤ë¡£"
+  "ãƒã‚¤ãƒ³ãƒˆã¨åŒã˜ãƒ¬ãƒ™ãƒ«ã®æ¬¡ã®ãƒ•ã‚©ãƒ«ãƒ€ã«ç§»å‹•ã™ã‚‹ã€‚"
   (interactive)
   (let ((func (laws-any-function
 	       '(laws-index-folder-level-0
@@ -2827,14 +2827,14 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
       (goto-char move-to))))
 
 (defun laws-completion-list (afunc)
-  "Êä´°¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£AFUNC¤ÏÏ¢ÁÛ¥ê¥¹¥È¤òÊÖ¤¹´Ø¿ô¡£"
+  "è£œå®Œãƒªã‚¹ãƒˆã‚’è¿”ã™é–¢æ•°ã€‚AFUNCã¯é€£æƒ³ãƒªã‚¹ãƒˆã‚’è¿”ã™é–¢æ•°ã€‚"
   (do ((xs (funcall afunc) (cdr xs))
        (result nil (cons (caar xs) result)))
       ((null xs) result)))
 
 (defun laws-index-goto-folder (folder)
-  "Êä´°¥ê¥¹¥È¤«¤é¡¢ºÇ¾å°Ì¤Î³¬ÁØ¤ËÁªÂòÅª¤Ë°ÜÆ°¤¹¤ë¥³¥Ş¥ó¥É¡£
-`laws-use-iswitchb'¤¬t¤Ê¤é`iswitchb'¤òÍøÍÑ¤¹¤ë¡£"
+  "è£œå®Œãƒªã‚¹ãƒˆã‹ã‚‰ã€æœ€ä¸Šä½ã®éšå±¤ã«é¸æŠçš„ã«ç§»å‹•ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚
+`laws-use-iswitchb'ãŒtãªã‚‰`iswitchb'ã‚’åˆ©ç”¨ã™ã‚‹ã€‚"
   (interactive
    (list (funcall
 	  (if laws-use-iswitchb
@@ -2911,7 +2911,7 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
      ["Make Index Files"	laws-retrieve-index t]
      "-"
      ["Retrieve HTML Data"	 laws-retrieve-html t]
-     ;;["Ë¡Îá¥Õ¥¡¥¤¥ë¤ÎºÆºîÀ®"	 laws-menu-data-create t]
+     ;;["æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã®å†ä½œæˆ"	 laws-menu-data-create t]
      )
     "-"
     ["Close Index"		bury-buffer t]
@@ -2923,7 +2923,7 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 (defalias 'laws 'laws-index)
 
 (defun laws-index ()
-  "Ë¡Îá¥Ç¡¼¥¿¤Ë¥¢¥¯¥»¥¹¤¹¤ë¤¿¤á¤Î¥¤¥ó¥¿¡¼¥Õ¥§¥¤¥¹¡£"
+  "æ³•ä»¤ãƒ‡ãƒ¼ã‚¿ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã€‚"
   (interactive)
   (unless (file-exists-p laws-index-file)
     (unless laws-online-mode
@@ -2936,7 +2936,7 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 	 (laws-index-mode)))))
 
 (defun laws-index-mode ()
-  "`laws-index'¤Î¤¿¤á¤Î¥á¥¸¥ã¡¼¥â¡¼¥É¡£"
+  "`laws-index'ã®ãŸã‚ã®ãƒ¡ã‚¸ãƒ£ãƒ¼ãƒ¢ãƒ¼ãƒ‰ã€‚"
   (kill-all-local-variables)
   (use-local-map laws-index-mode-map)
   (setq mode-name laws-index-mode-name)
@@ -3000,44 +3000,44 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 	(when kanji
 	  (goto-char
 	   (save-excursion
-	     (laws-move-to-article `(,(format "^Âè%s¾ò" kanji)))))
+	     (laws-move-to-article `(,(format "^ç¬¬%sæ¡" kanji)))))
 	  (laws-winconf-add 'force)))
     ;; anchor push
     (laws-push-anchor)))
 
 (defun laws-push-anchor (&optional new-window)
   (interactive "P")
-  (cond ( ;; ¥ê¡¼¥¸¥ç¥ó¤¬³èÀ­¤Î¾ì¹ç(·ÓÀşÉ½ÆâÉô¤Ç¼Â¹Ô)
+  (cond ( ;; ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ãŒæ´»æ€§ã®å ´åˆ(ç½«ç·šè¡¨å†…éƒ¨ã§å®Ÿè¡Œ)
 	 (and mark-active transient-mark-mode)
 	 (laws-display-anchor
 	  (laws-rectangle-anchor (region-beginning) (region-end))
 	  new-window))
-	( ;; Á´³Ñ³ç¸Ì
-	 (eq (char-after) ?\¡Ê)
+	( ;; å…¨è§’æ‹¬å¼§
+	 (eq (char-after) ?\ï¼ˆ)
 	 (laws-compose-paren-toggle))
-	( ;; ÄÌ¾ï¤Î¥¢¥ó¥«¡¼¤Î¾ì¹ç
+	( ;; é€šå¸¸ã®ã‚¢ãƒ³ã‚«ãƒ¼ã®å ´åˆ
 	 (memq (get-text-property (point) 'face)
 	       '(laws-anchor-name-face
 		 laws-anchor-article-face))
 	 (laws-display-anchor (laws-anchor-at-point) new-window))
-	( ;; ¥¢¥¦¥È¥é¥¤¥ó¥Ø¥Ã¥À
+	( ;; ã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ãƒ˜ãƒƒãƒ€
 	 (laws-outline-header-p)
 	 (laws-heading-jump))
 	(t (princ "No anchor at point."))))
 
 (defun laws-rectangle-anchor (start end)
-  "·ÓÀşÉ½¤ÎÃæ¤ÎÊ£¿ô¹Ô¤Ë¸Ù¤Ã¤¿¥ê¡¼¥¸¥ç¥ó¤«¤éË¡ÎáÌ¾¡¦¾òÊ¸ÈÖ¹æÅù¤òÊ¸
-»úÎó¤ÇÊÖ¤¹¡£"
+  "ç½«ç·šè¡¨ã®ä¸­ã®è¤‡æ•°è¡Œã«è·¨ã£ãŸãƒªãƒ¼ã‚¸ãƒ§ãƒ³ã‹ã‚‰æ³•ä»¤åãƒ»æ¡æ–‡ç•ªå·ç­‰ã‚’æ–‡
+å­—åˆ—ã§è¿”ã™ã€‚"
   (save-excursion
     (goto-char start)
     (labels ((trim (anchor)
-	       (let* ((kanji "[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]")
+	       (let* ((kanji "[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]")
 		      (regexp (concat
-			       "\\(Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½É´Àé]+¾ò"
-			       "\\(?:[¤Î¥Î]"	kanji "+\\)*\\)"
-			       "\\(Âè"		kanji "+¹à\\)*"
-			       "\\(Âè"		kanji "+¹æ"
-			       "\\(?:[¤Î¥Î]"	kanji "+\\)*\\)?")))
+			       "\\(ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒ]+æ¡"
+			       "\\(?:[ã®ãƒ]"	kanji "+\\)*\\)"
+			       "\\(ç¬¬"		kanji "+é …\\)*"
+			       "\\(ç¬¬"		kanji "+å·"
+			       "\\(?:[ã®ãƒ]"	kanji "+\\)*\\)?")))
 		 (if (string-match regexp anchor)
 		     (substring anchor 0 (match-end 0))
 		   anchor))))
@@ -3045,20 +3045,20 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 	    (lines (count-lines start end))
 	    (move-to
 	     (save-excursion
-	       (search-forward "¨¢" (line-end-position) t)
+	       (search-forward "â”‚" (line-end-position) t)
 	       (1- (current-column))))
 	    back-to)
-	(while (/= (preceding-char) ?¨¢)
+	(while (/= (preceding-char) ?â”‚)
 	  (backward-char)
 	  (when (= (point) (line-beginning-position))
 	    (error "Not a chart."))
 	  (incf count-back))
 	(setq back-to (current-column))
-	;; ¾ò¿ô¤Î¸å¤ÎÊ¸»úÎó¤ò¥È¥ê¥ß¥ó¥°
+	;; æ¡æ•°ã®å¾Œã®æ–‡å­—åˆ—ã‚’ãƒˆãƒªãƒŸãƒ³ã‚°
 	(trim
 	 (let (result)
 	   (replace-regexp-in-string
-	    "¡Ê.+?¡Ë" ""
+	    "ï¼ˆ.+?ï¼‰" ""
 	    (substring
 	     (apply 'concat
 		    (dotimes (x lines (nreverse result))
@@ -3078,16 +3078,16 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
   (multiple-value-bind (name article paragraph item)
       (laws-parse-anchor anchor)
     (setq name
-	  ;; If non nil, Ë¡ÎáÌ¾¤ËÊÑ´¹¡£
+	  ;; If non nil, æ³•ä»¤åã«å¤‰æ›ã€‚
 	  (and name			;(laws-anchor-convert-to-ref name)
 	       (laws-anchor-convert-entry-name name))
-	  ;; If non nil, Àµµ¬É½¸½Ê¸»úÎó¤ËÊÑ´¹¡£
+	  ;; If non nil, æ­£è¦è¡¨ç¾æ–‡å­—åˆ—ã«å¤‰æ›ã€‚
 	  article
 	  (laws-anchor-article article)
-	  ;; If non nil, Àµµ¬É½¸½Ê¸»úÎó¤ËÊÑ´¹¡£
+	  ;; If non nil, æ­£è¦è¡¨ç¾æ–‡å­—åˆ—ã«å¤‰æ›ã€‚
 	  paragraph
 	  (laws-anchor-paragraph paragraph)
-	  ;; If non nil, Àµµ¬É½¸½Ê¸»úÎó¤ËÊÑ´¹¡£
+	  ;; If non nil, æ­£è¦è¡¨ç¾æ–‡å­—åˆ—ã«å¤‰æ›ã€‚
 	  item
 	  (laws-anchor-item item))
     (when (and (not new-window) (not (one-window-p)))
@@ -3103,13 +3103,13 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 		     (setq new-window t)))
 	  (setq new-window t))))
     (unless name
-      ;; If nil, »²¾È¤·¤Æ¤¤¤ë¤Î¤Ï¸½ºß¤Î¥Õ¥¡¥¤¥ë¡£
+      ;; If nil, å‚ç…§ã—ã¦ã„ã‚‹ã®ã¯ç¾åœ¨ã®ãƒ•ã‚¡ã‚¤ãƒ«ã€‚
       (setq name (laws-current-buffer-law-name)))
     (laws-display (let* ((id (laws-get-id name))
 			 (file (laws-expand-data-file id)))
 		    (cond ((and name (eq id nil))
 			   (error "Parse error: %S" (list name id)))
-			  ((eq id nil)	; Ì¤ÅĞÏ¿Ë¡Îá
+			  ((eq id nil)	; æœªç™»éŒ²æ³•ä»¤
 			   (or (and (equal (laws-current-buffer-law-name)
 					   name)
 				    (buffer-file-name))
@@ -3180,10 +3180,10 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 
 (defun laws-make-article-regexp (prefix args)
   (list
-   (format "^Âè%s¾ò%s"
+   (format "^ç¬¬%sæ¡%s"
 	   (laws-to-kanji-number prefix)
 	   (mapconcat (lambda (x)
-			(format "[¤Î¥Î]%s"
+			(format "[ã®ãƒ]%s"
 				(laws-to-kanji-number (string-to-number x))))
 		      args ""))))
 
@@ -3193,39 +3193,39 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 		 (list (% n 10))
 	       (cons (% n 10) (split (/ n 10)))))
 	   (kanji (n)
-	     (nth n '("Îí" "°ì" "Æó" "»°" "»Í" "¸Ş" "Ï»" "¼·" "È¬" "¶å"))))
+	     (nth n '("é›¶" "ä¸€" "äºŒ" "ä¸‰" "å››" "äº”" "å…­" "ä¸ƒ" "å…«" "ä¹"))))
     (apply #'concat
 	   (nreverse
 	    (laws:map (lambda (i s)
-			(and (> i 0) (string= s "°ì") (setq s ""))
-			(if (string= s "Îí") ""
-			  (concat s (nth i '("" "½½" "É´" "Àé")))))
+			(and (> i 0) (string= s "ä¸€") (setq s ""))
+			(if (string= s "é›¶") ""
+			  (concat s (nth i '("" "å" "ç™¾" "åƒ")))))
 		      '(0 1 2 3) (mapcar #'kanji (split n)))))))
 
 (defun laws-to-arabic-number (kanji &optional em-size)
-  (if (string-match "[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½É´Àé]+" kanji)
+  (if (string-match "[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒ]+" kanji)
       (setq kanji (match-string 0 kanji))
     (error "Argument is not Chinese numeral"))
-  (let* ((number "[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]")
+  (let* ((number "[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]")
 	 (regexp (concat
-		  "\\(" number "?Àé\\)?"
-		  "\\(" number "?É´\\)?"
-		  "\\(" number "?½½\\)?"
+		  "\\(" number "?åƒ\\)?"
+		  "\\(" number "?ç™¾\\)?"
+		  "\\(" number "?å\\)?"
 		  "\\(" number "\\)?"))
 	 (lst (progn
-		;; ³Æ·å¤ÎÃÍ¤Î¥ê¥¹¥È¤òÀ¸À®
+		;; å„æ¡ã®å€¤ã®ãƒªã‚¹ãƒˆã‚’ç”Ÿæˆ
 		(string-match regexp kanji)
 		(mapcar (lambda (x) (match-string x kanji))
 			'(1 2 3 4))))
 	 result)
     (setq lst
-	  ;; ³ÆÍ×ÁÇ¤ò¿ô¤ËÊÑ´¹
+	  ;; å„è¦ç´ ã‚’æ•°ã«å¤‰æ›
 	  (dotimes (x 4 lst)
 	    (let ((element (nth x lst)) p)
-	      (and (or (equal element "Àé")
-		       (equal element "É´")
-		       (equal element "½½"))
-		   (setq element (concat "°ì" element)))
+	      (and (or (equal element "åƒ")
+		       (equal element "ç™¾")
+		       (equal element "å"))
+		   (setq element (concat "ä¸€" element)))
 	      (and element
 		   (setq element (substring element 0 1)))
 	      (setcar
@@ -3233,16 +3233,16 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 	       (cond
 		 ((equal element '()) 0)
 		 (t
-		  (setq p (string-match element "°ìÆó»°»Í¸ŞÏ»¼·È¬¶å"))
+		  (setq p (string-match element "ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹"))
 		  (string-to-number
 		   (substring "123456789" p (1+ p)))))))))
-    ;; ¹ç»»
+    ;; åˆç®—
     (setq result
 	  (apply (function +)
 		 (mapcar (lambda (x)
 			   (* (expt 10 (- 3 x)) (nth x lst)))
 			 '(0 1 2 3))))
-    ;; Á´³ÑÊ¸»ú¤ËÊÑ´¹
+    ;; å…¨è§’æ–‡å­—ã«å¤‰æ›
     (or (and em-size
 	     (japanese-zenkaku (number-to-string result)))
 	result)))
@@ -3279,7 +3279,7 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
       found)))
 
 ;; (defun laws-current-article ()
-;;   ;; ^$ ¤Ç¤Ï¤Ê¤¯¡¢laws-article-regexp ¤ÇÈ½ÃÇ¤¹¤ë¤è¤¦ÊÑ¹¹¤¹¤ë¡£
+;;   ;; ^$ ã§ã¯ãªãã€laws-article-regexp ã§åˆ¤æ–­ã™ã‚‹ã‚ˆã†å¤‰æ›´ã™ã‚‹ã€‚
 ;;   (let (beg end)
 ;;     (save-excursion
 ;;       (or (and (looking-at "^$")
@@ -3377,21 +3377,21 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 
 (defun laws-forward-article (n)
   (interactive "p")
-  ;; ¥İ¥¤¥ó¥È¤¬¥¢¥¦¥È¥é¥¤¥ó¥Ø¥Ã¥À¾å¤Ë¤¢¤ë¤«¤É¤¦¤«¤ÇÊ¬´ô
-  ;; Æ±°ì³¬ÁØ´Ö¤Î°ÜÆ°
+  ;; ãƒã‚¤ãƒ³ãƒˆãŒã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ãƒ˜ãƒƒãƒ€ä¸Šã«ã‚ã‚‹ã‹ã©ã†ã‹ã§åˆ†å²
+  ;; åŒä¸€éšå±¤é–“ã®ç§»å‹•
   (if (laws-outline-header-p)
       (laws-forward-same-level n)
-    ;; ¼¡¤Î¾òÊ¸¤Ø°ÜÆ°
+    ;; æ¬¡ã®æ¡æ–‡ã¸ç§»å‹•
     (or (laws-scan-buffer laws-article-regexp 'forward n t)
 	(goto-char (point-max)))))
 
 (defun laws-backward-article (n)
   (interactive "p")
-  ;; ¥İ¥¤¥ó¥È¤¬¥¢¥¦¥È¥é¥¤¥ó¥Ø¥Ã¥À¾å¤Ë¤¢¤ë¤«¤É¤¦¤«¤ÇÊ¬´ô
-  ;; Æ±°ì³¬ÁØ´Ö¤Î°ÜÆ°
+  ;; ãƒã‚¤ãƒ³ãƒˆãŒã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ãƒ˜ãƒƒãƒ€ä¸Šã«ã‚ã‚‹ã‹ã©ã†ã‹ã§åˆ†å²
+  ;; åŒä¸€éšå±¤é–“ã®ç§»å‹•
   (if (laws-outline-header-p)
       (laws-backward-same-level n)
-    ;; Á°¤Î¾òÊ¸¤Ø°ÜÆ°
+    ;; å‰ã®æ¡æ–‡ã¸ç§»å‹•
     (or (laws-scan-buffer laws-article-regexp 'backward n t)
 	(goto-char (point-min)))))
 
@@ -3456,7 +3456,7 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 	   (error "There is no anchor any further."))))
       (while (or (not (memq (point-face)
 			    '(laws-anchor-article-face laws-anchor-name-face)))
-		 (and (eq (char-before) ?\¡Ë)
+		 (and (eq (char-before) ?\ï¼‰)
 		      (eq (point-face (- (scan-lists (point) -1 0) 1))
 			  laws-anchor-name-face)))
 	(condition-case err
@@ -3471,27 +3471,27 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
   (let ((anchor (laws-current-anchor)))
     (when anchor
       (replace-regexp-in-string
-       "¡Ê.+?¡Ë" ""
+       "ï¼ˆ.+?ï¼‰" ""
        (buffer-substring-no-properties (car anchor) (cdr anchor))))))
 
 (defun laws-parse-anchor (anchor)
-  (let* ((kanji "[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]")
+  (let* ((kanji "[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]")
 	 (regexp (concat
-		  "\\(Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½É´Àé]+¾ò"
-		  "\\(?:[¤Î¥Î]"	kanji "+\\)*\\)"
-		  "\\(Âè"	kanji "+¹à\\)*"
-		  "\\(Âè"	kanji "+¹æ"
-		  "\\(?:[¤Î¥Î]"	kanji "+\\)*\\)?\\'"))
-	 ;; ¾ò¿ô
+		  "\\(ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒ]+æ¡"
+		  "\\(?:[ã®ãƒ]"	kanji "+\\)*\\)"
+		  "\\(ç¬¬"	kanji "+é …\\)*"
+		  "\\(ç¬¬"	kanji "+å·"
+		  "\\(?:[ã®ãƒ]"	kanji "+\\)*\\)?\\'"))
+	 ;; æ¡æ•°
 	 (article (and (string-match regexp anchor)
 		       (match-string 1 anchor)))
-	 ;; ¹à¿ô
+	 ;; é …æ•°
 	 (paragraph (and (string-match regexp anchor)
 			 (match-string 2 anchor)))
-	 ;; ¹æ¿ô
+	 ;; å·æ•°
 	 (item (and (string-match regexp anchor)
 		    (match-string 3 anchor)))
-	 ;; Ë¡ÎáÌ¾
+	 ;; æ³•ä»¤å
 	 (name (or (and (not article)
 			anchor)
 		   (and (and (string-match article anchor)
@@ -3500,7 +3500,7 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
     (list name article paragraph item)))
 
 (defun laws-get-name (id)
-  "ID(\"m29ho089\"¤Î¤è¤¦¤Ê·Á¼°)¤«¤éË¡ÎáÌ¾¤ò¼èÆÀ¤·¤ÆÊÖ¤¹¡£"
+  "ID(\"m29ho089\"ã®ã‚ˆã†ãªå½¢å¼)ã‹ã‚‰æ³•ä»¤åã‚’å–å¾—ã—ã¦è¿”ã™ã€‚"
   (block nil
     (let ((xs (laws-alist)))
       (while xs
@@ -3510,7 +3510,7 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 	(pop xs)))))
 
 (defun laws-current-buffer-law-name ()
-  "¥«¥ì¥ó¥È¥Õ¥¡¥¤¥ë¤ÎË¡ÎáÌ¾¤òÊÖ¤¹¡£"
+  "ã‚«ãƒ¬ãƒ³ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®æ³•ä»¤åã‚’è¿”ã™ã€‚"
   (laws-get-name (upcase (laws-file-sans-name (buffer-file-name)))))
 
 (defun laws-get-local-name (name id)
@@ -3519,7 +3519,7 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 		 (intern (concat ":" name)))
       (save-excursion
 	(goto-char (point-min))
-	(when (search-forward (concat "°Ê²¼¡Ö" name "¡×¤È¤¤¤¦¡£") nil t)
+	(when (search-forward (concat "ä»¥ä¸‹ã€Œ" name "ã€ã¨ã„ã†ã€‚") nil t)
 	  (laws-backward-anchor)
 	  (buffer-substring-no-properties
 	   (point)
@@ -3527,9 +3527,9 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
       (error "Not entried.")))
 
 (defun laws-get-id (name)
-  "Ë¡ÎáÌ¾NAME¤«¤é»²¾ÈÀè¤òÊÖ¤¹¡£"
+  "æ³•ä»¤åNAMEã‹ã‚‰å‚ç…§å…ˆã‚’è¿”ã™ã€‚"
   (block nil
-    ;; ÅĞÏ¿Ë¡ÎáÌ¾
+    ;; ç™»éŒ²æ³•ä»¤å
     (let ((xs (laws-alist)))
       (while xs
 	(let ((ys (cdar xs)))
@@ -3539,17 +3539,17 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 		(return (cdr cell))))
 	    (pop ys)))
 	(pop xs)))
-    ;; Î¬¾ÎË¡ÎáÌ¾
+    ;; ç•¥ç§°æ³•ä»¤å
     (let ((xs (laws-abbrev)))
       (while xs
 	(let ((ys (cdar xs)))
 	  (while ys
-	    (let ((cell (cdr (assoc (format "¡Ö%s¡×" name) ys))))
+	    (let ((cell (cdr (assoc (format "ã€Œ%sã€" name) ys))))
 	      (when cell
 		(if (= (length cell) 1)
 		    (return (cdar cell))
-		  ;; Î¬¾ÎË¡ÎáÌ¾¤Ç¡¢¤Ò¤È¤Ä¤ÎÎ¬¾Î¤ËÂĞ¤·¤ÆÊ£¿ô¤ÎË¡Îá¤¬ÂĞ±ş¤·¤Æ¤¤
-		  ;; ¤ë¾ì¹ç¤ËÊä´°¥ê¥¹¥È¤«¤éÁªÂò¤¹¤ë¡£
+		  ;; ç•¥ç§°æ³•ä»¤åã§ã€ã²ã¨ã¤ã®ç•¥ç§°ã«å¯¾ã—ã¦è¤‡æ•°ã®æ³•ä»¤ãŒå¯¾å¿œã—ã¦ã„
+		  ;; ã‚‹å ´åˆã«è£œå®Œãƒªã‚¹ãƒˆã‹ã‚‰é¸æŠã™ã‚‹ã€‚
 		  (let* ((selected (completing-read "Select: " cell nil t))
 			 (id (cdr (assoc selected cell))))
 		    (if id
@@ -3559,33 +3559,33 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 	(pop xs)))))
 
 (defun laws-anchor-convert-entry-name (name)
-  ;; name¤ËÂĞ±ş¤¹¤ëË¡Îá¥Õ¥¡¥¤¥ëÌ¾¤òÊÖ¤¹¡£
+  ;; nameã«å¯¾å¿œã™ã‚‹æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¿”ã™ã€‚
   (cond ((member name laws-local-name-list)
-	 ;; ¡ÖË¡¡×¡ÖÎá¡×¡Öµ¬Â§¡×¡Ö¿·Ë¡¡×¡ÖµìË¡¡×Åù¡¢¶ñÂÎÅª¤ÊË¡ÎáÌ¾¤ËÊÑ´¹¤¹¤ë¡£
+	 ;; ã€Œæ³•ã€ã€Œä»¤ã€ã€Œè¦å‰‡ã€ã€Œæ–°æ³•ã€ã€Œæ—§æ³•ã€ç­‰ã€å…·ä½“çš„ãªæ³•ä»¤åã«å¤‰æ›ã™ã‚‹ã€‚
 	 (laws-anchor-convert-entry-name
 	  (laws-get-local-name name (laws-file-sans-name (buffer-file-name)))))
-	;; ¡ÖÉíÂ§¡×¤Ø¤ÎÂĞ±ş(Ë¡Îá¤ò³«¤¯¤Î¤ß)¡£
-	;; `laws-anchor-at-point'¤Ç¾ò¿ô¡¢¹à¿ôÅù¤Ï¼èÆÀ¤·¤Ê¤¤¡£
-	((string= name "Æ±Ë¡ÉíÂ§")
+	;; ã€Œé™„å‰‡ã€ã¸ã®å¯¾å¿œ(æ³•ä»¤ã‚’é–‹ãã®ã¿)ã€‚
+	;; `laws-anchor-at-point'ã§æ¡æ•°ã€é …æ•°ç­‰ã¯å–å¾—ã—ãªã„ã€‚
+	((string= name "åŒæ³•é™„å‰‡")
 	 (error "Not supported."))
-	((string-match "^\\(.+?\\)ÉíÂ§$" name)
+	((string-match "^\\(.+?\\)é™„å‰‡$" name)
 	 (match-string 1 name))
-	;; ¡ÖÆ±Ë¡¡×
-	((string= name "Æ±Ë¡")
+	;; ã€ŒåŒæ³•ã€
+	((string= name "åŒæ³•")
 	 (save-excursion
 	   (goto-char (next-property-change (point)))
 	   (dotimes (x 1) (laws-move-to-anchor 'backward))
 	   (while (or (not (eq (get-text-property (point) 'face)
 			       laws-anchor-name-face))
-		      (looking-at "Æ±Ë¡"))
+		      (looking-at "åŒæ³•"))
 	     (laws-move-to-anchor 'backward))
 	   (laws-anchor-convert-entry-name
 	    (car (laws-parse-anchor (laws-anchor-at-point))))))
-	;; ¡Ö·ûË¡¡×Åù¡¢ÅĞÏ¿Ì¾¾Î¤ËÊÑ´¹¡£
+	;; ã€Œæ†²æ³•ã€ç­‰ã€ç™»éŒ²åç§°ã«å¤‰æ›ã€‚
 	((assoc name laws-unentry-names)
 	 (laws-anchor-convert-entry-name
 	  (cdr (assoc name laws-unentry-names))))
-	;; Ì¤»Ü¹ÔË¡Îá¤Î¾ì¹çw3m¤Çdump¤¹¤ë¡£
+	;; æœªæ–½è¡Œæ³•ä»¤ã®å ´åˆw3mã§dumpã™ã‚‹ã€‚
 	((assoc name laws-mishikou-list)
 	 (unless laws-online-mode
 	   (laws-online-mode-message #'error))
@@ -3597,38 +3597,38 @@ Opened¤Î¾ì¹ç¡¢¥Õ¥¡¥¤¥ë¤òÊÄ¤¸¤ë¡£"
 			  laws-htmldata-directory
 			  (cdr (assoc name laws-mishikou-list)))))
 	 (error "/"))
-	;; ÅĞÏ¿Ë¡ÎáÌ¾¡¢Î¬¾ÎË¡ÎáÌ¾
+	;; ç™»éŒ²æ³•ä»¤åã€ç•¥ç§°æ³•ä»¤å
 	(t name)))
 
 (defun laws-anchor-article (article)
   (when article
     (setq article
-	  (replace-regexp-in-string "[¤Î¥Î]" "[¤Î¥Î]" article))
-    (concat "^" article "[ ¡¡]*")))
+	  (replace-regexp-in-string "[ã®ãƒ]" "[ã®ãƒ]" article))
+    (concat "^" article "[ ã€€]*")))
 
 (defun laws-anchor-paragraph (paragraph)
   (when paragraph
     (setq paragraph
 	  (laws-to-arabic-number paragraph 'em-size))
-    (and (not (string= "£±" paragraph))
-	 (format "^\\(%s\\|[¡û¢ş]%s\\)" paragraph paragraph))))
+    (and (not (string= "ï¼‘" paragraph))
+	 (format "^\\(%s\\|[â—‹â—¯]%s\\)" paragraph paragraph))))
 
 (defun laws-anchor-item (item)
   (and item
        (string-match "\
-Âè\\([°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\)¹æ\\(\\([¤Î¥Î][°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+\\)*\\)" item)
+ç¬¬\\([ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\)å·\\(\\([ã®ãƒ][ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+\\)*\\)" item)
        (concat "^" (match-string 1 item) (match-string 2 item))))
 
 
 
 (defun laws-file-sans-name (file)
-  "¥Õ¥¡¥¤¥ëÌ¾¤Î¼çÉô(m29ho089)¤òÊÖ¤¹¡£"
+  "ãƒ•ã‚¡ã‚¤ãƒ«åã®ä¸»éƒ¨(m29ho089)ã‚’è¿”ã™ã€‚"
   (when file
     (file-name-nondirectory (file-name-sans-extension file))))
 
 (defun laws-buffer-file-laws-name (&optional full)
-  "buffer-file-name¤«¤édirectory¤Èextention¤ò½ü¤¤¤¿Ë¡ÎáÌ¾¤òÊÖ¤¹¡£
-FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
+  "buffer-file-nameã‹ã‚‰directoryã¨extentionã‚’é™¤ã„ãŸæ³•ä»¤åã‚’è¿”ã™ã€‚
+FULL ãŒé-nilãªã‚‰ path/file ã‚’è¿”ã™ã€‚"
   (let ((visitp (buffer-file-name)))
     (or (and (not visitp)
 	     (error "Buffer not visiting any file."))
@@ -3636,9 +3636,9 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
 	    (laws-file-sans-name (buffer-file-name))))))
 
 (defun laws-rename-buffer ()
-  "`laws-use-buffer-law-name'¤¬Èónil¤Ê¤é¡¢Ë¡Îá¥Õ¥¡¥¤¥ë¤Î¥Ğ¥Ã¥Õ¥¡Ì¾
-¤òË¡ÎáÌ¾¤È¤¹¤ë¡£Ë¡ÎáÌ¾¤ÎÄ¹¤µ¤¬`laws-name-length'¤è¤êÂç¤­¤±¤ì¤Ğ¡¢
-`laws-name-suffix'¤òÉÕ²Ã¤·¤Æ¥Ğ¥Ã¥Õ¥¡Ì¾¤ò½Ì¾®¤¹¤ë¡£"
+  "`laws-use-buffer-law-name'ãŒénilãªã‚‰ã€æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒƒãƒ•ã‚¡å
+ã‚’æ³•ä»¤åã¨ã™ã‚‹ã€‚æ³•ä»¤åã®é•·ã•ãŒ`laws-name-length'ã‚ˆã‚Šå¤§ãã‘ã‚Œã°ã€
+`laws-name-suffix'ã‚’ä»˜åŠ ã—ã¦ãƒãƒƒãƒ•ã‚¡åã‚’ç¸®å°ã™ã‚‹ã€‚"
   (let* ((id (laws-file-sans-name (buffer-file-name)))
 	 (name (laws-get-name (upcase id))))
     (when (and name laws-use-buffer-law-name)
@@ -3852,11 +3852,11 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
 
 (defun laws-current-anchor ()
   (if (and mark-active transient-mark-mode)
-      ;; ·ÓÀşÉ½Æâ¤Ç¥ê¡¼¥¸¥ç¥ó¤¬³èÀ­¤Î¾ì¹ç¤Ø¤ÎÂĞ±ş
+      ;; ç½«ç·šè¡¨å†…ã§ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ãŒæ´»æ€§ã®å ´åˆã¸ã®å¯¾å¿œ
       (progn
 	(deactivate-mark)
 	(cons (region-beginning) (region-end)))
-    ;; ÄÌ¾ï¤Î¥¢¥ó¥«¡¼¤Î¾ì¹ç
+    ;; é€šå¸¸ã®ã‚¢ãƒ³ã‚«ãƒ¼ã®å ´åˆ
     (labels ((point-face (p) (get-text-property p 'face))
 	     (next (p) (goto-char (next-property-change p))))
       (when (memq (point-face (point))
@@ -3866,14 +3866,14 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
 	      start end)
 	  (save-excursion
 	    (setq end (next back-to))
-	    (cond ((and (= (following-char) ?\¡Ê)
+	    (cond ((and (= (following-char) ?\ï¼ˆ)
 			(eq face 'laws-anchor-name-face))
-		   ;; ¡û¡ûË¡¡Ê¡û¡û¡û¡ËÂè¡û¡û¾òÂè¡û¹æ
+		   ;; â—‹â—‹æ³•ï¼ˆâ—‹â—‹â—‹ï¼‰ç¬¬â—‹â—‹æ¡ç¬¬â—‹å·
 		   (forward-sexp)
 		   (and (eq (point-face (point)) 'laws-anchor-article-face)
 			(setq end (next (point)))))
 		  ((eq (point-face (point)) 'laws-anchor-article-face)
-		   ;; ¡û¡ûË¡Âè¡û¡û¾òÂè¡û¹æ
+		   ;; â—‹â—‹æ³•ç¬¬â—‹â—‹æ¡ç¬¬â—‹å·
 		   (setq end (next (point)))))
 	    (laws-move-to-anchor 'backward)
 	    (setq start (point)))
@@ -3958,14 +3958,14 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
   (cond
    (current-prefix-arg
     (laws-backward-paren))
-   ((eq (char-after) ?\¡Ê)
+   ((eq (char-after) ?\ï¼ˆ)
     (forward-list)
     (laws-forward-paren nil))
-   ((re-search-forward ".¡Ê" nil t)
+   ((re-search-forward ".ï¼ˆ" nil t)
     (backward-char))))
 
 (defun laws-backward-paren ()
-  (and (re-search-backward ".¡Ê" nil t)
+  (and (re-search-backward ".ï¼ˆ" nil t)
        (forward-char)))
 
 (defun laws-fontify-or-defontify-paren ()
@@ -3973,20 +3973,20 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
   (destructuring-bind (beg . end) (laws-current-article)
     (or (let ((pos (and laws-paren-overlays
 			(overlay-start (car laws-paren-overlays)))))
-	  ;; overlay¤¬ÀßÄêºÑ¤ß¤«
-	  ;; overlay¤Î°ÌÃÖ¤¬¸½ºß¤Î¾òÊ¸Æâ¤«
+	  ;; overlayãŒè¨­å®šæ¸ˆã¿ã‹
+	  ;; overlayã®ä½ç½®ãŒç¾åœ¨ã®æ¡æ–‡å†…ã‹
 	  (and pos
 	       (< beg pos)
 	       (< pos end)
 	       ;; defontify
 	       (laws-defontify-paren)))
 	(or (and laws-paren-overlays
-		 ;; Â¾¤Î¾ò¹à¤Çoverlay¤¬ÀßÄêºÑ¤ß
+		 ;; ä»–ã®æ¡é …ã§overlayãŒè¨­å®šæ¸ˆã¿
 		 ;; defontify other
 		 (laws-defontify-paren)
 		 ;; fontify
 		 (laws-fontify-paren))
-	    ;; ÄÌ¾ï¤Î¥±¡¼¥¹
+	    ;; é€šå¸¸ã®ã‚±ãƒ¼ã‚¹
 	    ;; fontify
 	    (laws-fontify-paren)))))
 
@@ -4008,7 +4008,7 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
 
 (defun laws-paren-overlay-put (beg end)
   (or (looking-at laws-paren-exclude-regexp)
-;      (looking-at "¡Ê[^¡Ë]*?¡×")
+;      (looking-at "ï¼ˆ[^ï¼‰]*?ã€")
       (let ((overlays '(laws-paren1-face
 			laws-paren2-face
 			laws-paren3-face
@@ -4044,7 +4044,7 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
   (interactive)
   (let ((end (cadr (get-text-property (point) 'composition)))
 	(beg (point)))
-    (and (eq (char-after) ?\¡Ê)
+    (and (eq (char-after) ?\ï¼ˆ)
 	 (if end
 	     (decompose-region beg (+ beg end))
 	   (laws-compose-paren (point) (scan-lists (point) 1 0))))))
@@ -4083,7 +4083,7 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
 ;;       (insert
 ;;        (apply #'format
 ;; 	      (mapconcat (lambda (s) (format "%-20s%%s" s))
-;; 			 '("Ë¡ÎáÌ¾" "URL" "HTML" "¥Õ¥¡¥¤¥ëÌ¾" "ÆüÉÕ") "\n")
+;; 			 '("æ³•ä»¤å" "URL" "HTML" "ãƒ•ã‚¡ã‚¤ãƒ«å" "æ—¥ä»˜") "\n")
 ;; 	      (laws-file-info (buffer-file-name)))))
 ;;      (current-buffer))))
 
@@ -4117,44 +4117,44 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
 ;; outline
 ;;
 (defun laws-outline-regexps ()
-  (let ((number "[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]"))
+  (let ((number "[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]"))
     (setq outline-regexp
-	  (concat ;; ÌÜ¼¡
-	   ;; ÌÜ¼¡¤Î¥¢¥¦¥È¥é¥¤¥ó¥Ø¥Ã¥À¤¬¹ÔÆ¬¤Ë¤¢¤ë¾ì¹ç(ÇÑ»ßË¡ÎáÅù°ìÍ÷)
-	   ;; ¤¬¤¢¤ë¡£
+	  (concat ;; ç›®æ¬¡
+	   ;; ç›®æ¬¡ã®ã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ãƒ˜ãƒƒãƒ€ãŒè¡Œé ­ã«ã‚ã‚‹å ´åˆ(å»ƒæ­¢æ³•ä»¤ç­‰ä¸€è¦§)
+	   ;; ãŒã‚ã‚‹ã€‚
 	   "^"
-	   "\\(¡¡\\{2\\}Âè" number "+ÊÔ"
-	   "\\|¡¡\\{3\\}Âè" number "+¾Ï"
-	   "\\|¡¡\\{4\\}Âè" number "+Àá"
-	   "\\|¡¡\\{5\\}Âè" number "+´¾"
-	   "\\|¡¡\\{6\\}Âè" number "+ÌÜ"
-	   "\\|¡¡\\{3\\}Éí¡¡Â§"
-	   ;; ËÜÊ¸
-	   ;; ËÜÊ¸¤Î¥¢¥¦¥È¥é¥¤¥ó¥Ø¥Ã¥À¤Ï¡¢¹ÔÆ¬¤«¤é»Ï¤Ş¤Ã¤Æ¤¤
-	   ;; ¤Ê¤¤¤³¤È¡£
-	   "\\|Âè"     number "+ÊÔ¡¡"
-	   "\\|\\(Âè"  number "+¾Ï"
-	   "\\([¤Î¥Î]" number "\\)*\\)¡¡"
-	   "\\|\\(Âè"  number "+Àá"
-	   "\\([¤Î¥Î]" number "\\)*\\)¡¡"
-	   "\\|\\(Âè"  number "+´¾"
-	   "\\([¤Î¥Î]" number "\\)*\\)¡¡"
-	   "\\|\\(Âè"  number "+ÌÜ"
-	   "\\([¤Î¥Î]" number "\\)*\\)¡¡"
-	   "\\|ÉíÂ§¡¡?.*$\\)")))
+	   "\\(ã€€\\{2\\}ç¬¬" number "+ç·¨"
+	   "\\|ã€€\\{3\\}ç¬¬" number "+ç« "
+	   "\\|ã€€\\{4\\}ç¬¬" number "+ç¯€"
+	   "\\|ã€€\\{5\\}ç¬¬" number "+æ¬¾"
+	   "\\|ã€€\\{6\\}ç¬¬" number "+ç›®"
+	   "\\|ã€€\\{3\\}é™„ã€€å‰‡"
+	   ;; æœ¬æ–‡
+	   ;; æœ¬æ–‡ã®ã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ãƒ˜ãƒƒãƒ€ã¯ã€è¡Œé ­ã‹ã‚‰å§‹ã¾ã£ã¦ã„
+	   ;; ãªã„ã“ã¨ã€‚
+	   "\\|ç¬¬"     number "+ç·¨ã€€"
+	   "\\|\\(ç¬¬"  number "+ç« "
+	   "\\([ã®ãƒ]" number "\\)*\\)ã€€"
+	   "\\|\\(ç¬¬"  number "+ç¯€"
+	   "\\([ã®ãƒ]" number "\\)*\\)ã€€"
+	   "\\|\\(ç¬¬"  number "+æ¬¾"
+	   "\\([ã®ãƒ]" number "\\)*\\)ã€€"
+	   "\\|\\(ç¬¬"  number "+ç›®"
+	   "\\([ã®ãƒ]" number "\\)*\\)ã€€"
+	   "\\|é™„å‰‡ã€€?.*$\\)")))
   (setq outline-level 'laws-outline-level))
 
 (defun laws-outline-level ()
   (save-excursion
     (let ((str (if (looking-at outline-regexp) (match-string 1) ""))
-	  (number "[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]"))
+	  (number "[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]"))
       (cond
-       ((string-match (concat "Âè" number "+ÊÔ") str) 1)
-       ((string-match (concat "Âè" number "+¾Ï") str) 2)
-       ((string-match (concat "Âè" number "+Àá") str) 3)
-       ((string-match (concat "Âè" number "+´¾") str) 4)
-       ((string-match (concat "Âè" number "+ÌÜ") str) 5)
-       ((string-match "Éí¡¡?Â§" str) laws-supplementary-level)
+       ((string-match (concat "ç¬¬" number "+ç·¨") str) 1)
+       ((string-match (concat "ç¬¬" number "+ç« ") str) 2)
+       ((string-match (concat "ç¬¬" number "+ç¯€") str) 3)
+       ((string-match (concat "ç¬¬" number "+æ¬¾") str) 4)
+       ((string-match (concat "ç¬¬" number "+ç›®") str) 5)
+       ((string-match "é™„ã€€?å‰‡" str) laws-supplementary-level)
        (t 0)))))
 
 (defun laws-outline-forward-same-level (n)
@@ -4302,7 +4302,7 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
 	      (eq (car (funcall 'laws-heading-level)) 1)
 		  (and (eq (car (funcall 'laws-heading-level)) 2)
 		       (not (re-search-backward
-			     "^¡¡+Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]+ÊÔ" nil t))))
+			     "^ã€€+ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]+ç·¨" nil t))))
 	  (error "Already at top level of the outline.")
 	(if (= 0 (laws-outline-level))
 	    (laws-up-heading-2)
@@ -4314,7 +4314,7 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
     (laws-recenter t)))
 
 (defun laws-up-heading-2 ()
-  (if (looking-at "^¡¡+Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å]+ÊÔ")
+  (if (looking-at "^ã€€+ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹]+ç·¨")
       (error "")
   (let ((level (car (laws-heading-level))))
     (while (<= level (car (laws-heading-level)))
@@ -4323,23 +4323,23 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
 (defun laws-heading-level ()
   (save-excursion
     (let ((str (if (looking-at laws-heading-regexp) (match-string 1) ""))
-	  (number "[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½]"))
+	  (number "[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹å]"))
       (cond
-       ((string-match (concat "Âè" number "+ÊÔ") str)
+       ((string-match (concat "ç¬¬" number "+ç·¨") str)
 	(cons 1 (match-string 0 str)))
        ((string-match
-	 (concat "Âè" number "+¾Ï\\([¤Î¥Î]" number "\\)*") str)
+	 (concat "ç¬¬" number "+ç« \\([ã®ãƒ]" number "\\)*") str)
 	(cons 2 (match-string 0 str)))
        ((string-match
-	 (concat "Âè" number "+Àá\\([¤Î¥Î]" number "\\)*") str)
+	 (concat "ç¬¬" number "+ç¯€\\([ã®ãƒ]" number "\\)*") str)
 	(cons 3 (match-string 0 str)))
        ((string-match
-	 (concat "Âè" number "+´¾\\([¤Î¥Î]" number "\\)*") str)
+	 (concat "ç¬¬" number "+æ¬¾\\([ã®ãƒ]" number "\\)*") str)
 	(cons 4 (match-string 0 str)))
        ((string-match
-	 (concat "Âè" number "+ÌÜ\\([¤Î¥Î]" number "\\)*") str)
+	 (concat "ç¬¬" number "+ç›®\\([ã®ãƒ]" number "\\)*") str)
 	(cons 5 (match-string 0 str)))
-       ((string-match "Éí¡¡?Â§" str)
+       ((string-match "é™„ã€€?å‰‡" str)
 	(cons laws-supplementary-level (match-string 0 str)))
        (t nil)))))
 
@@ -4350,9 +4350,9 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
     (cond
      ((null heading)
       (error "Not header line point."))
-     ((= level 1) nil)			 ; ÊÔ
-     ((= laws-supplementary-level level) ; ÉíÂ§
-      (setq header-string-list (list "Éí¡¡?Â§")))
+     ((= level 1) nil)			 ; ç·¨
+     ((= laws-supplementary-level level) ; é™„å‰‡
+      (setq header-string-list (list "é™„ã€€?å‰‡")))
      (t
       (catch 'loop
 	(save-excursion
@@ -4376,8 +4376,8 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
       (forward-char)
       (while lst
 	(re-search-forward
-	 (concat "^¡¡*" (car lst)
-		 (if (string= "Éí¡¡?Â§" (car lst)) "" "¡¡")) nil t)
+	 (concat "^ã€€*" (car lst)
+		 (if (string= "é™„ã€€?å‰‡" (car lst)) "" "ã€€")) nil t)
 	(pop lst))
       (forward-line 0)
       (and
@@ -4385,11 +4385,11 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
        (laws-recenter t)))))
 
 (defun laws-goto-toc ()
-  "ÌÜ¼¡¤Ë°ÜÆ°¤¹¤ë¥³¥Ş¥ó¥É¡£"
+  "ç›®æ¬¡ã«ç§»å‹•ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive)
   (let ((pt (save-excursion
 	      (goto-char (point-min))
-	      (re-search-forward "^¡¡+Âè°ì[ÊÔ¾Ï]" nil t))))
+	      (re-search-forward "^ã€€+ç¬¬ä¸€[ç·¨ç« ]" nil t))))
     (if (not pt)
 	(message "No table of contents found.")
       (goto-char pt)
@@ -4397,11 +4397,11 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
       (recenter 1))))
 
 (defun laws-move-to-tables ()
-  "·ÓÀşÉ½¤Ë°ÜÆ°¤¹¤ë¥³¥Ş¥ó¥É¡£"
+  "ç½«ç·šè¡¨ã«ç§»å‹•ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã€‚"
   (interactive)
   (let ((backto (point)))
     (forward-char)
-    (if (re-search-forward "^¨£" nil t)
+    (if (re-search-forward "^â”Œ" nil t)
 	(forward-line 0)
       (goto-char backto)
       (error "No chart found."))))
@@ -4430,9 +4430,9 @@ FULL ¤¬Èó-nil¤Ê¤é path/file ¤òÊÖ¤¹¡£"
     (iswitchb-read-buffer prompt)))
 
 (defun laws-iswitchb (subject)
-  "iswitchb¤ÇË¡Îá¥Õ¥¡¥¤¥ë¤ò³«¤¯¡£
-¥í¡¼¥Ş»ú¤Ë¤è¤ë¥¤¥ó¥¯¥ê¥á¥ó¥¿¥ë¸¡º÷(migemo)¤òÍøÍÑ¤¹¤ë¤¿¤á¡¢
-migemo¤Èiswitchb¤ÎÀßÄê¤¬É¬Í×¡£"
+  "iswitchbã§æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€‚
+ãƒ­ãƒ¼ãƒå­—ã«ã‚ˆã‚‹ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ã‚¿ãƒ«æ¤œç´¢(migemo)ã‚’åˆ©ç”¨ã™ã‚‹ãŸã‚ã€
+migemoã¨iswitchbã®è¨­å®šãŒå¿…è¦ã€‚"
   (interactive (laws-iswitchb-interactive))
   (message "Reading names...")
   (let ((name (funcall
@@ -4470,17 +4470,17 @@ migemo¤Èiswitchb¤ÎÀßÄê¤¬É¬Í×¡£"
 	   (laws:filter 'file-directory-p (directory-files parent t match)))))
 
 (defun laws-names-list ()
-  "ÅĞÏ¿Ë¡ÎáÌ¾¤ÈÎ¬¾ÎË¡ÎáÌ¾¤Î¥ê¥¹¥È¤òÊÖ¤¹¡£"
+  "ç™»éŒ²æ³•ä»¤åã¨ç•¥ç§°æ³•ä»¤åã®ãƒªã‚¹ãƒˆã‚’è¿”ã™ã€‚"
   (or laws-names-list
       (setq laws-names-list
 	    (let ((result nil))
-	      ;; ÅĞÏ¿Ë¡ÎáÌ¾
+	      ;; ç™»éŒ²æ³•ä»¤å
 	      (do ((xs (laws-alist) (cdr xs)))
 		  ((null xs))
 		(do ((ys (cdar xs) (cdr ys)))
 		    ((null ys))
 		  (push (car (caar ys)) result)))
-	      ;; Î¬¾ÎË¡ÎáÌ¾
+	      ;; ç•¥ç§°æ³•ä»¤å
 	      (do ((xs (laws-abbrev) (cdr xs)))
 		  ((null xs) (delete-dups (nreverse result)))
 		(do ((ys (cdar xs) (cdr ys)))
@@ -4577,7 +4577,7 @@ migemo¤Èiswitchb¤ÎÀßÄê¤¬É¬Í×¡£"
 		  laws-font-lock-keywords-1
 		  (let ((regs (car init)))
 		    ;; `laws-font-lock-keywords-2'
-		    ;; Ë¡Îá¥Õ¥¡¥¤¥ë¤´¤È¤Ë¥Ğ¥Ã¥Õ¥¡¥í¡¼¥«¥ë¤ÊÀßÄê¡£
+		    ;; æ³•ä»¤ãƒ•ã‚¡ã‚¤ãƒ«ã”ã¨ã«ãƒãƒƒãƒ•ã‚¡ãƒ­ãƒ¼ã‚«ãƒ«ãªè¨­å®šã€‚
 		    ;; `laws-anchor-clickable'
 		    (cond ((and regs laws-anchor-clickable)
 			   (list `(,regs (0 laws-anchor-name-face t))
@@ -4587,14 +4587,14 @@ migemo¤Èiswitchb¤ÎÀßÄê¤¬É¬Í×¡£"
     ;; iimage
     (when (nth 2 init)
       (iimage-mode 1))
-    ;; Ì¤»Ü¹ÔË¡Îá¤Î¥ê¥ó¥¯ÀèÀßÄê
+    ;; æœªæ–½è¡Œæ³•ä»¤ã®ãƒªãƒ³ã‚¯å…ˆè¨­å®š
     (set (make-local-variable 'laws-mishikou-list)
 	 (cadr (laws-read-init-file))))
   (turn-on-font-lock)
   (setq line-spacing laws-line-space)
   ;; imenu
   (setq imenu-generic-expression
-	'((nil "^Âè[°ìÆó»°»Í¸ŞÏ»¼·È¬¶å½½É´Àé¤Î¥Î]+¾ò.\\{1,20\\}" 0)))
+	'((nil "^ç¬¬[ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒã®ãƒ]+æ¡.\\{1,20\\}" 0)))
   (imenu-add-to-menubar "Articles")
   (easy-menu-add laws-mode-menu)
   ;; outline
