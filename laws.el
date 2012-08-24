@@ -1121,7 +1121,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	       ;; 1. 法令名文字列の末尾が半角空白の場合がある。
 	       ;; 2. （）が複数の場合があるが、0個の場合はない。
 	       (let ((s (replace-regexp-in-string "[\r\n\t]+" "" m)))
-		 (when (string-match "^\\(.+?\\)\\(　抄\\)?\\(（.+?）+\\) *$" s)
+		 (when (string-match "^\\(.+?\\)\\(　抄\\)?\\(（.+?）*\\) *$" s)
 		   (cons (match-string 1 s) (concat (match-string 2 s)
 						    (match-string 3 s))))))))
     (save-current-buffer
@@ -1138,7 +1138,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 				result))
 			(kill-buffer (current-buffer))
 			(cons (cdr index) (nreverse result)))))
-		(laws-request-uri-list) (laws-jikoubetsu-index-alist)))))
+		(laws-request-uri-list) laws-jikoubetsu-index-alist))))
 
 (defvar laws-ryaku-url
   "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON")
@@ -1182,25 +1182,22 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defun laws-request-uri-list ()
   "URLリスト"
-  (let ((ls nil))
-    (dotimes (i 50 (nreverse ls))
-      (push
-       (format (mapconcat #'identity
-			  '("H_CTG_%d=%%81%%40"
-			    "H_CTG_GUN=1"
-			    "H_NAME=0"
-			    "H_NAME_YOMI=%%82%%A0"
-			    "H_NO_GENGO=H"
-			    "H_NO_YEAR=0"
-			    "H_NO_TYPE=2"
-			    "H_NO_NO=0"
-			    "H_RYAKU=1"
-			    "H_YOMI_GUN=1") "&")
-	       (+ i 1))
-       ls))))
+  (loop for (cid . name) in laws-jikoubetsu-index-alist
+        collect 
+        (format (mapconcat #'identity
+                           '("H_CTG_%d=%%81%%40"
+                             "H_CTG_GUN=1"
+                             "H_NAME=0"
+                             "H_NAME_YOMI=%%82%%A0"
+                             "H_NO_GENGO=H"
+                             "H_NO_YEAR=0"
+                             "H_NO_TYPE=2"
+                             "H_NO_NO=0"
+                             "H_RYAKU=1"
+                             "H_YOMI_GUN=1") "&")
+                cid)))
 
-(defun laws-jikoubetsu-index-alist ()
-  "事項別索引"
+(defconst laws-jikoubetsu-index-alist 
   '((1 . "憲法")	(2 . "国会")
     (3 . "行政組織")	(4 . "国家公務員")
     (5 . "行政手続")	(6 . "統計")
@@ -1225,7 +1222,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (43 . "電気通信")	(44 . "労働")
     (45 . "環境保全")	(46 . "厚生")
     (47 . "社会福祉")	(48 . "社会保険")
-    (49 . "防衛")	(50 . "外事")))
+    (49 . "防衛")	(50 . "外事"))
+  "事項別索引")
 
 (defun laws-make-jikoubetsu-index ()
   (let ((strs nil)
