@@ -3,9 +3,10 @@
 ;; Copyright (C) 2007, 2008  Kazushi NODA
 
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
+;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
-;; Version: $Id: laws.el,v 1.110 2008/04/26 13:49:34 kazu Exp $
-;; Keywords:
+;; Version: 0.8.8
+;; Keywords: Japanese law
 
 ;; This file is not part of GNU Emacs.
 
@@ -32,14 +33,13 @@
 (require 'revive)
 (require 'easymenu)
 (require 'outline)
-(require 'poem)
 (require 'iswitchb)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 ;;; laws-vars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
-(defconst laws-version "version 0.8.7"
+(defconst laws-version "version 0.8.8"
   "Version of laws.el")
 
 ;;
@@ -87,7 +87,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'boolean
   :group 'laws)
 
-(defcustom laws-coding-system-for-write 'euc-jp-unix
+(defcustom laws-coding-system-for-write 'utf-8-unix
   "法令ファイルの文字コード。"
   :type 'symbol
   :group 'laws)
@@ -1426,10 +1426,13 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 		  (message "File `%s.html' not changed from last retrieving." id)
 		  (sit-for 2))
 	      (when (file-exists-p file) (delete-file file)) ;テキストの削除
-	      (laws-make-directory (laws-get-dirname id))    ;ディレクトリ
-	      (laws-make-backup-file html-path)		     ;バックアップ
-	      (write-region-as-coding-system 'japanese-shift-jis-dos
-		(point) (point-max) html-path)))
+	      (laws-make-directory (laws-get-dirname id)) ;ディレクトリ
+	      (laws-make-backup-file html-path) ;バックアップ
+              ;; e-gov の html はすべて shift_jis のようで、
+              ;; 当分変わると思えないのでハードコーディング。
+              (let ((coding-system-for-write 'japanese-shift-jis-dos))
+                (write-region
+                 (point) (point-max) html-path))))
 	  (kill-buffer buffer))))
     html-path))
 
@@ -1459,12 +1462,13 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 		  (laws-make-directory dir)
 		  (with-current-buffer (set-buffer buffer)
 		    (goto-char (point-min))
-		    (write-region-as-binary
-		     (progn (re-search-forward "^$" nil t)
-			    (forward-line 1)
-			    (point))
-		     (point-max)
-		     file))
+                    (let ((coding-system-for-write 'binary))
+                      (write-region
+                       (progn (re-search-forward "^$" nil t)
+                              (forward-line 1)
+                              (point))
+                       (point-max)
+                       file)))
 		  (kill-buffer buffer)))
 	    ls)))
 
@@ -1553,13 +1557,15 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(html (laws-htmldata-retrieve id nil))
 	(file (laws-expand-data-file id))
 	(regfile (laws-expand-init-file id))
-	(coding-system-for-write (or laws-coding-system-for-write))
+	(coding-system-for-write laws-coding-system-for-write)
 	alist images h-path)
     (with-temp-file temp
       (laws-make-directory (file-name-directory temp))
       ;; バッファにhtmlを取得する。
       (message "Getting htmldata...")
-      (insert-file-contents-as-raw-text html)
+      (let ((coding-system-for-read 'raw-text)
+            format-alist)
+        (insert-file-contents html))
       (message (concat (current-message) " done."))
       ;; イメージデータの取得。
       (setq images (laws-make-images-list))
