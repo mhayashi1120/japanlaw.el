@@ -1320,7 +1320,8 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (setq category (coding-system-category codesys))
       (unless (or (null category) (assq category categories))
 	(push (cons category codesys) categories)))
-    (car (detect-coding-with-priority start end (nreverse categories)))))
+    (with-coding-priority (nreverse categories)
+      (car (detect-coding-region start end)))))
 
 
 (defun laws-url-decode-string (str &optional coding)
@@ -1687,12 +1688,13 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `laws-index-search')。"
       (destructuring-bind (mode line start)
 	  (assoc laws-index-local-mode laws-index-conf)
 	(set-window-start (selected-window) start)
-	(goto-line line)
+	(laws-goto-line line)
 	(laws-index-move-to-column)))))
 
 ;;
 ;; Common
 ;;
+
 (defmacro laws-with-buffer-read-only (&rest forms)
   "バッファの未編集とリードオンリー状態を保持してFORMSを評価する。"
   '(unless (eq major-mode 'laws-index-mode)
@@ -1728,6 +1730,10 @@ FUNCSは引数を取らない関数のリスト。"
   (block nil
     (mapc (lambda (f) (and (funcall f) (return f)))
 	  funcs)))
+
+(defun laws-goto-line (line)
+  (goto-char (point-min))
+  (forward-line line))
 
 (defun laws:filter (pred ls)
   "PREDを適用した結果tを返した要素を集める。"
@@ -2428,7 +2434,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
        (erase-buffer)
        (laws-index-search-insert-func (laws-search-alist)))
       (laws-index-highlight-search-buffer)
-      (goto-line line))))
+      (laws-goto-line line))))
 
 ;; Opened
 (defun laws-index-opened-oc ()
@@ -3262,17 +3268,17 @@ Openedの場合、ファイルを閉じる。"
     line))
 
 (defun laws-scan-buffer (regexp direction count &optional recenter limit)
-  (labels ((scan (s)
-	     (setq found
-		   (case direction
-		     (forward (and (bolp)
-				   (not (eobp))
-				   (forward-char))
-			      (re-search-forward s limit t))
-		     (backward (unless (bolp) (forward-line 1))
-			       (re-search-backward s limit t))))
-	     (when found (decf count))))
-    (let ((found t))
+  (let ((found t))
+    (labels ((scan (s)
+                   (setq found
+                         (case direction
+                           (forward (and (bolp)
+                                         (not (eobp))
+                                         (forward-char))
+                                    (re-search-forward s limit t))
+                           (backward (unless (bolp) (forward-line 1))
+                                     (re-search-backward s limit t))))
+                   (when found (decf count))))
       (while (and found (> count 0))
 	(scan regexp))
       (forward-line 0)
@@ -4100,7 +4106,7 @@ FULL が非-nilなら path/file を返す。"
 (defun laws-describe-bindings (keymap)
   (let ((name (symbol-name keymap)))
     (help-setup-xref (list #'laws-describe-bindings keymap)
-                     (interactive-p))
+                     nil)
     (with-output-to-temp-buffer "*Help*"
       (princ name) (terpri)
       (princ (make-string (length name) ?-)) (terpri) (terpri)
