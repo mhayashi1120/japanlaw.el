@@ -1,12 +1,13 @@
 ;;; laws.el --- -*- Coding: utf-8 -*-
 
 ;; Copyright (C) 2007, 2008  Kazushi NODA
+;;               2012 Masahiro Hayashi <mhayashi1120@gmail.com>
 
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
 ;; Version: 0.8.8
-;; Keywords: Japanese law
+;; Keywords: docs help
 
 ;; This file is not part of GNU Emacs.
 
