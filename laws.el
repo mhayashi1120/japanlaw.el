@@ -36,6 +36,11 @@
 (require 'outline)
 (require 'iswitchb)
 
+(defmacro laws-labels (bindings &rest body)
+  (if (functionp 'cl-labels)
+      `(cl-labels ,bindings ,@body)
+    `(labels ,bindings ,@body)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 ;;; laws-vars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
@@ -1058,19 +1063,21 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defun laws-make-index-files (&optional regenerate)
   (unless laws-online-mode
     (laws-online-mode-message #'error))
-  (labels ((make-index (file new-alist-func old-alist-func)
-	     ;; インデックスファイルを生成する関数。FILEに、NEW-ALIST-FUNCの
-	     ;; 返すALISTを出力する。ALISTがOLD-ALIST-FUNCの返す値と同じなら
-	     ;; 出力しない。出力する場合、番号付きバックアップファイルを生成
-	     ;; する。戻り値は出力した場合はTを返し、出力しなければNILを返す。
-	     (let ((alist (funcall new-alist-func)))
-	       (if (equal alist (funcall old-alist-func))
-		   nil
-		 (laws-make-backup-file file)
-		 (with-temp-file file
-		   (insert (format "%S" alist))
-		   (message "Wrote %s" file))
-		 t))))
+  (laws-labels
+      ((make-index
+        (file new-alist-func old-alist-func)
+        ;; インデックスファイルを生成する関数。FILEに、NEW-ALIST-FUNCの
+        ;; 返すALISTを出力する。ALISTがOLD-ALIST-FUNCの返す値と同じなら
+        ;; 出力しない。出力する場合、番号付きバックアップファイルを生成
+        ;; する。戻り値は出力した場合はTを返し、出力しなければNILを返す。
+        (let ((alist (funcall new-alist-func)))
+          (if (equal alist (funcall old-alist-func))
+              nil
+            (laws-make-backup-file file)
+            (with-temp-file file
+              (insert (format "%S" alist))
+              (message "Wrote %s" file))
+            t))))
     (let (index-updatedp abbrev-updatedp)
       ;; indexファイルが存在しない場合
       ;; 再取得して更新された場合
@@ -1117,15 +1124,16 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defun laws-get-index ()
   "事項別分類索引をGETして、法令名とIDのalistのリストを生成して返す。"
-  (labels ((split (m)
-	     (save-match-data
-	       ;; htmldata
-	       ;; 1. 法令名文字列の末尾が半角空白の場合がある。
-	       ;; 2. （）が複数の場合があるが、0個の場合はない。
-	       (let ((s (replace-regexp-in-string "[\r\n\t]+" "" m)))
-		 (when (string-match "^\\(.+?\\)\\(　抄\\)?\\(（.+?）*\\) *$" s)
-		   (cons (match-string 1 s) (concat (match-string 2 s)
-						    (match-string 3 s))))))))
+  (laws-labels
+      ((split (m)
+              (save-match-data
+                ;; htmldata
+                ;; 1. 法令名文字列の末尾が半角空白の場合がある。
+                ;; 2. （）が複数の場合があるが、0個の場合はない。
+                (let ((s (replace-regexp-in-string "[\r\n\t]+" "" m)))
+                  (when (string-match "^\\(.+?\\)\\(　抄\\)?\\(（.+?）*\\) *$" s)
+                    (cons (match-string 1 s) (concat (match-string 2 s)
+                                                     (match-string 3 s))))))))
     (save-current-buffer
       (laws:map #'(lambda (request index)
 		    (let ((case-fold-search t)
@@ -1278,7 +1286,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "GETしたhtmlのタグを置換する。"
   (let ((case-fold-search t)
 	(pixel (or table-pixel laws-table-pixel)))
-    (labels ((match (rx s) (save-match-data (string-match rx s))))
+    (laws-labels ((match (rx s) (save-match-data (string-match rx s))))
       (while (re-search-forward "<TABLE [^>]+>\\|<DIV ALIGN=\"right\">" nil t)
 	(replace-match
 	 (let ((s (match-string 0)))
@@ -1624,8 +1632,9 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 
 (defun laws-index-header-line-format (mode)
   "`laws-index-mode'の。`header-line-format'"
-  (labels ((spc (n)
-	     (propertize " " 'display `(space :width (,n)))))
+  (laws-labels
+      ((spc (n)
+            (propertize " " 'display `(space :width (,n)))))
     (concat " "
 	    (mapconcat
 	     (lambda (s)
@@ -1981,7 +1990,7 @@ FUNCSは引数を取らない関数のリスト。"
   ;; かどうかで判定。ディレクトリは大文字、urlは小文字。
   (laws-make-alist-from-name
    (lambda ()
-     (labels ((nameof (file) (laws-file-sans-name file)))
+     (laws-labels ((nameof (file) (laws-file-sans-name file)))
        (mapcar #'nameof
 	       (laws:filter
 		(lambda (file)
@@ -2115,30 +2124,30 @@ LFUNCは、NAMEからなるリストを返す関数。"
       ;; 検索式
       (insert (format "%S\n" `(,(if opened "-" "+") ,(car cell))))
       ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
-      (labels
+      (laws-labels
 	  ((rec (ls)
-	     (unless (null ls)
-	       (let* ((cell (car ls))
-		      (opened (cadr cell)))
-		 (insert
-		  (format "%S\n" `(,(if opened "  -" "  +") ,(car cell))))
-		 (when opened
-		   (let ((cell (cddr cell)))
-		     (do ((xs cell (cdr xs)))
-			 ((null xs))
-		       (if (atom (cdar xs))
-			   (insert
-			    (format "%S\n" `("    -" ,(caar xs) ,(cdar xs))))
-			 (let ((opened (car (cdar xs))))
-			   (insert (format "%S\n" `(,(if opened "    -" "    +")
-						     ,(caar xs))))
-			   (when opened
-			     (do ((ys (cdr (cdar xs)) (cdr ys)))
-				 ((null ys))
-			       (insert
-				(format "%S\n" `("      -" ,(caar ys)
-							   ,(cdar ys))))))))))))
-	       (rec (cdr ls)))))
+                (unless (null ls)
+                  (let* ((cell (car ls))
+                         (opened (cadr cell)))
+                    (insert
+                     (format "%S\n" `(,(if opened "  -" "  +") ,(car cell))))
+                    (when opened
+                      (let ((cell (cddr cell)))
+                        (do ((xs cell (cdr xs)))
+                            ((null xs))
+                          (if (atom (cdar xs))
+                              (insert
+                               (format "%S\n" `("    -" ,(caar xs) ,(cdar xs))))
+                            (let ((opened (car (cdar xs))))
+                              (insert (format "%S\n" `(,(if opened "    -" "    +")
+                                                       ,(caar xs))))
+                              (when opened
+                                (do ((ys (cdr (cdar xs)) (cdr ys)))
+                                    ((null ys))
+                                  (insert
+                                   (format "%S\n" `("      -" ,(caar ys)
+                                                    ,(cdar ys))))))))))))
+                  (rec (cdr ls)))))
 	(when opened (rec (cddr cell)))))
     (laws-index-search-insert-func (cdr alist))))
 
@@ -2563,21 +2572,21 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
   "法令名(略称法令名を含む)を検索するコマンド。引数付きで実行した
 場合は、以前の検索結果を初期化しない。"
   (interactive (laws-index-search-interactive))
-  (labels
+  (laws-labels
       ((display-result (rx names abbreves complete noclear)
-	 (unless noclear (setq laws-search-alist nil))
-	 ;; t: opened flag
-	 (push
-	  (list (format "検索式 `%s'" rx) t
-		`(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
-		`(,(format "略称法令名検索 該当件数 %d" (length abbreves)) t ,@abbreves)
-		`(,(format "法令名検索 該当件数 %d" (length names)) t ,@names))
-	  laws-search-alist)
-	 ;; バッファ更新
-	 ;; laws-index-goto-mode: Return nil if same local-mode.
-	 (unless (laws-index-goto-mode 'Search)
-	   (laws-with-buffer-read-only (erase-buffer))
-	   (laws-index-insert-alist-function #'laws-search-alist))))
+                       (unless noclear (setq laws-search-alist nil))
+                       ;; t: opened flag
+                       (push
+                        (list (format "検索式 `%s'" rx) t
+                              `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
+                              `(,(format "略称法令名検索 該当件数 %d" (length abbreves)) t ,@abbreves)
+                              `(,(format "法令名検索 該当件数 %d" (length names)) t ,@names))
+                        laws-search-alist)
+                       ;; バッファ更新
+                       ;; laws-index-goto-mode: Return nil if same local-mode.
+                       (unless (laws-index-goto-mode 'Search)
+                         (laws-with-buffer-read-only (erase-buffer))
+                         (laws-index-insert-alist-function #'laws-search-alist))))
     (let ((complete nil))
       (message "Searching...")
       (display-result
@@ -2638,37 +2647,38 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 
 ;; Searchモードで検索結果をハイライトする
 (defun laws-index-highlight-search-buffer ()
-  (labels ((put-overlay ()
-	     (let ((rx (and (re-search-forward
-			     "`\\(.+?\\)'" (line-end-position) t)
-			    (match-string 1))))
-	       ;; 検索式
-	       (overlay-put
-		(car (push (make-overlay (match-beginning 1)
-					 (match-end 1))
-			   laws-index-search-overlaies))
-		'face '(:foreground "red"))
-	       ;; 検索結果
-	       (forward-line 1)
-	       (while (and (/= (laws-index-folder-level) 0)
-			   (not (eobp)))
-		 (while (= (laws-index-folder-level) 1)
-		   (forward-line 1))
-		 (when (>= (laws-index-folder-level) 2)
-		   (let* ((end (re-search-forward "[-+]\" \"\\(.+?\\)\""
-						  (line-end-position) t))
-			  (beg (and end (match-beginning 1))))
-		     (when (and beg
-				(string-match
-				 rx (buffer-substring-no-properties beg end)))
-		       (overlay-put
-			(car (push (make-overlay (+ beg (match-beginning 0))
-						 (+ beg (match-end 0)))
-				   laws-index-search-overlaies))
-			'face 'match)))
-		   (forward-line 1)))
-	       (and (= (laws-index-folder-level) 0)
-		    (put-overlay)))))
+  (laws-labels
+      ((put-overlay ()
+                    (let ((rx (and (re-search-forward
+                                    "`\\(.+?\\)'" (line-end-position) t)
+                                   (match-string 1))))
+                      ;; 検索式
+                      (overlay-put
+                       (car (push (make-overlay (match-beginning 1)
+                                                (match-end 1))
+                                  laws-index-search-overlaies))
+                       'face '(:foreground "red"))
+                      ;; 検索結果
+                      (forward-line 1)
+                      (while (and (/= (laws-index-folder-level) 0)
+                                  (not (eobp)))
+                        (while (= (laws-index-folder-level) 1)
+                          (forward-line 1))
+                        (when (>= (laws-index-folder-level) 2)
+                          (let* ((end (re-search-forward "[-+]\" \"\\(.+?\\)\""
+                                                         (line-end-position) t))
+                                 (beg (and end (match-beginning 1))))
+                            (when (and beg
+                                       (string-match
+                                        rx (buffer-substring-no-properties beg end)))
+                              (overlay-put
+                               (car (push (make-overlay (+ beg (match-beginning 0))
+                                                        (+ beg (match-end 0)))
+                                          laws-index-search-overlaies))
+                               'face 'match)))
+                          (forward-line 1)))
+                      (and (= (laws-index-folder-level) 0)
+                           (put-overlay)))))
     (mapc 'delete-overlay laws-index-search-overlaies)
     (setq laws-index-search-overlaies nil)
     (save-excursion
@@ -2723,18 +2733,19 @@ MARKSが非nilなら削除マークが付いた項目のみ。"
 Bookmarkの場合、ファイル:`laws-bookmark-file'に書き出す。
 Openedの場合、ファイルを閉じる。"
   (interactive)
-  (labels ((delalist (alist &optional form)
-	     ;; ALIST is a symbol. Return a function.
-	     `(lambda ()
-		(mapc (lambda (cel)
-			(setq ,alist (delete cel (funcall (function ,alist)))))
-		      (or ,form (laws-index-get-cells 'marks))))))
+  (laws-labels
+      ((delalist (alist &optional form)
+                 ;; ALIST is a symbol. Return a function.
+                 `(lambda ()
+                    (mapc (lambda (cel)
+                            (setq ,alist (delete cel (funcall (function ,alist)))))
+                          (or ,form (laws-index-get-cells 'marks))))))
     (case laws-index-local-mode
       (Bookmark
        (funcall
 	(delalist 'laws-bookmark-alist
 		  '(mapcar (lambda (x) (upcase x))
-		    (laws-index-get-cells 'marks))))
+                           (laws-index-get-cells 'marks))))
        (laws-with-buffer-read-only (erase-buffer))
        (laws-index-insert-bookmark))
       (Opened
@@ -2749,7 +2760,7 @@ Openedの場合、ファイルを閉じる。"
        (funcall
 	(delalist 'laws-recent-alist
 		  '(mapcar (lambda (x) (upcase x))
-		    (laws-index-get-cells 'marks))))
+                           (laws-index-get-cells 'marks))))
        (laws-with-buffer-read-only (erase-buffer))
        (laws-index-insert-recent)))))
 
@@ -3044,17 +3055,18 @@ Openedの場合、ファイルを閉じる。"
 字列で返す。"
   (save-excursion
     (goto-char start)
-    (labels ((trim (anchor)
-	       (let* ((kanji "[一二三四五六七八九十]")
-		      (regexp (concat
-			       "\\(第[一二三四五六七八九十百千]+条"
-			       "\\(?:[のノ]"	kanji "+\\)*\\)"
-			       "\\(第"		kanji "+項\\)*"
-			       "\\(第"		kanji "+号"
-			       "\\(?:[のノ]"	kanji "+\\)*\\)?")))
-		 (if (string-match regexp anchor)
-		     (substring anchor 0 (match-end 0))
-		   anchor))))
+    (laws-labels
+        ((trim (anchor)
+               (let* ((kanji "[一二三四五六七八九十]")
+                      (regexp (concat
+                               "\\(第[一二三四五六七八九十百千]+条"
+                               "\\(?:[のノ]"	kanji "+\\)*\\)"
+                               "\\(第"		kanji "+項\\)*"
+                               "\\(第"		kanji "+号"
+                               "\\(?:[のノ]"	kanji "+\\)*\\)?")))
+                 (if (string-match regexp anchor)
+                     (substring anchor 0 (match-end 0))
+                   anchor))))
       (let ((count-back 0)
 	    (lines (count-lines start end))
 	    (move-to
@@ -3202,12 +3214,13 @@ Openedの場合、ファイルを閉じる。"
 		      args ""))))
 
 (defun laws-to-kanji-number (n)
-  (labels ((split (n)
-	     (if (zerop (/ n 10))
-		 (list (% n 10))
-	       (cons (% n 10) (split (/ n 10)))))
-	   (kanji (n)
-	     (nth n '("零" "一" "二" "三" "四" "五" "六" "七" "八" "九"))))
+  (laws-labels
+      ((split (n)
+              (if (zerop (/ n 10))
+                  (list (% n 10))
+                (cons (% n 10) (split (/ n 10)))))
+       (kanji (n)
+              (nth n '("零" "一" "二" "三" "四" "五" "六" "七" "八" "九"))))
     (apply #'concat
 	   (nreverse
 	    (laws:map (lambda (i s)
@@ -3276,16 +3289,17 @@ Openedの場合、ファイルを閉じる。"
 
 (defun laws-scan-buffer (regexp direction count &optional recenter limit)
   (let ((found t))
-    (labels ((scan (s)
-                   (setq found
-                         (case direction
-                           (forward (and (bolp)
-                                         (not (eobp))
-                                         (forward-char))
-                                    (re-search-forward s limit t))
-                           (backward (unless (bolp) (forward-line 1))
-                                     (re-search-backward s limit t))))
-                   (when found (decf count))))
+    (laws-labels
+        ((scan (s)
+               (setq found
+                     (case direction
+                       (forward (and (bolp)
+                                     (not (eobp))
+                                     (forward-char))
+                                (re-search-forward s limit t))
+                       (backward (unless (bolp) (forward-line 1))
+                                 (re-search-backward s limit t))))
+               (when found (decf count))))
       (while (and found (> count 0))
 	(scan regexp))
       (forward-line 0)
@@ -3336,21 +3350,22 @@ Openedの場合、ファイルを閉じる。"
 
 (defun laws-current-article ()
   ;; Test:
-  (labels ((end-point (p)
-	     (cond ((re-search-forward
-		     (concat
-		      "\\(" laws-article-regexp "\\|" outline-regexp "\\)")
-		     nil t)
-		    (forward-line 0)
-		    (or (looking-at outline-regexp)
-			(while (not (looking-at "^$"))
-			  (forward-line -1)))
-		    (when (>= p (point))
-		      (error "Irregular article boundaries."))
-		    (point))
-		   ((re-search-forward "^$" nil t)
-		    (point))
-		   (t (point-max)))))
+  (laws-labels
+      ((end-point (p)
+                  (cond ((re-search-forward
+                          (concat
+                           "\\(" laws-article-regexp "\\|" outline-regexp "\\)")
+                          nil t)
+                         (forward-line 0)
+                         (or (looking-at outline-regexp)
+                             (while (not (looking-at "^$"))
+                               (forward-line -1)))
+                         (when (>= p (point))
+                           (error "Irregular article boundaries."))
+                         (point))
+                        ((re-search-forward "^$" nil t)
+                         (point))
+                        (t (point-max)))))
     (let (beg end)
       (save-excursion
 	(forward-line 0)
@@ -3455,12 +3470,13 @@ Openedの場合、ファイルを閉じる。"
 ;; anchor
 ;;
 (defun laws-move-to-anchor (direction)
-  (labels ((point-face (&optional point)
-	     (get-text-property (or point (point)) 'face))
-	   (scanner ()
-	     (case direction
-	       (forward (next-property-change (point)))
-	       (backward (previous-property-change (point))))))
+  (laws-labels
+      ((point-face (&optional point)
+                   (get-text-property (or point (point)) 'face))
+       (scanner ()
+                (case direction
+                  (forward (next-property-change (point)))
+                  (backward (previous-property-change (point))))))
     (let ((back-to (point)))
       (while (memq (point-face)
 		   '(laws-anchor-article-face laws-anchor-name-face))
@@ -3871,8 +3887,9 @@ FULL が非-nilなら path/file を返す。"
 	(deactivate-mark)
 	(cons (region-beginning) (region-end)))
     ;; 通常のアンカーの場合
-    (labels ((point-face (p) (get-text-property p 'face))
-	     (next (p) (goto-char (next-property-change p))))
+    (laws-labels
+        ((point-face (p) (get-text-property p 'face))
+         (next (p) (goto-char (next-property-change p))))
       (when (memq (point-face (point))
 		  '(laws-anchor-name-face laws-anchor-article-face))
 	(let ((back-to (point))
