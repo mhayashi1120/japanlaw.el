@@ -1,4 +1,4 @@
-;;; laws.el --- -*- Coding: utf-8 -*-
+;;; japanlaw.el --- -*- Coding: utf-8 -*-
 
 ;; Copyright (C) 2007, 2008  Kazushi NODA
 ;;               2012 Masahiro Hayashi <mhayashi1120@gmail.com>
@@ -36,43 +36,43 @@
 (require 'outline)
 (require 'iswitchb)
 
-(defmacro laws-labels (bindings &rest body)
+(defmacro japanlaw-labels (bindings &rest body)
   (if (functionp 'cl-labels)
       `(cl-labels ,bindings ,@body)
     `(labels ,bindings ,@body)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-;;; laws-vars
+;;; japanlaw-vars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
-(defconst laws-version "version 0.8.8"
-  "Version of laws.el")
+(defconst japanlaw-version "version 0.8.8"
+  "Version of japanlaw.el")
 
 ;;
 ;; Customize group
 ;;
-(defgroup laws nil
-  "Laws mode."
-  :prefix "laws-"
+(defgroup japanlaw nil
+  "japanlaw mode."
+  :prefix "japanlaw-"
   :group 'applications)
 
-(defgroup laws-faces nil
+(defgroup japanlaw-faces nil
   "Faces for highlighting text."
-  :prefix "laws-"
+  :prefix "japanlaw-"
   :group 'faces)
 
 ;;
 ;; User variables
 ;;
-(defcustom laws-line-space nil
+(defcustom japanlaw-line-space nil
   "*法令ファイルの行間。"
   :type 'integer
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-index-initial-mode 'Index
-  "`laws-index-mode'の初期モード。次のうちひとつ選択できる。
+(defcustom japanlaw-index-initial-mode 'Index
+  "`japanlaw-index-mode'の初期モード。次のうちひとつ選択できる。
 Opened Recent Search Bookmark Index Directory Abbrev"
-  :group 'laws
+  :group 'japanlaw
   :type '(choice
 	  (symbol :tag "Default" :value Index)
 	  (symbol :tag "Opened" :value Opened)
@@ -83,60 +83,60 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	  (symbol :tag "Directory" :value Directory)
 	  (symbol :tag "Abbrev" :value Abbrev)))
 
-(defcustom laws-recent-max 100
-  "最近開いたファイルの履歴のリスト`laws-recent-alist'の最大数。"
+(defcustom japanlaw-recent-max 100
+  "最近開いたファイルの履歴のリスト`japanlaw-recent-alist'の最大数。"
   :type 'integer
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-use-index-header-line t
+(defcustom japanlaw-use-index-header-line t
   "ヘッダラインを表示する。"
   :type 'boolean
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-coding-system-for-write 'utf-8-unix
+(defcustom japanlaw-coding-system-for-write 'utf-8-unix
   "法令ファイルの文字コード。"
   :type 'symbol
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-window-height 15
+(defcustom japanlaw-window-height 15
   "参照条文を表示するウィンドウの高さ。"
   :type 'integer
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-reposition-line 2
+(defcustom japanlaw-reposition-line 2
   ""
   :type 'integer
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-anchor-clickable nil
+(defcustom japanlaw-anchor-clickable nil
   "法令内のアンカーをクリッカブルにする。"
   :type 'boolean
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-use-iswitchb nil
-  "`laws-index-goto-folder'で`iswitchb'を使う。migemoとiswitchbの設定が必要。"
+(defcustom japanlaw-use-iswitchb nil
+  "`japanlaw-index-goto-folder'で`iswitchb'を使う。migemoとiswitchbの設定が必要。"
   :type 'boolean
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-iswitchb-initial-list 'download
-  "`laws-iswitchb'での検索対象の法令リストの初期値。"
-  :group 'laws
+(defcustom japanlaw-iswitchb-initial-list 'download
+  "`japanlaw-iswitchb'での検索対象の法令リストの初期値。"
+  :group 'japanlaw
   :type '(choice
 	  (symbol :tag "download" :value download)
 	  (symbol :tag "bookmark" :value bookmark)
 	  (symbol :tag "all" :value all)))
 
-(defcustom laws-max-mini-window-height max-mini-window-height
-  "`laws-iswitchb'のミニウインドウの最大高さ。"
+(defcustom japanlaw-max-mini-window-height max-mini-window-height
+  "`japanlaw-iswitchb'のミニウインドウの最大高さ。"
   :type 'number
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-online-mode t
+(defcustom japanlaw-online-mode t
   "オンラインモードで起動する。"
   :type 'boolean
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-excluded-law-names
+(defcustom japanlaw-excluded-law-names
   '("社会保険労務士法"
     "土地家屋調査士法"
     "行政書士法"
@@ -147,232 +147,232 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "法令名と法人名が重複する法令名のリスト。法の文言の中に現われる
  「〜法人」を着色しない。"
   :type 'list
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-unentry-names
+(defcustom japanlaw-unentry-names
   '(("憲法" . "日本国憲法"))
   "法の文言の中で使われるが、略称法令名にも登録法令名にも含まれな
 い法令名のアリスト。"
   :type 'alist
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-local-names-plist
+(defcustom japanlaw-local-names-plist
   '(("不動産登記令" :法 "不動産登記法" :規則 "不動産登記規則"))
   "ある法令ファイルの中での「法」・「規則」・「令」などを指し示す法令名。
 先頭の要素が法令ファイルの法令名。上の例では、「不動産登記令」の中で、
  「法」は「不動産登記法」を指し、「規則」は「不動産登記規則」を指す。
 法文の中で、`（以下「法」という。）'のように記述されているので、
 ここで設定せずとも対応可能だが、設定されていれば優先して適用される。
-タグは`laws-local-name-list'に登録されている名称を利用する。"
+タグは`japanlaw-local-name-list'に登録されている名称を利用する。"
   :type 'list
-  :group 'laws)
+  :group 'japanlaw)
 
 ;; Path names
-(defcustom laws-path (expand-file-name "~/.laws.d")
+(defcustom japanlaw-path (expand-file-name "~/.laws.d")
   "法令データ提供システムから取得したインデックスファイル、法令デー
 タ等の保存先パス。"
   :type 'directory
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-htmldata-directory "htmldata"
+(defcustom japanlaw-htmldata-directory "htmldata"
   "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
 の親ディレクトリ名。"
   :type 'string
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-htmldata-path (concat laws-path "/" laws-htmldata-directory)
+(defcustom japanlaw-htmldata-path (concat japanlaw-path "/" japanlaw-htmldata-directory)
   "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
 の親ディレクトリのパス名。"
   :type 'directory
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-egov-url "http://law.e-gov.go.jp/"
+(defcustom japanlaw-egov-url "http://law.e-gov.go.jp/"
   "法令データ提供システムのURL。"
   :type 'directory
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-data-path (concat laws-path "/data")
+(defcustom japanlaw-data-path (concat japanlaw-path "/data")
   "w3mでdumpした法令ファイルの保存先ディレクトリの親ディレクトリのパス名。"
   :type 'directory
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-temp-path (concat laws-path "/tmp")
+(defcustom japanlaw-temp-path (concat japanlaw-path "/tmp")
   "w3mでdumpする一時ファイルの保存先ディレクトリのパス名。"
   :type 'directory
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-extention ".law"
+(defcustom japanlaw-extention ".law"
   "法令データファイルの拡張子。`auto-mode-alist'に追加される。"
   :type 'string
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-index-file (concat laws-path "/.index")
+(defcustom japanlaw-index-file (concat japanlaw-path "/.index")
   "事項別インデックスファイルのファイル名。"
   :type 'file
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-abbrev-file (concat laws-path "/.abbrev")
+(defcustom japanlaw-abbrev-file (concat japanlaw-path "/.abbrev")
   "略称法令名のインデックスファイルのファイル名。"
   :type 'file
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-bookmark-file (concat laws-path "/.bookmark")
+(defcustom japanlaw-bookmark-file (concat japanlaw-path "/.bookmark")
   "ブックマークの保存先ファイル名。"
   :type 'file
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-recent-file (concat laws-path "/.recent")
+(defcustom japanlaw-recent-file (concat japanlaw-path "/.recent")
   "最近開いたファイルのリストの保存先ファイル名"
   :type 'file
-  :group 'laws)
+  :group 'japanlaw)
 
 ;; Buffer name
-(defcustom laws-use-buffer-law-name t
+(defcustom japanlaw-use-buffer-law-name t
   "tならバッファ名を法令名とする。nilなら変更しない。"
   :type 'boolean
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-name-suffix ".."
+(defcustom japanlaw-name-suffix ".."
   "バッファ名を縮小する場合のSUFFIX。"
   :type 'string
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-name-length 20
+(defcustom japanlaw-name-length 20
   "バッファ名(法令名)の最大長。"
   :type 'integer
-  :group 'laws)
+  :group 'japanlaw)
 
 ;; w3m
-(defcustom laws-w3m-dump-cols 5000
+(defcustom japanlaw-w3m-dump-cols 5000
   "w3mでdumpするときのカラム数。"
   :type 'integer
-  :group 'laws)
+  :group 'japanlaw)
 
-(defcustom laws-table-pixel 550
+(defcustom japanlaw-table-pixel 550
   "w3mでdumpするときのテーブルのピクセル数。"
   :type 'integer
-  :group 'laws)
+  :group 'japanlaw)
 
 ;; paren
-(defcustom laws-compose-paren-char "＃"
+(defcustom japanlaw-compose-paren-char "＃"
   "`compose-region'で括弧を不可視にする場合、代替の1文字。
 ここで指定する文字が対応括弧の代わりる表示される。"
   :type 'string
-  :group 'laws)
+  :group 'japanlaw)
 
 ;; 
 ;; font-lock-keyword-face
 ;; 
-;; 以下、defcustomされている`laws-*-face'の値(シンボル名)を他に変更しないこと。
-(defvar laws-index-flag-face 'laws-index-flag-face
-  "Face name to use for open or close flag of laws index mode.")
+;; 以下、defcustomされている`japanlaw-*-face'の値(シンボル名)を他に変更しないこと。
+(defvar japanlaw-index-flag-face 'japanlaw-index-flag-face
+  "Face name to use for open or close flag of law index mode.")
 
-(defvar laws-index-header-key-face 'laws-index-header-key-face
+(defvar japanlaw-index-header-key-face 'japanlaw-index-header-key-face
   "Face name to use for shortcut key of header line.")
 
-(defvar laws-index-header-foreground-face 'laws-index-header-foreground-face
+(defvar japanlaw-index-header-foreground-face 'japanlaw-index-header-foreground-face
   "Face name to use for foreground of header line.")
 
-(defvar laws-index-header-selected-face 'laws-index-header-selected-face
+(defvar japanlaw-index-header-selected-face 'japanlaw-index-header-selected-face
   "Face name to use for selected foreground of header line.")
 
-(defvar laws-article-number-face 'laws-article-number-face
+(defvar japanlaw-article-number-face 'japanlaw-article-number-face
   "Face name to use for number of article.")
 
-(defvar laws-article-paragraph-face 'laws-article-paragraph-face
+(defvar japanlaw-article-paragraph-face 'japanlaw-article-paragraph-face
   "Face name to use for number of article.")
 
-(defvar laws-article-item-face 'laws-article-item-face
+(defvar japanlaw-article-item-face 'japanlaw-article-item-face
   "Face name to use for number of article.")
 
-(defvar laws-anchor-name-face 'laws-anchor-name-face
-  "Face name to use for laws name.")
+(defvar japanlaw-anchor-name-face 'japanlaw-anchor-name-face
+  "Face name to use for japanlaw name.")
 
-(defvar laws-anchor-article-face 'laws-anchor-article-face
+(defvar japanlaw-anchor-article-face 'japanlaw-anchor-article-face
   "Face name to use for anchor article.")
 
-(defvar laws-anchor-paragraph-face 'laws-anchor-paragraph-face
+(defvar japanlaw-anchor-paragraph-face 'japanlaw-anchor-paragraph-face
   "Face name to use for number of terms.")
 
-(defvar laws-article-subnumber-face 'laws-article-subnumber-face
+(defvar japanlaw-article-subnumber-face 'japanlaw-article-subnumber-face
   "Face name to use for articl sub number.")
 
-(defvar laws-article-subitem1-face 'laws-article-subitem1-face
+(defvar japanlaw-article-subitem1-face 'japanlaw-article-subitem1-face
   "Face name to use for article sub item.")
 
-(defvar laws-article-subitem2-face 'laws-article-subitem2-face
+(defvar japanlaw-article-subitem2-face 'japanlaw-article-subitem2-face
   "Face name to use for article sub item-2.")
 
-(defvar laws-article-subitem3-face 'laws-article-subitem3-face
+(defvar japanlaw-article-subitem3-face 'japanlaw-article-subitem3-face
   "Face name to use for article sub item-3.")
 
-(defvar laws-article-subitem4-face 'laws-article-subitem4-face
+(defvar japanlaw-article-subitem4-face 'japanlaw-article-subitem4-face
   "Face name to use for article sub item-4.")
 
-(defvar laws-volume-face 'laws-volume-face
+(defvar japanlaw-volume-face 'japanlaw-volume-face
   "Face name to use for volume.")
 
-(defvar laws-chapter-face 'laws-chapter-face
+(defvar japanlaw-chapter-face 'japanlaw-chapter-face
   "Face name to use for chapter.")
 
-(defvar laws-section-face 'laws-section-face
+(defvar japanlaw-section-face 'japanlaw-section-face
   "Face name to use for section.")
 
-(defvar laws-subsection-face 'laws-subsection-face
+(defvar japanlaw-subsection-face 'japanlaw-subsection-face
   "Face name to use for subsection.")
 
-(defvar laws-subsection2-face 'laws-subsection2-face
+(defvar japanlaw-subsection2-face 'japanlaw-subsection2-face
   "Face name to use for subsection-2.")
 
-(defvar laws-comment-face 'laws-comment-face
+(defvar japanlaw-comment-face 'japanlaw-comment-face
   "Face name to use for comment.")
 
-(defvar laws-supplementary-face 'laws-supplementary-face
+(defvar japanlaw-supplementary-face 'japanlaw-supplementary-face
   "Face name to use for supplementary.")
 
-(defvar laws-paren1-face 'laws-paren1-face
+(defvar japanlaw-paren1-face 'japanlaw-paren1-face
   "Face name to use for Parentheses of the 1'th hierarchy.")
 
-(defvar laws-paren2-face 'laws-paren2-face
+(defvar japanlaw-paren2-face 'japanlaw-paren2-face
   "Face name to use for Parentheses of the 2'th hierarchy.")
 
-(defvar laws-paren3-face 'laws-paren3-face
+(defvar japanlaw-paren3-face 'japanlaw-paren3-face
   "Face name to use for Parentheses of the 3'th hierarchy.")
 
-(defvar laws-paren4-face 'laws-paren4-face
+(defvar japanlaw-paren4-face 'japanlaw-paren4-face
   "Face name tp use for Parentheses of the 4'th hierarchy.")
 
-(defvar laws-paren5-face 'laws-paren5-face
+(defvar japanlaw-paren5-face 'japanlaw-paren5-face
   "Face name tp use for Parentheses of the 5'th hierarchy.")
 
-(defvar laws-paren6-face 'laws-paren6-face
+(defvar japanlaw-paren6-face 'japanlaw-paren6-face
   "Face name to use for Parentheses of the 6'th hierarchy.")
 
-(defvar laws-paren-error-face 'laws-paren-error-face
+(defvar japanlaw-paren-error-face 'japanlaw-paren-error-face
   "Face name to use for Parentheses of the max hierarchy.")
 
 ;; 
 ;; faces
 ;; 
-(defface laws-index-flag-face
+(defface japanlaw-index-flag-face
     '((((class color) (background light))
        (:foreground "CadetBlue"))
       (((class color) (background dark))
        (:foreground "Aquamarine"))
       (t (:foreground "SkyBlue")))
-  "Font Lock mode face used to highlight laws index folder flag."
-  :group 'laws-faces)
+  "Font Lock mode face used to highlight japanlaw index folder flag."
+  :group 'japanlaw-faces)
 
-(defface laws-index-header-key-face
+(defface japanlaw-index-header-key-face
     '((((class color) (background light))
        (:foreground "Black" :background nil :underline nil :weight bold))
       (((class color) (background dark))
        (:foreground "White" :background nil :underline nil :weight bold))
       (t (:foreground nil :underline t)))
-  "Font Lock mode face used to highlight laws index header line."
-  :group 'laws-faces)
+  "Font Lock mode face used to highlight japanlaw index header line."
+  :group 'japanlaw-faces)
 
-(defface laws-index-header-selected-face
+(defface japanlaw-index-header-selected-face
     '((((class color) (background light))
        (:foreground "Black" :background nil :underline nil :weight bold
 	:box (:line-width -1 :color nil :style pressed-button)))
@@ -380,307 +380,307 @@ Opened Recent Search Bookmark Index Directory Abbrev"
        (:foreground "White" :background nil :underline nil :weight bold
 	:box (:line-width -1 :color nil :style pressed-button)))
       (t (:foreground nil :underline t :weight bold)))
-  "Font Lock mode face used to highlight laws index header line."
-  :group 'laws-faces)
+  "Font Lock mode face used to highlight japanlaw index header line."
+  :group 'japanlaw-faces)
 
-(defface laws-index-header-foreground-face
+(defface japanlaw-index-header-foreground-face
     '((((class color) (background light))
        (:foreground "Gray60" :background nil :weight bold))
       (((class color) (background dark))
        (:foreground "CornflowerBlue" :background nil :weight bold))
       (t (:foreground nil :weight bold)))
-  "Font Lock mode face used to highlight laws index header line."
-  :group 'laws-faces)
+  "Font Lock mode face used to highlight japanlaw index header line."
+  :group 'japanlaw-faces)
 
-(defface laws-volume-face
+(defface japanlaw-volume-face
     '((((class color) (background light))
        (:foreground "Blue"))
       (((class color) (background dark))
        (:foreground "Medium aquamarine"))
       (t (:foreground "Medium aquamarine")))
   "Font Lock mode face used to highlight volume lines."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-chapter-face
+(defface japanlaw-chapter-face
     '((((class color) (background light))
        (:foreground "DarkGoldenrod"))
       (((class color) (background dark))
        (:foreground "Green3"))
       (t (:foreground "Green3")))
   "Font Lock mode face used to highlight chapter lines."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-section-face
+(defface japanlaw-section-face
     '((((class color) (background light))
        (:foreground "Purple"))
       (((class color) (background dark))
        (:foreground "Cyan"))
       (t (:foreground "Cyan")))
   "Font Lock mode face used to highlight section lines."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-subsection-face
+(defface japanlaw-subsection-face
     '((((class color) (background light))
        (:foreground "Orchid"))
       (((class color) (background dark))
        (:foreground "LightSteelBlue"))
       (t (:foreground "LightSteelBlue")))
   "Font Lock mode face used to highlight subsection lines."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-subsection2-face
+(defface japanlaw-subsection2-face
     '((((class color) (background light))
        (:foreground "red"))
       (((class color) (background dark))
        (:foreground "Dark sea green"))
       (t (:foreground "Dark sea green")))
   "Font Lock mode face used to highlight subsection-2."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-comment-face
+(defface japanlaw-comment-face
     '((((class color) (background light))
        (:foreground "CadetBlue"))
       (((class color) (background dark))
        (:foreground "LightSteelBlue"))
       (t (:foreground "LightSteelBlue")))
   "Font Lock mode face used to highlight comment."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-anchor-article-face
+(defface japanlaw-anchor-article-face
     '((((class color) (background light))
        (:foreground nil :underline t))
       (((class color) (background dark))
        (:foreground nil :underline t))
       (t (:foreground nil :underline t)))
   "Font Lock mode face used to highlight reference."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-anchor-name-face
+(defface japanlaw-anchor-name-face
     '((((class color) (background light))
        (:foreground nil :underline t))
       (((class color) (background dark))
        (:foreground nil :underline t))
       (t (:foreground nil :underline t)))
-  "Font Lock mode face used to highlight laws name."
-  :group 'laws-faces)
+  "Font Lock mode face used to highlight japanlaw name."
+  :group 'japanlaw-faces)
 
-(defface laws-supplementary-face
+(defface japanlaw-supplementary-face
     '((((class color) (background light))
        (:foreground "CadetBlue"))
       (((class color) (background dark))
        (:foreground "Brown3"))
       (t (:foreground "Brown3")))
   "Font Lock mode face used to highlight comment."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-paren1-face
+(defface japanlaw-paren1-face
     '((((class color) (background light))
        (:foreground "Palevioletred3"))
       (((class color) (background dark))
        (:foreground "Palevioletred3"))
       (t (:foreground "Palevioletred3")))
   "Parentheses of the 1'th hierarchy."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-paren2-face
+(defface japanlaw-paren2-face
     '((((class color) (background light))
        (:foreground "Brown"))
       (((class color) (background dark))
        (:foreground "Brown"))
       (t (:foreground "Brown")))
   "Parentheses of the 2'th hierarchy."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-paren3-face
+(defface japanlaw-paren3-face
     '((((class color) (background light))
        (:foreground "Yellow4"))
       (((class color) (background dark))
        (:foreground "Yellow4"))
       (t (:foreground "Yellow4")))
   "Parentheses of the 3'th hierarchy."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-paren4-face
+(defface japanlaw-paren4-face
     '((((class color) (background light))
        (:foreground "Tan3"))
       (((class color) (background dark))
        (:foreground "Tan3"))
       (t (:foreground "Tan3")))
   "Parentheses of the 4'th hierarchy."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-paren5-face
+(defface japanlaw-paren5-face
     '((((class color) (background light))
        (:foreground "RosyBrown3"))
       (((class color) (background dark))
        (:foreground "RosyBrown3"))
       (t (:foreground "RosyBrown3")))
   "Parentheses of the 5'th hierarchy."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-paren6-face
+(defface japanlaw-paren6-face
     '((((class color) (background light))
        (:foreground "Blue"))
       (((class color) (background dark))
        (:foreground "Blue"))
       (t (:foreground "Blue")))
   "Parentheses of the 6'th hierarchy."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-article-number-face
+(defface japanlaw-article-number-face
     '((((class color) (background light))
        (:foreground "Blue"))
       (((class color) (background dark))
        (:foreground "LightSkyBlue"))
       (t (:foreground "LightSkyBlue")))
   "Font Lock mode face used to highlight article number."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-article-paragraph-face
+(defface japanlaw-article-paragraph-face
     '((((class color) (background light))
        (:foreground "DarkGreen"))
       (((class color) (background dark))
        (:foreground "Cyan"))
       (t (:foreground "Cyan")))
   "Font Lock mode face used to highlight paragraph number."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-article-item-face
+(defface japanlaw-article-item-face
     '((((class color) (background light))
        (:foreground "Blue"))
       (((class color) (background dark))
        (:foreground "Red"))
       (t (:foreground "Red")))
   "Font Lock mode face used to highlight item number."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-anchor-paragraph-face
+(defface japanlaw-anchor-paragraph-face
     '((((class color) (background light))
        (:foreground "Blue"))
       (((class color) (background dark))
        (:foreground "LightSkyBlue"))
       (t (:foreground "LightSkyBlue")))
   "Font Lock mode face used to highlight number of termss."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-article-subnumber-face
+(defface japanlaw-article-subnumber-face
     '((((class color) (background light))
        (:foreground "Blue"))
       (((class color) (background dark))
        (:foreground "IndianRed1"))
       (t (:foreground "IndianRed1")))
   "Font Lock mode face used to highlight article sub number."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-article-subitem1-face
+(defface japanlaw-article-subitem1-face
     '((((class color) (background light))
        (:foreground "Blue"))
       (((class color) (background dark))
        (:foreground "Green"))
       (t (:foreground "Green")))
   "Font Lock mode face used to highlight article sub item."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-article-subitem2-face
+(defface japanlaw-article-subitem2-face
     '((((class color) (background light))
        (:foreground "Orange"))
       (((class color) (background dark))
        (:foreground "Orange"))
       (t (:foreground "Orange")))
   "Font Lock mode face used to highlight article sub item-2."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-article-subitem3-face
+(defface japanlaw-article-subitem3-face
     '((((class color) (background light))
        (:foreground "Red"))
       (((class color) (background dark))
        (:foreground "HotPink1"))
       (t (:foreground "HotPink1":weight bold)))
   "Font Lock mode face used to highlight article sub item-3."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
-(defface laws-article-subitem4-face
+(defface japanlaw-article-subitem4-face
     '((((class color) (background light))
        (:foreground "Maroon"))
       (((class color) (background dark))
        (:foreground "Pink4"))
       (t (:foreground "Pink4")))
   "Font Lock mode face used to highlight article sub item-4."
-  :group 'laws-faces)
+  :group 'japanlaw-faces)
 
 ;;
 ;; Internal variables
 ;;
 
 ;; Mode line image
-(defvar laws-online-icon
+(defvar japanlaw-online-icon
   (or (plist-get (cdr (find-image '((:type xpm :file "ezimage/doc-plus.xpm"))))
 		 :file)
       "[+]")
   "Mode line online image path.")
 
-(defvar laws-offline-icon
+(defvar japanlaw-offline-icon
   (or (plist-get (cdr (find-image '((:type xpm :file "ezimage/doc-minus.xpm"))))
 		 :file)
       "[-]")
   "Mode line offline image path.")
 
-(defvar laws-icon
-  (if laws-online-mode laws-online-icon laws-offline-icon)
+(defvar japanlaw-icon
+  (if japanlaw-online-mode japanlaw-online-icon japanlaw-offline-icon)
   "Start up mode line image path.")
 
-(defvar laws-mode-line-buffer-identification
+(defvar japanlaw-mode-line-buffer-identification
   (default-value 'mode-line-buffer-identification))
-(make-variable-buffer-local 'laws-mode-line-buffer-identification)
+(make-variable-buffer-local 'japanlaw-mode-line-buffer-identification)
 
-(defvar laws-mode-line
+(defvar japanlaw-mode-line
   (cons `(:eval (propertize
-		 ,@(if (and (file-exists-p laws-online-icon)
-			    (file-exists-p laws-offline-icon))
+		 ,@(if (and (file-exists-p japanlaw-online-icon)
+			    (file-exists-p japanlaw-offline-icon))
 		       (list
 			"    "
 			(quote 'display) '(create-image
-					   laws-icon 'xpm nil
+					   japanlaw-icon 'xpm nil
 					   :ascent 'center))
-		       (list 'laws-icon))
+		       (list 'japanlaw-icon))
 		 'local-map (make-mode-line-mouse-map
-			     'mouse-1 'laws-online-or-offline)
+			     'mouse-1 'japanlaw-online-or-offline)
 		 'mouse-face 'mode-line-highlight
-		 'help-echo (if laws-online-mode
+		 'help-echo (if japanlaw-online-mode
 				"mouse-1: turn to offline mode."
 			      "mouse-1: turn to online mode.")))
 	(cons " "
-	      (list (car laws-mode-line-buffer-identification))))
-  "Laws mode line format.")
+	      (list (car japanlaw-mode-line-buffer-identification))))
+  "JapanLaw mode line format.")
 
 ;; BookMark
 
 ;; Search
-(defvar laws-search-history nil)
+(defvar japanlaw-search-history nil)
 
 ;; Winconf
-(defvar laws-winconf-list '())
+(defvar japanlaw-winconf-list '())
 
-(defvar laws-winconf-index 0)
+(defvar japanlaw-winconf-index 0)
 
-(defvar laws-display-toggle-winconf nil
-  "For laws-display-toggle.")
+(defvar japanlaw-display-toggle-winconf nil
+  "For japanlaw-display-toggle.")
 
 ;; Parentheses
-(defvar laws-parens "（.+）")
+(defvar japanlaw-parens "（.+）")
 
-(defvar laws-paren-exclude-regexp
+(defvar japanlaw-paren-exclude-regexp
   "（\\([０-９]+\\|[一二三四五六七八九十]+\\|[ｉ]+\\)）")
 
-(defvar laws-paren-overlays)
+(defvar japanlaw-paren-overlays)
 
 ;; 法、令、規則、新法、旧法等への対応
-(defvar laws-local-name-list
+(defvar japanlaw-local-name-list
   '("法" "新法" "旧法" "規則" "新規則" "旧規則" "令" "新令" "旧令" "新細則" "旧細則" "附則" "法附則" "規則附則")
   "")
 
 ;; outline
-(defvar laws-heading-regexp
+(defvar japanlaw-heading-regexp
   (let ((number "[一二三四五六七八九十]"))
     (concat "^　*"
 	    "\\(第" number "+編"
@@ -696,92 +696,92 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 そのため、少なくとも1個の全角空白が必要。これは手作業で挿入する必要が
 ある。")
 
-(defvar laws-supplementary-level 6
+(defvar japanlaw-supplementary-level 6
   "附則のアウトラインレベル")
 
-;; laws-mode
-(defvar laws-mishikou-list)		;ローカル変数
+;; japanlaw-mode
+(defvar japanlaw-mishikou-list)		;ローカル変数
 
-(defvar laws-mode-name "Laws")
+(defvar japanlaw-mode-name "JapanLaw")
 
-(defvar laws-mode-map
+(defvar japanlaw-mode-map
   (let ((map (make-sparse-keymap)))
     (suppress-keymap map)
-    ;; laws-anchor-clickable
-    (define-key map [mouse-2] 'laws-push-mouse-2)
+    ;; japanlaw-anchor-clickable
+    (define-key map [mouse-2] 'japanlaw-push-mouse-2)
     (define-key map [follow-link] 'mouse-face)
     ;; quit
-    (define-key map "q" 'laws-view-quit)
-    (define-key map "Q" 'laws-exit)
+    (define-key map "q" 'japanlaw-view-quit)
+    (define-key map "Q" 'japanlaw-exit)
     ;; search
     (dotimes (i 10)
       (define-key map (format "%d" i) 'digit-argument))
-    (define-key map "-" 'laws-digit-argument-suffix)
-    (define-key map " " 'laws-search-or-push-anchor)
+    (define-key map "-" 'japanlaw-digit-argument-suffix)
+    (define-key map " " 'japanlaw-search-or-push-anchor)
     ;; bookmark
-    (define-key map "A" 'laws-bookmark-this-file)
+    (define-key map "A" 'japanlaw-bookmark-this-file)
     ;; scroll
-    (define-key map "n" 'laws-forward-article)
-    (define-key map "p" 'laws-backward-article)
-    (define-key map "[" 'laws-backward-paragraph)
-    (define-key map "]" 'laws-forward-paragraph)
-    (define-key map "j" 'laws-scroll-up-screen)
-    (define-key map "k" 'laws-scroll-down-screen)
+    (define-key map "n" 'japanlaw-forward-article)
+    (define-key map "p" 'japanlaw-backward-article)
+    (define-key map "[" 'japanlaw-backward-paragraph)
+    (define-key map "]" 'japanlaw-forward-paragraph)
+    (define-key map "j" 'japanlaw-scroll-up-screen)
+    (define-key map "k" 'japanlaw-scroll-down-screen)
     ;; anchor
-    (define-key map "\C-i" 'laws-forward-anchor)
-    (define-key map "\C-\M-i" 'laws-backward-anchor)
+    (define-key map "\C-i" 'japanlaw-forward-anchor)
+    (define-key map "\C-\M-i" 'japanlaw-backward-anchor)
     ;; window
-    (define-key map "v" 'laws-display-toggle)
-    (define-key map "o" 'laws-other-window)
+    (define-key map "v" 'japanlaw-display-toggle)
+    (define-key map "o" 'japanlaw-other-window)
     ;; winconf
-    (define-key map "wp" 'laws-backward-winconf)
-    (define-key map "wn" 'laws-forward-winconf)
-    (define-key map "wi" 'laws-winconf-insert)
-    (define-key map "wa" 'laws-winconf-add)
-    (define-key map "wo" 'laws-winconf-override)
-    (define-key map "wd" 'laws-winconf-delete)
-    (define-key map "wD" 'laws-winconf-delete-all)
-    (define-key map "wh" 'laws-winconf-backward-delete)
-    (define-key map "wf" 'laws-restore-first-winconf)
-    (define-key map "wl" 'laws-restore-last-winconf)
-    (define-key map "wc" 'laws-restore-current-winconf)
-    (define-key map "," 'laws-backward-winconf)
-    (define-key map "." 'laws-forward-winconf)
-    (define-key map "<" 'laws-restore-first-winconf)
-    (define-key map ">" 'laws-restore-last-winconf)
-    (define-key map "wm" 'laws-winconf-message)
+    (define-key map "wp" 'japanlaw-backward-winconf)
+    (define-key map "wn" 'japanlaw-forward-winconf)
+    (define-key map "wi" 'japanlaw-winconf-insert)
+    (define-key map "wa" 'japanlaw-winconf-add)
+    (define-key map "wo" 'japanlaw-winconf-override)
+    (define-key map "wd" 'japanlaw-winconf-delete)
+    (define-key map "wD" 'japanlaw-winconf-delete-all)
+    (define-key map "wh" 'japanlaw-winconf-backward-delete)
+    (define-key map "wf" 'japanlaw-restore-first-winconf)
+    (define-key map "wl" 'japanlaw-restore-last-winconf)
+    (define-key map "wc" 'japanlaw-restore-current-winconf)
+    (define-key map "," 'japanlaw-backward-winconf)
+    (define-key map "." 'japanlaw-forward-winconf)
+    (define-key map "<" 'japanlaw-restore-first-winconf)
+    (define-key map ">" 'japanlaw-restore-last-winconf)
+    (define-key map "wm" 'japanlaw-winconf-message)
     ;; paren
-    (define-key map "e" 'laws-fontify-or-defontify-paren)
-    (define-key map "dd" 'laws-decompose-paren)
-    (define-key map "de" 'laws-compose-paren)
+    (define-key map "e" 'japanlaw-fontify-or-defontify-paren)
+    (define-key map "dd" 'japanlaw-decompose-paren)
+    (define-key map "de" 'japanlaw-compose-paren)
     ;; outline
-    (define-key map "gt" 'laws-goto-toc)
-    (define-key map "t" 'laws-goto-toc)
-    (define-key map "gu" 'laws-up-heading)
-    (define-key map "u" 'laws-up-heading)
-    (define-key map "gf" 'laws-next-visible-heading)
-    (define-key map "f" 'laws-next-visible-heading)
-    (define-key map "gb" 'laws-previous-visible-heading)
-    (define-key map "b" 'laws-previous-visible-heading)
-    (define-key map "gn" 'laws-forward-same-level)
-    (define-key map "gp" 'laws-backward-same-level)
-    (define-key map "gg" 'laws-heading-jump)
-    (define-key map "gc" 'laws-move-to-tables)
-    (define-key map "c" 'laws-move-to-tables)
+    (define-key map "gt" 'japanlaw-goto-toc)
+    (define-key map "t" 'japanlaw-goto-toc)
+    (define-key map "gu" 'japanlaw-up-heading)
+    (define-key map "u" 'japanlaw-up-heading)
+    (define-key map "gf" 'japanlaw-next-visible-heading)
+    (define-key map "f" 'japanlaw-next-visible-heading)
+    (define-key map "gb" 'japanlaw-previous-visible-heading)
+    (define-key map "b" 'japanlaw-previous-visible-heading)
+    (define-key map "gn" 'japanlaw-forward-same-level)
+    (define-key map "gp" 'japanlaw-backward-same-level)
+    (define-key map "gg" 'japanlaw-heading-jump)
+    (define-key map "gc" 'japanlaw-move-to-tables)
+    (define-key map "c" 'japanlaw-move-to-tables)
     ;; iswitchb
-;;    (define-key map "\C-c\C-b" 'laws-iswitchb)
+;;    (define-key map "\C-c\C-b" 'japanlaw-iswitchb)
     ;; help
-    (define-key map "?" 'laws-help)
+    (define-key map "?" 'japanlaw-help)
     map))
 
-;; laws-index-mode
-(defvar laws-index-mode-name "Laws"
-  "`laws-index-mode'のモード名。")
+;; japanlaw-index-mode
+(defvar japanlaw-index-mode-name "JapanLaw"
+  "`japanlaw-index-mode'のモード名。")
 
-(defvar laws-index-buffer "*Laws*"
-  "`laws-index-mode'のバッファ名。")
+(defvar japanlaw-index-buffer "*JapanLaw*"
+  "`japanlaw-index-mode'のバッファ名。")
 
-(defvar laws-index-header-items
+(defvar japanlaw-index-header-items
   '("Opened"
     "Recent"
     "Search"
@@ -789,63 +789,63 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     "Index"
     "Directory"
     "Abbrev")
-  "`laws-index-mode'のヘッダラインのモードを表わす項目。")
+  "`japanlaw-index-mode'のヘッダラインのモードを表わす項目。")
 
 ;; 個別のモードの状態を保存するグローバル変数。
-(defvar laws-recent-alist nil)
-(defvar laws-bookmark-alist nil)
-(defvar laws-opened-alist nil)
-(defvar laws-search-history nil)
+(defvar japanlaw-recent-alist nil)
+(defvar japanlaw-bookmark-alist nil)
+(defvar japanlaw-opened-alist nil)
+(defvar japanlaw-search-history nil)
 
-(defvar laws-alist nil)
-(defvar laws-abbrev nil)
-(defvar laws-abbrev-alist nil)
+(defvar japanlaw-alist nil)
+(defvar japanlaw-abbrev nil)
+(defvar japanlaw-abbrev-alist nil)
 
 ;; 個別のモードの状態を保存するローカル変数。
-(defvar laws-index-local-mode)
-(defvar laws-index-conf)
-(defvar laws-names-alist)
-(defvar laws-search-alist)
-(defvar laws-index-alist)
-(defvar laws-directory-alist)
+(defvar japanlaw-index-local-mode)
+(defvar japanlaw-index-conf)
+(defvar japanlaw-names-alist)
+(defvar japanlaw-search-alist)
+(defvar japanlaw-index-alist)
+(defvar japanlaw-directory-alist)
 ;; Searchモードでハイライトのためのoverlayを保持するローカル変数。
-(defvar laws-index-search-overlaies)
+(defvar japanlaw-index-search-overlaies)
 
 ;; iswitchb
-(defvar laws-names-list nil "iswitchbのための補完リスト")
+(defvar japanlaw-names-list nil "iswitchbのための補完リスト")
 
-(defvar laws-iswitchb-present-list nil
-  "`laws-iswitchb'の現在の検索対象の法令リスト。")
+(defvar japanlaw-iswitchb-present-list nil
+  "`japanlaw-iswitchb'の現在の検索対象の法令リスト。")
 
 ;; w3m
-(defvar laws-w3m-dump-command
+(defvar japanlaw-w3m-dump-command
   (lambda (cols) (format "w3m -dump -cols %s" cols)))
 
-;; laws-index
-(defun laws-set-face-invisible (n)
+;; japanlaw-index
+(defun japanlaw-set-face-invisible (n)
   "不可視のプロパティを設定するフォームを返す。"
   `(,n (progn (put-text-property
 	       (match-beginning ,n) (match-end ,n)
 	       'invisible t)
 	      nil)))
 
-(defun laws-set-mouse-face-1 (n)
+(defun japanlaw-set-mouse-face-1 (n)
   `(,n (progn (add-text-properties
 	       (match-beginning ,n) (match-end ,n)
 	       (list
 		'mouse-face 'highlight
-		'local-map 'laws-index-mode-map))
+		'local-map 'japanlaw-index-mode-map))
 	      nil)))
 
-(defun laws-set-mouse-face-2 (n)
+(defun japanlaw-set-mouse-face-2 (n)
   `(,n (progn (add-text-properties
 	       (match-beginning ,n) (match-end ,n)
 	       (list
 		'mouse-face 'highlight
-		'local-map 'laws-mode-map))
+		'local-map 'japanlaw-mode-map))
 	      nil)))
 
-(defvar laws-index-font-lock-keywords
+(defvar japanlaw-index-font-lock-keywords
   (let ((fcolor (cdr (assq 'foreground-color
 			   (frame-parameters (selected-frame))))))
     (list `(
@@ -854,216 +854,216 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	    ;;
 	    ;; folder
 	    "^\\((\"\\)\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)$"
-	    ,(laws-set-face-invisible 1)
-	    (2 laws-index-flag-face t)
-	    ,(laws-set-mouse-face-1 2)
-	    ,(laws-set-face-invisible 3)
-	    ,(laws-set-face-invisible 4)
+	    ,(japanlaw-set-face-invisible 1)
+	    (2 japanlaw-index-flag-face t)
+	    ,(japanlaw-set-mouse-face-1 2)
+	    ,(japanlaw-set-face-invisible 3)
+	    ,(japanlaw-set-face-invisible 4)
 	    (5 '(:foreground ,fcolor) t)
-	    ,(laws-set-mouse-face-1 5)
-	    ,(laws-set-face-invisible 6))
+	    ,(japanlaw-set-mouse-face-1 5)
+	    ,(japanlaw-set-face-invisible 6))
 
 	  ;;
 	  ;; Abbrev
 	  ;;
 	  ;; folder
 	  `("^\\((\"\\) \\{2\\}\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
-	    ,(laws-set-face-invisible 1)
-	    (2 laws-index-flag-face t)
-	    ,(laws-set-mouse-face-1 2)
-	    ,(laws-set-face-invisible 3)
-	    ,(laws-set-face-invisible 4)
+	    ,(japanlaw-set-face-invisible 1)
+	    (2 japanlaw-index-flag-face t)
+	    ,(japanlaw-set-mouse-face-1 2)
+	    ,(japanlaw-set-face-invisible 3)
+	    ,(japanlaw-set-face-invisible 4)
 	    (5 '(:foreground ,fcolor) t)
-	    ,(laws-set-mouse-face-1 5)
-	    ,(laws-set-face-invisible 6))
+	    ,(japanlaw-set-mouse-face-1 5)
+	    ,(japanlaw-set-face-invisible 6))
 	  ;; sub folder
 	  `("^\\((\"\\) \\{4\\}\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
-	    ,(laws-set-face-invisible 1)
-	    (2 laws-index-flag-face t)
-	    ,(laws-set-mouse-face-1 2)
-	    ,(laws-set-face-invisible 3)
-	    ,(laws-set-face-invisible 4)
+	    ,(japanlaw-set-face-invisible 1)
+	    (2 japanlaw-index-flag-face t)
+	    ,(japanlaw-set-mouse-face-1 2)
+	    ,(japanlaw-set-face-invisible 3)
+	    ,(japanlaw-set-face-invisible 4)
 	    (5 '(:foreground ,fcolor) t)
-	    ,(laws-set-mouse-face-1 5)
-	    ,(laws-set-face-invisible 6))
+	    ,(japanlaw-set-mouse-face-1 5)
+	    ,(japanlaw-set-face-invisible 6))
 	  `("^\\((\"\\) \\{6\\}\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
-	    ,(laws-set-face-invisible 1)
-	    (2 laws-index-flag-face t)
-	    ,(laws-set-mouse-face-1 2)
-	    ,(laws-set-face-invisible 3)
-	    ,(laws-set-face-invisible 4)
+	    ,(japanlaw-set-face-invisible 1)
+	    (2 japanlaw-index-flag-face t)
+	    ,(japanlaw-set-mouse-face-1 2)
+	    ,(japanlaw-set-face-invisible 3)
+	    ,(japanlaw-set-face-invisible 4)
 	    (5 '(:foreground ,fcolor) t)
-	    ,(laws-set-mouse-face-1 5)
-	    ,(laws-set-face-invisible 6))
+	    ,(japanlaw-set-mouse-face-1 5)
+	    ,(japanlaw-set-face-invisible 6))
 
 	  ;;
 	  ;; Opened, Recent, Bookmark
 	  ;;
 	  `("^\\((\"\\)\\([ D]\\)\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\".+)\\)$"
-	    ,(laws-set-face-invisible 1)
+	    ,(japanlaw-set-face-invisible 1)
 	    (2 '(:foreground "red") t)
-	    ,(laws-set-mouse-face-1 2)
-	    (3 laws-index-flag-face t)
-	    ,(laws-set-face-invisible 4)
-	    ,(laws-set-face-invisible 5)
+	    ,(japanlaw-set-mouse-face-1 2)
+	    (3 japanlaw-index-flag-face t)
+	    ,(japanlaw-set-face-invisible 4)
+	    ,(japanlaw-set-face-invisible 5)
 	    (6 '(:foreground ,fcolor) t)
-	    ,(laws-set-mouse-face-1 6)
-	    ,(laws-set-face-invisible 7))
+	    ,(japanlaw-set-mouse-face-1 6)
+	    ,(japanlaw-set-face-invisible 7))
 
 	  ;;
 	  ;; 法令名
 	  ;;
 	  `("^\\((\"\\) \\{2,\\}\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\".+)\\)$"
-	    ,(laws-set-face-invisible 1)
-	    (2 laws-index-flag-face t)
-	    ;;,(laws-set-mouse-face-1 2)
-	    ,(laws-set-face-invisible 3)
-	    ,(laws-set-face-invisible 4)
+	    ,(japanlaw-set-face-invisible 1)
+	    (2 japanlaw-index-flag-face t)
+	    ;;,(japanlaw-set-mouse-face-1 2)
+	    ,(japanlaw-set-face-invisible 3)
+	    ,(japanlaw-set-face-invisible 4)
 	    (5 '(:foreground ,fcolor) t)
-	    ,(laws-set-mouse-face-1 5)
-	    ,(laws-set-face-invisible 6))
+	    ,(japanlaw-set-mouse-face-1 5)
+	    ,(japanlaw-set-face-invisible 6))
 	  ))
-  "`laws-index-mode'のための`font-lock-keywords'")
+  "`japanlaw-index-mode'のための`font-lock-keywords'")
 
-(defvar laws-index-mode-map
+(defvar japanlaw-index-mode-map
   (let ((map (make-sparse-keymap)))
     (mapc (lambda (mode)
 	    (define-key map (vector (downcase (aref mode 0)))
-	      `(lambda () (interactive) (laws-index-goto-mode (intern ,mode)))))
-	  laws-index-header-items)
-    (define-key map [mouse-2] 'laws-index-mouse-open-or-close)
+	      `(lambda () (interactive) (japanlaw-index-goto-mode (intern ,mode)))))
+	  japanlaw-index-header-items)
+    (define-key map [mouse-2] 'japanlaw-index-mouse-open-or-close)
     (define-key map [follow-link] 'mouse-face)
-    (define-key map " " 'laws-index-open-or-close)
-    (define-key map "u" 'laws-index-upper-level)
-    (define-key map "\M-[" 'laws-index-open-all)
-    (define-key map "\M-]" 'laws-index-close-all)
-    (define-key map "p" 'laws-index-previous-line)
-    (define-key map "n" 'laws-index-next-line)
-    (define-key map "j" 'laws-index-scroll-up-line)
-    (define-key map "k" 'laws-index-scroll-down-line)
-    (define-key map "\M-p" 'laws-index-previous-folder)
-    (define-key map "\M-n" 'laws-index-next-folder)
-    (define-key map "\M-<" 'laws-index-beginning-of-buffer)
-    (define-key map "\M->" 'laws-index-end-of-buffer)
-    (define-key map "\C-j" 'laws-index-goto-folder)
-    (define-key map "A" 'laws-index-bookmark-add)
-    (define-key map "m" 'laws-index-put-deletion-flag)
-    (define-key map "x" 'laws-index-do-delete-marks)
-    (define-key map "P" 'laws-index-bookmark-move-up)
-    (define-key map "N" 'laws-index-bookmark-move-down)
-    (define-key map "S" 'laws-index-search)
-    (define-key map "g" 'laws-index-update)
+    (define-key map " " 'japanlaw-index-open-or-close)
+    (define-key map "u" 'japanlaw-index-upper-level)
+    (define-key map "\M-[" 'japanlaw-index-open-all)
+    (define-key map "\M-]" 'japanlaw-index-close-all)
+    (define-key map "p" 'japanlaw-index-previous-line)
+    (define-key map "n" 'japanlaw-index-next-line)
+    (define-key map "j" 'japanlaw-index-scroll-up-line)
+    (define-key map "k" 'japanlaw-index-scroll-down-line)
+    (define-key map "\M-p" 'japanlaw-index-previous-folder)
+    (define-key map "\M-n" 'japanlaw-index-next-folder)
+    (define-key map "\M-<" 'japanlaw-index-beginning-of-buffer)
+    (define-key map "\M->" 'japanlaw-index-end-of-buffer)
+    (define-key map "\C-j" 'japanlaw-index-goto-folder)
+    (define-key map "A" 'japanlaw-index-bookmark-add)
+    (define-key map "m" 'japanlaw-index-put-deletion-flag)
+    (define-key map "x" 'japanlaw-index-do-delete-marks)
+    (define-key map "P" 'japanlaw-index-bookmark-move-up)
+    (define-key map "N" 'japanlaw-index-bookmark-move-down)
+    (define-key map "S" 'japanlaw-index-search)
+    (define-key map "g" 'japanlaw-index-update)
     (define-key map "q" 'bury-buffer)
-    (define-key map "Q" 'laws-exit)
-;;    (define-key map "\C-c\C-b" 'laws-iswitchb)
-    (define-key map "?" 'laws-index-help)
+    (define-key map "Q" 'japanlaw-exit)
+;;    (define-key map "\C-c\C-b" 'japanlaw-iswitchb)
+    (define-key map "?" 'japanlaw-index-help)
     map)
-  "`laws-index-mode'のキーマップを返す。")
+  "`japanlaw-index-mode'のキーマップを返す。")
 
 ;; Regexp
-(defvar laws-volume-face-regexp
+(defvar japanlaw-volume-face-regexp
   "\\(^[ 　]*第.+編　[^（）\n]*\\)")
 
-(defvar laws-chapter-face-regexp "\
+(defvar japanlaw-chapter-face-regexp "\
 \\(^[ 　]*第.+章\\([のノ][一二三四五六七八九十]\\)*　[^（）\n]+\\)")
 
-(defvar laws-section-face-regexp "\
+(defvar japanlaw-section-face-regexp "\
 \\(^[ 　]*第.+節\\([のノ][一二三四五六七八九十]\\)*　[^（）\n]+\\)")
 
-(defvar laws-subsection-face-regexp "\
+(defvar japanlaw-subsection-face-regexp "\
 \\(^[ 　]*第.+款\\([のノ][一二三四五六七八九十]\\)*　[^（）\n]+\\)")
 
-(defvar laws-subsection2-face-regexp "\
+(defvar japanlaw-subsection2-face-regexp "\
 ^\\([ 　]*第.+目\\([のノ][一二三四五六七八九十]\\)*　[^（）\n]+\\)")
 
-(defvar laws-article-subitem3-face-regexp "^\\(（[０-９]+）\\|([0-9]+)\\)　")
+(defvar japanlaw-article-subitem3-face-regexp "^\\(（[０-９]+）\\|([0-9]+)\\)　")
 
-(defvar laws-comment-face-regexp "^[ 　]*\\(（\\cj+）\\|(\\cj+) \\)$")
+(defvar japanlaw-comment-face-regexp "^[ 　]*\\(（\\cj+）\\|(\\cj+) \\)$")
 
-(defvar laws-article-subitem4-face-regexp "^（ｉ+）　")
+(defvar japanlaw-article-subitem4-face-regexp "^（ｉ+）　")
 
-(defvar laws-supplementary-face-regexp
+(defvar japanlaw-supplementary-face-regexp
   "^\\([　 ]*附　?則.*$\\)")
 
-(defvar laws-article-subitem2-face-regexp "^\\cK　")
+(defvar japanlaw-article-subitem2-face-regexp "^\\cK　")
 
-(defvar laws-article-number-face-regexp "\
+(defvar japanlaw-article-number-face-regexp "\
 \\(^第[一二三四五六七八九十百千]+条\\([ノの][一二三四五六七八九十百]+\\)*\\)[ 　]*")
 
-(defvar laws-article-paragraph-face-regexp "\
+(defvar japanlaw-article-paragraph-face-regexp "\
 \\(^\\([○◯]\\)?\\([０-９]+\\|[0-9]+\\)\\)[ 　]*")
 
-(defvar laws-article-item-face-regexp "\
+(defvar japanlaw-article-item-face-regexp "\
 \\(^[一二三四五六七八九十]+\\([のノ][一二三四五六七八九十]+\\)*\\)[ 　]*")
 
-(defvar laws-anchor-name-face-regexp2 "\
+(defvar japanlaw-anchor-name-face-regexp2 "\
 \\([^同]\\(\\([新旧]?\\(附則\\|法附則\\|規則附則\\|細則\\|法\\|規則\\|令\\)\\)\
 \\(\\(第[一二三四五六七八九十百千]+条\\)\\([のノ][一二三四五六七八九十]+\\)*\
 \\(第[一二三四五六七八九十]+項\\)*\
 \\(第[一二三四五六七八九十]+号\\([のノ][一二三四五六七八九十]+\\)*\\)*\\)\\)\\)")
 
-(defvar laws-anchor-article-face-regexp3 "\
+(defvar japanlaw-anchor-article-face-regexp3 "\
 .\\(\\(第[一二三四五六七八九十百千]+条\\)\\([のノ][一二三四五六七八九十]+\\)*\
 \\(第[一二三四五六七八九十]+項\\)*\
 \\(第[一二三四五六七八九十]+号\\([のノ][一二三四五六七八九十]+\\)*\\)*\\)")
 
-(defvar laws-article-regexp
+(defvar japanlaw-article-regexp
   "^第[一二三四五六七八九十百千]+条\\([のノ][一二三四五六七八九十]+\\)\\{0,3\\}"
   "条数の正規表現。")
 
-(defvar laws-paragraph-regexp
-  (concat "^[○◯]?\\(" laws-article-regexp "\\|[０-９]\\|[0-9]\\)\\{1,2\\}")
+(defvar japanlaw-paragraph-regexp
+  (concat "^[○◯]?\\(" japanlaw-article-regexp "\\|[０-９]\\|[0-9]\\)\\{1,2\\}")
   "項数の正規表現。")
 
 ;; font-lock-keywords
-(defvar laws-font-lock-keywords)
-(defvar laws-font-lock-keywords-0
-  (list `(,(concat "\\(" (regexp-opt laws-excluded-law-names) "\\)[^人]")
-	   (1 laws-anchor-name-face nil))))
+(defvar japanlaw-font-lock-keywords)
+(defvar japanlaw-font-lock-keywords-0
+  (list `(,(concat "\\(" (regexp-opt japanlaw-excluded-law-names) "\\)[^人]")
+	   (1 japanlaw-anchor-name-face nil))))
 
-(defvar laws-font-lock-keywords-1
-  (list `(,laws-chapter-face-regexp 1 laws-chapter-face)
-	`(,laws-section-face-regexp 1 laws-section-face)
-	`(,laws-subsection-face-regexp 1 laws-subsection-face)
-	`(,laws-subsection2-face-regexp 1 laws-subsection2-face)
-	`(,laws-supplementary-face-regexp 1 laws-supplementary-face)
-	`(,laws-article-number-face-regexp 1 laws-article-number-face)
-	`(,laws-anchor-name-face-regexp2 3 laws-anchor-name-face)
-	`(,laws-anchor-name-face-regexp2 4 laws-anchor-name-face)
-	'("同法" 0 laws-anchor-name-face)
-	`(,laws-anchor-article-face-regexp3 1 laws-anchor-article-face)
-	`(,laws-anchor-article-face-regexp3 ,(laws-set-mouse-face-2 1))
-	`("同法" ,(laws-set-mouse-face-2 0))
-	`(,laws-article-paragraph-face-regexp 1 laws-article-paragraph-face)
-	`(,laws-article-item-face-regexp 1 laws-article-item-face)
-	`(,laws-article-subitem2-face-regexp 0 laws-article-subitem2-face)
-	`(,laws-article-subitem3-face-regexp  0 laws-article-subitem3-face)
-	`(,laws-article-subitem4-face-regexp 0 laws-article-subitem4-face)
-	`(,laws-volume-face-regexp 1 laws-volume-face)
-	`(,laws-comment-face-regexp 1 laws-comment-face)
-	`(,laws-anchor-name-face-regexp2 ,(laws-set-mouse-face-2 2)))
-  "Font lock keywords to highlight the `laws-mode' buffer.")
+(defvar japanlaw-font-lock-keywords-1
+  (list `(,japanlaw-chapter-face-regexp 1 japanlaw-chapter-face)
+	`(,japanlaw-section-face-regexp 1 japanlaw-section-face)
+	`(,japanlaw-subsection-face-regexp 1 japanlaw-subsection-face)
+	`(,japanlaw-subsection2-face-regexp 1 japanlaw-subsection2-face)
+	`(,japanlaw-supplementary-face-regexp 1 japanlaw-supplementary-face)
+	`(,japanlaw-article-number-face-regexp 1 japanlaw-article-number-face)
+	`(,japanlaw-anchor-name-face-regexp2 3 japanlaw-anchor-name-face)
+	`(,japanlaw-anchor-name-face-regexp2 4 japanlaw-anchor-name-face)
+	'("同法" 0 japanlaw-anchor-name-face)
+	`(,japanlaw-anchor-article-face-regexp3 1 japanlaw-anchor-article-face)
+	`(,japanlaw-anchor-article-face-regexp3 ,(japanlaw-set-mouse-face-2 1))
+	`("同法" ,(japanlaw-set-mouse-face-2 0))
+	`(,japanlaw-article-paragraph-face-regexp 1 japanlaw-article-paragraph-face)
+	`(,japanlaw-article-item-face-regexp 1 japanlaw-article-item-face)
+	`(,japanlaw-article-subitem2-face-regexp 0 japanlaw-article-subitem2-face)
+	`(,japanlaw-article-subitem3-face-regexp  0 japanlaw-article-subitem3-face)
+	`(,japanlaw-article-subitem4-face-regexp 0 japanlaw-article-subitem4-face)
+	`(,japanlaw-volume-face-regexp 1 japanlaw-volume-face)
+	`(,japanlaw-comment-face-regexp 1 japanlaw-comment-face)
+	`(,japanlaw-anchor-name-face-regexp2 ,(japanlaw-set-mouse-face-2 2)))
+  "Font lock keywords to highlight the `japanlaw-mode' buffer.")
 
-(unless laws-anchor-clickable
+(unless japanlaw-anchor-clickable
   (mapc (lambda (x)
-	  (delete x laws-font-lock-keywords-1))
-	(list `(,laws-anchor-name-face-regexp2 ,(laws-set-mouse-face-2 2))
-	      `(,laws-anchor-article-face-regexp3 ,(laws-set-mouse-face-2 1))
-	      `("同法" ,(laws-set-mouse-face-2 0)))))
+	  (delete x japanlaw-font-lock-keywords-1))
+	(list `(,japanlaw-anchor-name-face-regexp2 ,(japanlaw-set-mouse-face-2 2))
+	      `(,japanlaw-anchor-article-face-regexp3 ,(japanlaw-set-mouse-face-2 1))
+	      `("同法" ,(japanlaw-set-mouse-face-2 0)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-;;; laws-data
+;;; japanlaw-data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
-(defun laws-make-backup-file (file)
+(defun japanlaw-make-backup-file (file)
   (let ((version-control t))
     (when (file-exists-p file)
       (rename-file file (car (find-backup-file-name file))))))
 
-(defun laws-make-index-files (&optional regenerate)
-  (unless laws-online-mode
-    (laws-online-mode-message #'error))
-  (laws-labels
+(defun japanlaw-make-index-files (&optional regenerate)
+  (unless japanlaw-online-mode
+    (japanlaw-online-mode-message #'error))
+  (japanlaw-labels
       ((make-index
         (file new-alist-func old-alist-func)
         ;; インデックスファイルを生成する関数。FILEに、NEW-ALIST-FUNCの
@@ -1073,7 +1073,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
         (let ((alist (funcall new-alist-func)))
           (if (equal alist (funcall old-alist-func))
               nil
-            (laws-make-backup-file file)
+            (japanlaw-make-backup-file file)
             (with-temp-file file
               (insert (format "%S" alist))
               (message "Wrote %s" file))
@@ -1081,27 +1081,27 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (let (index-updatedp abbrev-updatedp)
       ;; indexファイルが存在しない場合
       ;; 再取得して更新された場合
-      (when (or regenerate (not (file-exists-p laws-index-file)))
+      (when (or regenerate (not (file-exists-p japanlaw-index-file)))
 	(if (not (y-or-n-p "Make index files? "))
 	    (if regenerate
 		(error "Cancel.")
 	      (error "First of all, you should make the index file."))
-	  (laws-make-directory laws-path)
+	  (japanlaw-make-directory japanlaw-path)
 	  (setq index-updatedp
-		(make-index laws-index-file #'laws-get-index #'laws-alist))
+		(make-index japanlaw-index-file #'japanlaw-get-index #'japanlaw-alist))
 	  (message "Process has completed.")))
       ;; abbrevファイルが存在しない場合
       ;; 再取得して更新された場合
-      (when (or regenerate (not (file-exists-p laws-abbrev-file)))
-	(laws-make-directory laws-path)
+      (when (or regenerate (not (file-exists-p japanlaw-abbrev-file)))
+	(japanlaw-make-directory japanlaw-path)
 	(setq abbrev-updatedp
 	      (make-index
-	       laws-abbrev-file #'laws-make-abbrev-index #'laws-abbrev))
+	       japanlaw-abbrev-file #'japanlaw-make-abbrev-index #'japanlaw-abbrev))
 	(message "Process has completed.")
 	(sit-for 1))
       (cons index-updatedp abbrev-updatedp))))
 
-(defun laws-url-retrieve (url)
+(defun japanlaw-url-retrieve (url)
   "URLをGETする。"
   (save-current-buffer
     (with-current-buffer
@@ -1115,16 +1115,16 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	(goto-char (point-min))
 	(current-buffer)))))
 
-(defun laws-get-dirname (id)
+(defun japanlaw-get-dirname (id)
   "GETしたIDの保存先ディレクトリを返す。"
-  (concat laws-htmldata-path "/" (upcase (substring id 0 3))))
+  (concat japanlaw-htmldata-path "/" (upcase (substring id 0 3))))
 
-(defvar laws-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
+(defvar japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
   "法令データ提供システムのcgiのURL。")
 
-(defun laws-get-index ()
+(defun japanlaw-get-index ()
   "事項別分類索引をGETして、法令名とIDのalistのリストを生成して返す。"
-  (laws-labels
+  (japanlaw-labels
       ((split (m)
               (save-match-data
                 ;; htmldata
@@ -1135,11 +1135,11 @@ Opened Recent Search Bookmark Index Directory Abbrev"
                     (cons (match-string 1 s) (concat (match-string 2 s)
                                                      (match-string 3 s))))))))
     (save-current-buffer
-      (laws:map #'(lambda (request index)
+      (japanlaw:map #'(lambda (request index)
 		    (let ((case-fold-search t)
 			  (result nil))
 		      (with-current-buffer
-			  (laws-url-retrieve (concat laws-egov "?" request))
+			  (japanlaw-url-retrieve (concat japanlaw-egov "?" request))
 			(message "Reading [text/html]... %2d of 50 (%d%%)"
 				 (car index) (* (/ (car index) 50.0) 100))
 			(while (re-search-forward
@@ -1148,14 +1148,14 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 				result))
 			(kill-buffer (current-buffer))
 			(cons (cdr index) (nreverse result)))))
-		(laws-request-uri-list) laws-jikoubetsu-index-alist))))
+		(japanlaw-request-uri-list) japanlaw-jikoubetsu-index-alist))))
 
-(defvar laws-ryaku-url
+(defvar japanlaw-ryaku-url
   "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON")
 
-(defun laws-make-abbrev-index ()
+(defun japanlaw-make-abbrev-index ()
   "略称法令名をGETして、連想リストを返す。"
-  (with-current-buffer (laws-url-retrieve laws-ryaku-url)
+  (with-current-buffer (japanlaw-url-retrieve japanlaw-ryaku-url)
     (let ((rx-a "<A NAME=\"[0-9]+\"><B>\\(.+?\\)</B>")
 	  (rx-b "<B>\\(.+?\\)</B>")
 	  (rx-c "<A HREF=\".+?H_FILE_NAME=\\([^&]+\\)&.+?\">\\(.+?\\)</A>"))
@@ -1190,9 +1190,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	   result-a))
 	(nreverse result-a)))))
 
-(defun laws-request-uri-list ()
+(defun japanlaw-request-uri-list ()
   "URLリスト"
-  (loop for (cid . name) in laws-jikoubetsu-index-alist
+  (loop for (cid . name) in japanlaw-jikoubetsu-index-alist
         collect 
         (format (mapconcat #'identity
                            '("H_CTG_%d=%%81%%40"
@@ -1207,7 +1207,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
                              "H_YOMI_GUN=1") "&")
                 cid)))
 
-(defconst laws-jikoubetsu-index-alist 
+(defconst japanlaw-jikoubetsu-index-alist 
   '((1 . "憲法")	(2 . "国会")
     (3 . "行政組織")	(4 . "国家公務員")
     (5 . "行政手続")	(6 . "統計")
@@ -1235,7 +1235,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (49 . "防衛")	(50 . "外事"))
   "事項別索引")
 
-(defun laws-make-jikoubetsu-index ()
+(defun japanlaw-make-jikoubetsu-index ()
   (let ((strs nil)
 	(case-fold-search t))
     (save-excursion
@@ -1249,7 +1249,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (sort strs (lambda (x y)
 		 (< (string-to-number (car x)) (string-to-number (car y)))))))
 
-(defun laws-make-stags-alist ()
+(defun japanlaw-make-stags-alist ()
   "行頭から前方に検索して、ポイント行内のS式のリストを返す。"
   (save-excursion
     (save-match-data
@@ -1260,9 +1260,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	  (push (cons (match-beginning 0) (match-end 0)) result))
 	result))))
 
-(defun laws-in-stag-p (pos)
+(defun japanlaw-in-stag-p (pos)
   "ポイントPOSがタグの中にあればtを、なければnilを返す。"
-  (let ((ls (laws-make-stags-alist)))
+  (let ((ls (japanlaw-make-stags-alist)))
     (block nil
       (while ls
 	(let ((points (car ls)))
@@ -1271,7 +1271,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	      (return t)
 	    (pop ls)))))))
 
-(defun laws-duplicate-names (ls)
+(defun japanlaw-duplicate-names (ls)
   "重複する法令名のリストを返す。"
   (do ((xs (cdr ls) (cdr xs))
        (name (caar ls) (caar xs))
@@ -1282,11 +1282,11 @@ Opened Recent Search Bookmark Index Directory Abbrev"
       (when (string-match name (caar ys))
 	(push name result)))))
 
-(defun laws-replace-table-value (&optional table-pixel)
+(defun japanlaw-replace-table-value (&optional table-pixel)
   "GETしたhtmlのタグを置換する。"
   (let ((case-fold-search t)
-	(pixel (or table-pixel laws-table-pixel)))
-    (laws-labels ((match (rx s) (save-match-data (string-match rx s))))
+	(pixel (or table-pixel japanlaw-table-pixel)))
+    (japanlaw-labels ((match (rx s) (save-match-data (string-match rx s))))
       (while (re-search-forward "<TABLE [^>]+>\\|<DIV ALIGN=\"right\">" nil t)
 	(replace-match
 	 (let ((s (match-string 0)))
@@ -1299,7 +1299,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 		 (t ;; 出力される罫線表の幅を指定。
 		  (format "<TABLE WIDTH=%S BORDER>" pixel)))))))))
 
-(defun laws-load-index (index)
+(defun japanlaw-load-index (index)
   "インデックスファイルをreadしてリストを返す。"
   (with-temp-buffer
     (insert-file-contents index)
@@ -1310,7 +1310,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	  ((null ys))
 	(push (cons (car (caar ys)) (cdar ys)) acc)))))
 
-(defun laws-extract-name ()
+(defun japanlaw-extract-name ()
   "html から法令名を取得して、文字列長の小さい順でソートされたリストを返す。"
   (let ((result nil)
 	(case-fold-search t)
@@ -1318,7 +1318,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (while (re-search-forward rx nil t) (push (match-string 1) result))
     (sort (delete-dups result) (lambda (x y) (< (length x) (length y))))))
 
-(defun laws-detect-coding-region (start end priority-list)
+(defun japanlaw-detect-coding-region (start end priority-list)
   ;; `w3m-detect-coding-region'(w3m-fsf.el)の関数名のみ変更。
   "Detect coding system of the text in the region between START and END.
 Return the first possible coding system.
@@ -1333,7 +1333,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (car (detect-coding-region start end)))))
 
 
-(defun laws-url-decode-string (str &optional coding)
+(defun japanlaw-url-decode-string (str &optional coding)
   ;; `w3m-url-decode-string'(w3m.el)のxemacs対応を除いた他、関数名を変更。
   (let ((start 0)
 	(buf))
@@ -1354,65 +1354,65 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	    (with-temp-buffer
 	      (set-buffer-multibyte nil)
 	      (insert str)
-	      (laws-detect-coding-region (point-min) (point-max) coding))))
+	      (japanlaw-detect-coding-region (point-min) (point-max) coding))))
     (decode-coding-string
      str (or coding 'iso-8859-1 'iso-2022-7bit 'iso-2022-7bit))))
 
-(defun laws-make-substitution-alist (ls index)
+(defun japanlaw-make-substitution-alist (ls index)
   "置換用のalist \(\(\"法令名\" . \"path\"\) ...\) を返す。"
   (do ((ls ls (cdr ls))
        (acc nil (acons (car ls) (cdr (assoc (car ls) index)) acc)))
       ((null ls) acc)))
 
-(defun laws-expand-htmldata-url (id)
+(defun japanlaw-expand-htmldata-url (id)
   "ID(のファイル名部分`M29HO089'などの形式)から、法令名のURLを返す。"
   (if (> 3 (length id))
       ""
-    (concat laws-egov-url laws-htmldata-directory "/"
+    (concat japanlaw-egov-url japanlaw-htmldata-directory "/"
 	    (upcase (substring id 0 3)) "/" (upcase id) ".html")))
 
-(defun laws-expand-htmldata-file (id)
+(defun japanlaw-expand-htmldata-file (id)
   "ID(のファイル名部分)から、GETしたHTMLの保存先パスファイルを返す。"
   (if (> 3 (length id))
       ""
-    (concat laws-htmldata-path "/"
+    (concat japanlaw-htmldata-path "/"
 	    (upcase (substring id 0 3)) "/" (upcase id) ".html")))
 
-(defun laws-expand-data-file (id)
+(defun japanlaw-expand-data-file (id)
   "ID(のファイル名部分)から、ダンプしたデータの保存先パスファイル名を返す。"
   (if (> 3 (length id))
       ""
-    (concat laws-data-path "/"
-	    (downcase (substring id 0 3)) "/" (downcase id) laws-extention)))
+    (concat japanlaw-data-path "/"
+	    (downcase (substring id 0 3)) "/" (downcase id) japanlaw-extention)))
 
-(defun laws-expand-init-file (id)
+(defun japanlaw-expand-init-file (id)
   (if (> 3 (length id))
       ""
-    (concat laws-data-path "/"
+    (concat japanlaw-data-path "/"
 	    (downcase (substring id 0 3)) "/." (downcase id))))
 
-(defun laws-make-directory (dir)
+(defun japanlaw-make-directory (dir)
   (unless (and (file-exists-p dir)
 	       (file-directory-p dir))
     (when (file-regular-p dir)
       (error "File `%s' exists!" dir))
     (make-directory dir 'parent)))
 
-(defun laws-htmldata-retrieve (id force)
+(defun japanlaw-htmldata-retrieve (id force)
   "IDのHTMLデータが存在しない場合と、FORCEが非nilの場合に取得する。最後
 に取得した時から変更があった場合、番号付きバックアップファイルを生成する。
 保存先のhtmlのパスファイル名を返す。"
-  (let ((html-path (laws-expand-htmldata-file id))
-	(file (laws-expand-data-file id)))
+  (let ((html-path (japanlaw-expand-htmldata-file id))
+	(file (japanlaw-expand-data-file id)))
     (when (or force (not (file-exists-p html-path)))
       (let ((buffer
-	     (set-buffer (laws-url-retrieve (laws-expand-htmldata-url id)))))
+	     (set-buffer (japanlaw-url-retrieve (japanlaw-expand-htmldata-url id)))))
 	(with-current-buffer buffer
 	  (goto-char (point-min))
 	  ;; (save-excursion (replace-string "" ""))    ;Emacs23?
 	  (when (search-forward "404 Not Found" nil t)
 	    (re-search-forward "^$" nil t)
-	    (error (concat (laws-expand-htmldata-url id)
+	    (error (concat (japanlaw-expand-htmldata-url id)
 			   (replace-regexp-in-string
 			    "<.+?>\\|\r\n" ""
 			    (buffer-substring (point) (point-max))))))
@@ -1435,8 +1435,8 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 		  (message "File `%s.html' not changed from last retrieving." id)
 		  (sit-for 2))
 	      (when (file-exists-p file) (delete-file file)) ;テキストの削除
-	      (laws-make-directory (laws-get-dirname id)) ;ディレクトリ
-	      (laws-make-backup-file html-path) ;バックアップ
+	      (japanlaw-make-directory (japanlaw-get-dirname id)) ;ディレクトリ
+	      (japanlaw-make-backup-file html-path) ;バックアップ
               ;; e-gov の html はすべて shift_jis のようで、
               ;; 当分変わると思えないのでハードコーディング。
               (let ((coding-system-for-write 'japanese-shift-jis-dos))
@@ -1445,7 +1445,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	  (kill-buffer buffer))))
     html-path))
 
-(defun laws-make-images-list ()
+(defun japanlaw-make-images-list ()
   "htmldataから画像データのパスリストを取得して返す。"
   (save-excursion
     (goto-char (point-min))
@@ -1455,20 +1455,20 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(push (match-string 1) result))
       (nreverse result))))
 
-(defun laws-expand-image-file-name (path)
-  (concat laws-path path))
+(defun japanlaw-expand-image-file-name (path)
+  (concat japanlaw-path path))
 
-(defun laws-expand-image-file-url (path)
-  (concat laws-egov-url (substring path 1)))
+(defun japanlaw-expand-image-file-url (path)
+  (concat japanlaw-egov-url (substring path 1)))
 
-(defun laws-images-retrieve (ls)
+(defun japanlaw-images-retrieve (ls)
   (save-current-buffer
     (mapcar #'(lambda (path)
-		(let* ((url (laws-expand-image-file-url path))
-		       (file (laws-expand-image-file-name path))
+		(let* ((url (japanlaw-expand-image-file-url path))
+		       (file (japanlaw-expand-image-file-name path))
 		       (dir (file-name-directory file))
-		       (buffer (laws-url-retrieve url)))
-		  (laws-make-directory dir)
+		       (buffer (japanlaw-url-retrieve url)))
+		  (japanlaw-make-directory dir)
 		  (with-current-buffer (set-buffer buffer)
 		    (goto-char (point-min))
                     (let ((coding-system-for-write 'binary))
@@ -1481,7 +1481,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 		  (kill-buffer buffer)))
 	    ls)))
 
-(defun laws-replace-image-tags (images)
+(defun japanlaw-replace-image-tags (images)
   (let ((case-fold-search t))
     (goto-char (point-min))
     (while images
@@ -1490,7 +1490,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(replace-match (format "\"<../..%s>\"" (car images)) nil nil nil 1))
       (pop images))))
 
-(defun laws-html-get-h-path ()
+(defun japanlaw-html-get-h-path ()
   "htmldataからH-PATHを抽出する。"
   (let ((case-fold-search t)
 	(h-path nil))
@@ -1499,21 +1499,21 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (while (re-search-forward "<A HREF=\".+?H_PATH=\\(.+?\\)\" [^>]+>" nil t)
 	(let ((path (match-string-no-properties 1)))
 	  (when (re-search-forward "\\([^<]+\\)</A>" nil t)
-	    (let ((s (laws-url-decode-string (match-string 1))))
+	    (let ((s (japanlaw-url-decode-string (match-string 1))))
 	      (push (cons s path) h-path)))))
       (nreverse h-path))))
 
-(defun laws-w3m-dump (command htmldata)
+(defun japanlaw-w3m-dump (command htmldata)
   (shell-command (concat command " " htmldata) t))
 
-(defun laws-replace-zspc ()
+(defun japanlaw-replace-zspc ()
   (goto-char (point-min))
   (while (search-forward "  " nil t)
     (replace-match "　")))
 
-(defun laws-make-font-lock-regexp-in-buffer (h-path)
-  ;; laws-name-search-in-buffer
-  (let ((xs (laws-names-list))
+(defun japanlaw-make-font-lock-regexp-in-buffer (h-path)
+  ;; japanlaw-name-search-in-buffer
+  (let ((xs (japanlaw-names-list))
 	(result nil))
     (save-excursion
       (while xs
@@ -1523,7 +1523,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(pop xs)))
     (mapc (lambda (name)
 	    (setq result (delete name result)))
-	  laws-excluded-law-names)
+	  japanlaw-excluded-law-names)
     (when h-path
       (mapc (lambda (cell) (push (car cell) result))
 	    h-path))
@@ -1531,45 +1531,45 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	nil
       (regexp-opt result))))
 
-(defun laws-write-init-file (out h-path iimagep force)
+(defun japanlaw-write-init-file (out h-path iimagep force)
   (if (or force (not (file-exists-p out)))
-      (let ((regexps (laws-make-font-lock-regexp-in-buffer h-path)))
+      (let ((regexps (japanlaw-make-font-lock-regexp-in-buffer h-path)))
 	(with-temp-file out
 	  ;; 正規表現文字列、冒頭の未施行法令等とその参照先URLのcons、imageが
 	  ;; 含まれているかどうか。
-	  (insert ";;; `laws-mode' laws-font-lock-keywords-2 file.\n")
+	  (insert ";;; `japanlaw-mode' japanlaw-font-lock-keywords-2 file.\n")
 	  (insert (format "%S" (list regexps h-path iimagep)))
 	  (message "Wrote %s" out)))))
 
-(defun laws-read-init-file ()
+(defun japanlaw-read-init-file ()
   ;; 生成されたファイル情報を読み込む。
-  (let ((file (laws-expand-init-file
+  (let ((file (japanlaw-expand-init-file
 	       (file-name-sans-extension
 		(file-name-nondirectory (buffer-file-name))))))
     (if (file-exists-p file)
 	(with-temp-buffer
 	  (insert-file-contents file)
 	  (read (current-buffer)))
-      (message "Not exists laws-font-lock-keywords-2 file `%s'" file)
+      (message "Not exists japanlaw-font-lock-keywords-2 file `%s'" file)
       nil)))
 
-(defun laws-make-data (id &optional force)
+(defun japanlaw-make-data (id &optional force)
   "htmlデータをw3mでダンプする。FORCEが非nilならIDをGET、nilなら既
 にGETしたHTMLを対象とする。また、font-lockのためのタグの埋め込み等
 の加工を行なう。
 生成されたファイルの名前を返す。"
-  (unless laws-online-mode
-    (laws-online-mode-message #'error))
+  (unless japanlaw-online-mode
+    (japanlaw-online-mode-message #'error))
   (message "Getting file and converting...")
-  (let ((temp (concat laws-temp-path "/temp.html"))
+  (let ((temp (concat japanlaw-temp-path "/temp.html"))
 	;; htmldata を取得。
-	(html (laws-htmldata-retrieve id nil))
-	(file (laws-expand-data-file id))
-	(regfile (laws-expand-init-file id))
-	(coding-system-for-write laws-coding-system-for-write)
+	(html (japanlaw-htmldata-retrieve id nil))
+	(file (japanlaw-expand-data-file id))
+	(regfile (japanlaw-expand-init-file id))
+	(coding-system-for-write japanlaw-coding-system-for-write)
 	alist images h-path)
     (with-temp-file temp
-      (laws-make-directory (file-name-directory temp))
+      (japanlaw-make-directory (file-name-directory temp))
       ;; バッファにhtmlを取得する。
       (message "Getting htmldata...")
       (let ((coding-system-for-read 'raw-text)
@@ -1577,37 +1577,37 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
         (insert-file-contents html))
       (message (concat (current-message) " done."))
       ;; イメージデータの取得。
-      (setq images (laws-make-images-list))
+      (setq images (japanlaw-make-images-list))
       (when (and force images)
 	(message "Getting images...")
-	(laws-images-retrieve images)
+	(japanlaw-images-retrieve images)
 	(message "Getting images... done."))
       ;; `H_PATH'の取得。
-      (setq h-path (laws-html-get-h-path))
+      (setq h-path (japanlaw-html-get-h-path))
       ;; htmlタグの置換。テンポラリファイルに書き出す。
       ;; テンポラリファイルは削除せずに残す。
       (goto-char (point-min))
       (message "Replacing tag's value in htmldata...")
-      (laws-replace-table-value)
+      (japanlaw-replace-table-value)
       ;; イメージを置換する。
-      (when images (laws-replace-image-tags images))
+      (when images (japanlaw-replace-image-tags images))
       )
     (message (concat (current-message) " done."))
     ;; テンポラリファイルを対象にw3mでダンプする。
     (with-temp-file file
-      (laws-make-directory (file-name-directory file))
+      (japanlaw-make-directory (file-name-directory file))
       (message "Extracting data from htmldata...")
-      (laws-w3m-dump
-       (funcall laws-w3m-dump-command laws-w3m-dump-cols) temp)
+      (japanlaw-w3m-dump
+       (funcall japanlaw-w3m-dump-command japanlaw-w3m-dump-cols) temp)
       (message (concat (current-message) " done."))
       ;; 半角空白2個を全角空白に置換する。
       (message "Replacing spaces...")
-      (save-excursion (laws-replace-zspc))
+      (save-excursion (japanlaw-replace-zspc))
       (message (concat (current-message) " done."))
       ;; バッファ内の法令名を取得し、正規表現を生成する。
       (message "Scanning law names...")
       ;; 情報を書き込む。
-      (laws-write-init-file regfile h-path (if images t nil) force)
+      (japanlaw-write-init-file regfile h-path (if images t nil) force)
       (message (concat (current-message) " done."))
       (message "Scanning law names...done")
       (message "Getting file and converting...done")
@@ -1615,24 +1615,24 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       file)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-;;; laws-index
+;;; japanlaw-index
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
 ;;
 ;; Header line
 ;;
-(defun laws-index-mode-header-line-keymap (mode)
+(defun japanlaw-index-mode-header-line-keymap (mode)
   "ヘッダラインのキーマップを返す。"
   (let ((map (make-sparse-keymap)))
     (define-key map [header-line mouse-1]
       `(lambda (e) (interactive "e")
 	       (set-buffer (window-buffer (posn-window (event-end e))))
-	       (laws-index-goto-mode (intern ,mode))))
+	       (japanlaw-index-goto-mode (intern ,mode))))
     map))
 
-(defun laws-index-header-line-format (mode)
-  "`laws-index-mode'の。`header-line-format'"
-  (laws-labels
+(defun japanlaw-index-header-line-format (mode)
+  "`japanlaw-index-mode'の。`header-line-format'"
+  (japanlaw-labels
       ((spc (n)
             (propertize " " 'display `(space :width (,n)))))
     (concat " "
@@ -1642,7 +1642,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 		   (concat 
 		    (propertize (concat (spc 5) s (spc 5))
 				'face
-				laws-index-header-selected-face
+				japanlaw-index-header-selected-face
 				'mouse-face 'highlight
 				'help-echo (format "`%s'" s))
 		    (spc 1))
@@ -1651,70 +1651,70 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 		   (concat
 		    (propertize (concat (spc 5) (substring s 0 1))
 				'face
-				laws-index-header-key-face)
+				japanlaw-index-header-key-face)
 		    (propertize (concat (substring s 1) (spc 5))
 				'face
-				laws-index-header-foreground-face))
+				japanlaw-index-header-foreground-face))
 		   'mouse-face 'highlight
 		   'help-echo (format "mouse-1: Goto `%s' mode" s)
-		   'local-map (laws-index-mode-header-line-keymap s))
+		   'local-map (japanlaw-index-mode-header-line-keymap s))
 		  (spc 1))))
-	     laws-index-header-items ""))))
+	     japanlaw-index-header-items ""))))
 
-(defun laws-index-update ()
+(defun japanlaw-index-update ()
   "現在のモードの表示を更新する。
 更新するのは、Opened,Recent,Bookmarkの場合。それ以外のモードでは更新しない。"
   (interactive)
-  (when (memq laws-index-local-mode '(Opened Recent Bookmark))
-    (laws-index-goto-mode laws-index-local-mode 'update)
-    (message "Updating %s...done" laws-index-local-mode)))
+  (when (memq japanlaw-index-local-mode '(Opened Recent Bookmark))
+    (japanlaw-index-goto-mode japanlaw-index-local-mode 'update)
+    (message "Updating %s...done" japanlaw-index-local-mode)))
 
-(defun laws-index-goto-mode (mode &optional update)
-  "`laws-index-mode'の各、個別のモード`laws-index-local-mode'に遷移する。
-MODEが現在のMODEと同じ場合、nilを返す(see. `laws-index-search')。"
-  (laws-index-set-mode-conf)
+(defun japanlaw-index-goto-mode (mode &optional update)
+  "`japanlaw-index-mode'の各、個別のモード`japanlaw-index-local-mode'に遷移する。
+MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')。"
+  (japanlaw-index-set-mode-conf)
   (let ((name (lambda (mode)
-		(format "%s:%s" laws-index-mode-name mode))))
+		(format "%s:%s" japanlaw-index-mode-name mode))))
     (unless (and (not update) (string= mode-name (funcall name mode)))
       (setq header-line-format
-	    (if laws-use-index-header-line
-		(laws-index-header-line-format mode)
+	    (if japanlaw-use-index-header-line
+		(japanlaw-index-header-line-format mode)
 	      nil))
       (setq mode-name (funcall name mode)
-	    laws-index-local-mode mode)
+	    japanlaw-index-local-mode mode)
       (force-mode-line-update)
-      (laws-index-insert-contents mode)
-      (laws-index-restore-mode-conf))))
+      (japanlaw-index-insert-contents mode)
+      (japanlaw-index-restore-mode-conf))))
 
 ;; Buffer configuration
-(defun laws-index-set-mode-conf ()
+(defun japanlaw-index-set-mode-conf ()
   "現在のバッファの情報を保存する。"
-  (setq laws-index-conf
-	(delete (assoc laws-index-local-mode laws-index-conf)
-		laws-index-conf))
-  (push `(,laws-index-local-mode
+  (setq japanlaw-index-conf
+	(delete (assoc japanlaw-index-local-mode japanlaw-index-conf)
+		japanlaw-index-conf))
+  (push `(,japanlaw-index-local-mode
 	  ,(line-number-at-pos)
 	  ,(window-start))
-	laws-index-conf))
+	japanlaw-index-conf))
 
-(defun laws-index-restore-mode-conf ()
+(defun japanlaw-index-restore-mode-conf ()
   "以前のバッファの状態を復元する。"
-  (let ((cel (assoc laws-index-local-mode laws-index-conf)))
+  (let ((cel (assoc japanlaw-index-local-mode japanlaw-index-conf)))
     (when cel
       (destructuring-bind (mode line start)
-	  (assoc laws-index-local-mode laws-index-conf)
+	  (assoc japanlaw-index-local-mode japanlaw-index-conf)
 	(set-window-start (selected-window) start)
-	(laws-goto-line line)
-	(laws-index-move-to-column)))))
+	(japanlaw-goto-line line)
+	(japanlaw-index-move-to-column)))))
 
 ;;
 ;; Common
 ;;
 
-(defmacro laws-with-buffer-read-only (&rest forms)
+(defmacro japanlaw-with-buffer-read-only (&rest forms)
   "バッファの未編集とリードオンリー状態を保持してFORMSを評価する。"
-  '(unless (eq major-mode 'laws-index-mode)
-    (error "ERROR: major-mode is not laws-index-mode."))
+  '(unless (eq major-mode 'japanlaw-index-mode)
+    (error "ERROR: major-mode is not japanlaw-index-mode."))
   `(progn
      (setq buffer-read-only nil)
      (unwind-protect
@@ -1723,49 +1723,49 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `laws-index-search')。"
 	 (setq buffer-read-only t)
 	 (set-buffer-modified-p nil)))))
 
-(defsubst laws-read ()
+(defsubst japanlaw-read ()
   "バッファのinvisibleなS式をreadする。"
   (save-excursion
     (forward-line 0)
     (read (current-buffer))))
 
-(defsubst laws-get-values (&optional pointer)
+(defsubst japanlaw-get-values (&optional pointer)
   "バッファのinvisibleなS式のデータをリストで返す。
 関数POINTERが与えられれば、POINTERが指す値を返す。
-\(laws-read\)のエラーを把捉したらnilを返す。"
+\(japanlaw-read\)のエラーを把捉したらnilを返す。"
   (condition-case err
-      (destructuring-bind (flag name . id) (laws-read)
+      (destructuring-bind (flag name . id) (japanlaw-read)
 	(if (functionp pointer)
 	    (funcall pointer (list flag name id))
 	  (list flag name id)))
     (error nil)))
 
-(defsubst laws-any-function (funcs)
+(defsubst japanlaw-any-function (funcs)
   "FUNCSの中で初めに非nilを返した関数を返す。
 FUNCSは引数を取らない関数のリスト。"
   (block nil
     (mapc (lambda (f) (and (funcall f) (return f)))
 	  funcs)))
 
-(defun laws-goto-line (line)
+(defun japanlaw-goto-line (line)
   (goto-char (point-min))
   (forward-line line))
 
-(defun laws:filter (pred ls)
+(defun japanlaw:filter (pred ls)
   "PREDを適用した結果tを返した要素を集める。"
   (do ((xs ls (cdr xs))
        (acc nil (if (funcall pred (car xs)) (cons (car xs) acc) acc)))
       ((null xs) (nreverse acc))))
 
-(defun laws:append-map (f ls &rest more)
-  (apply 'append (apply 'laws:map f ls more)))
+(defun japanlaw:append-map (f ls &rest more)
+  (apply 'append (apply 'japanlaw:map f ls more)))
 
-(defun laws:fringe (tree)
+(defun japanlaw:fringe (tree)
   (if (listp tree)
-      (laws:append-map 'laws:fringe tree)
+      (japanlaw:append-map 'japanlaw:fringe tree)
     (list tree)))
 
-(defun laws:map (f ls &rest more)
+(defun japanlaw:map (f ls &rest more)
   (let* ((x (cons ls more))
 	 (n (apply 'min (mapcar 'length x))))
     (do ((n n (- n 1))
@@ -1784,52 +1784,52 @@ FUNCSは引数を取らない関数のリスト。"
 ;; Common
 
 ;; インデックスファイルの内容を保持するローカル変数。
-(defun laws-alist ()
+(defun japanlaw-alist ()
   "インデックスファイルをロードする関数。"
-  (or laws-alist
-      (and (file-exists-p laws-index-file)
-	   (setq laws-alist
+  (or japanlaw-alist
+      (and (file-exists-p japanlaw-index-file)
+	   (setq japanlaw-alist
 		 (with-temp-buffer
-		   (insert-file-contents laws-index-file)
+		   (insert-file-contents japanlaw-index-file)
 		   (read (current-buffer)))))))
 
 ;; 略称法令名のインデックスファイルの内容を保持するローカル変数。
-(defun laws-abbrev ()
+(defun japanlaw-abbrev ()
   "略称法令名のインデックスファイルをロードする関数。"
-  (or laws-abbrev
-      (and (file-exists-p laws-abbrev-file)
-	   (setq laws-abbrev
+  (or japanlaw-abbrev
+      (and (file-exists-p japanlaw-abbrev-file)
+	   (setq japanlaw-abbrev
 		 (with-temp-buffer
-		   (insert-file-contents laws-abbrev-file)
+		   (insert-file-contents japanlaw-abbrev-file)
 		   (read (current-buffer)))))))
 
 ;; Search
-(defun laws-names-alist ()
-  (or laws-names-alist
-      (setq laws-names-alist
-	    (cons (do ((xs (laws-alist) (cdr xs))
+(defun japanlaw-names-alist ()
+  (or japanlaw-names-alist
+      (setq japanlaw-names-alist
+	    (cons (do ((xs (japanlaw-alist) (cdr xs))
 		       (result nil))
 		      ((null xs) result)
 		    (do ((ys (cdar xs) (cdr ys)))
 			((null ys))
 		      (push (car ys) result)))
-		  (do ((xs (laws-abbrev-alist) (cdr xs))
+		  (do ((xs (japanlaw-abbrev-alist) (cdr xs))
 		       (result nil))
 		      ((null xs) result)
 		    (do ((ys (cdr (cdar xs)) (cdr ys)))
 			((null ys))
 		      (push (cons (caar ys) (cdr (cdar ys))) result)))))))
 
-(defun laws-search-alist ()
-  laws-search-alist)
+(defun japanlaw-search-alist ()
+  japanlaw-search-alist)
 
 ;; Index
-;; `laws-alist'から生成した、`laws-index'のIndexモードで利用する連想リスト。
-(defun laws-index-alist ()
-  "`laws-index-alist'を生成する関数。"
-  (or laws-index-alist
-      (setq laws-index-alist
-	    (do ((xs (laws-alist) (cdr xs))
+;; `japanlaw-alist'から生成した、`japanlaw-index'のIndexモードで利用する連想リスト。
+(defun japanlaw-index-alist ()
+  "`japanlaw-index-alist'を生成する関数。"
+  (or japanlaw-index-alist
+      (setq japanlaw-index-alist
+	    (do ((xs (japanlaw-alist) (cdr xs))
 		 (result nil))
 		((null xs) (nreverse result))
 	      (push (cons (caar xs)
@@ -1843,12 +1843,12 @@ FUNCSは引数を取らない関数のリスト。"
 		    result)))))
 
 ;; Directory
-;; `laws-alist'から生成した、`laws-index'のDirectoryモードで利用する連想リスト。
-(defun laws-directory-alist ()
-  "`laws-directory-alist'を生成する関数。"
-  (or laws-directory-alist
-      (setq laws-directory-alist
-	    (let ((dirs (do ((xs (laws-alist) (cdr xs))
+;; `japanlaw-alist'から生成した、`japanlaw-index'のDirectoryモードで利用する連想リスト。
+(defun japanlaw-directory-alist ()
+  "`japanlaw-directory-alist'を生成する関数。"
+  (or japanlaw-directory-alist
+      (setq japanlaw-directory-alist
+	    (let ((dirs (do ((xs (japanlaw-alist) (cdr xs))
 			     (result nil))
 			    ((null xs)
 			     (sort result
@@ -1903,13 +1903,13 @@ FUNCSは引数を取らない関数のリスト。"
 		  (nreverse result)))))))
 
 ;; Abbrev
-;; `laws-abbrev'から生成した、`laws-index'のAbbrevモードで利用する連想リスト。
-(defun laws-abbrev-alist ()
-  "`laws-abbrev-alist'を生成する関数。"
-  (or laws-abbrev-alist
+;; `japanlaw-abbrev'から生成した、`japanlaw-index'のAbbrevモードで利用する連想リスト。
+(defun japanlaw-abbrev-alist ()
+  "`japanlaw-abbrev-alist'を生成する関数。"
+  (or japanlaw-abbrev-alist
       (setq
-       laws-abbrev-alist
-       (do ((xs (laws-abbrev) (cdr xs))
+       japanlaw-abbrev-alist
+       (do ((xs (japanlaw-abbrev) (cdr xs))
 	    (result nil))
 	   ((null xs) (nreverse result))
 	 (push (cons (caar xs)
@@ -1928,137 +1928,137 @@ FUNCSは引数を取らない関数のリスト。"
 	       result)))))
 
 ;; Bookmark
-(defun laws-bookmark-alist ()
+(defun japanlaw-bookmark-alist ()
   "ブックマークの連想リストを返す関数。"
-  (or laws-bookmark-alist
-      (and (file-exists-p laws-bookmark-file)
-	   (setq laws-bookmark-alist
+  (or japanlaw-bookmark-alist
+      (and (file-exists-p japanlaw-bookmark-file)
+	   (setq japanlaw-bookmark-alist
 		 (with-temp-buffer
-		   (insert-file-contents laws-bookmark-file)
+		   (insert-file-contents japanlaw-bookmark-file)
 		   (read (current-buffer)))))))
 
-(defun laws-bookmark-save ()
-  "ブックマークファイル:`laws-bookmark-file'に
-`laws-bookmark-alist'を出力する。変更がなかった場合は出力しない。"
+(defun japanlaw-bookmark-save ()
+  "ブックマークファイル:`japanlaw-bookmark-file'に
+`japanlaw-bookmark-alist'を出力する。変更がなかった場合は出力しない。"
   (ignore-errors
-    (when (and laws-bookmark-file
-	       (file-exists-p (file-name-directory laws-bookmark-file)))
+    (when (and japanlaw-bookmark-file
+	       (file-exists-p (file-name-directory japanlaw-bookmark-file)))
       (with-temp-buffer
 	(save-excursion
-	  (if (file-exists-p laws-bookmark-file)
-	      (insert-file-contents laws-bookmark-file)
+	  (if (file-exists-p japanlaw-bookmark-file)
+	      (insert-file-contents japanlaw-bookmark-file)
 	    (princ nil (current-buffer))))
-	(unless (equal (read (current-buffer)) (laws-bookmark-alist))
-	  (with-temp-file laws-bookmark-file
-	    (insert (format "%S" laws-bookmark-alist))
-	    (message "Wrote %s" laws-bookmark-file))
+	(unless (equal (read (current-buffer)) (japanlaw-bookmark-alist))
+	  (with-temp-file japanlaw-bookmark-file
+	    (insert (format "%S" japanlaw-bookmark-alist))
+	    (message "Wrote %s" japanlaw-bookmark-file))
 	  t)))))
 
-(defun laws-convert-files ()
+(defun japanlaw-convert-files ()
   "Bookmark's format change in v0.8.5 from v0.8.4."
   ;; Bookmark
-  (when (and laws-bookmark-file
-	     (file-exists-p (file-name-directory laws-bookmark-file))
-	     (file-exists-p laws-bookmark-file))
+  (when (and japanlaw-bookmark-file
+	     (file-exists-p (file-name-directory japanlaw-bookmark-file))
+	     (file-exists-p japanlaw-bookmark-file))
     (with-temp-buffer
-      (save-excursion (insert-file-contents laws-bookmark-file))
+      (save-excursion (insert-file-contents japanlaw-bookmark-file))
       (let ((alist (read (current-buffer))))
 	(when (consp (car alist))
-	  (with-temp-file laws-bookmark-file
+	  (with-temp-file japanlaw-bookmark-file
 	    (insert (format "%S" (mapcar (lambda (x) (upcase (cdr x))) alist)))
-	    (message "Wrote %s" laws-bookmark-file))
-	  (setq laws-bookmark-alist nil)
-	  (laws-bookmark-alist)))))
+	    (message "Wrote %s" japanlaw-bookmark-file))
+	  (setq japanlaw-bookmark-alist nil)
+	  (japanlaw-bookmark-alist)))))
   ;; Recent
-  (when (and laws-recent-file
-	     (file-exists-p (file-name-directory laws-recent-file))
-	     (file-exists-p laws-recent-file))
+  (when (and japanlaw-recent-file
+	     (file-exists-p (file-name-directory japanlaw-recent-file))
+	     (file-exists-p japanlaw-recent-file))
     (with-temp-buffer
-      (save-excursion (insert-file-contents laws-recent-file))
+      (save-excursion (insert-file-contents japanlaw-recent-file))
       (let ((alist (read (current-buffer))))
-	(with-temp-file laws-recent-file
+	(with-temp-file japanlaw-recent-file
 	  (insert (format "%S" (mapcar (lambda (x) (upcase x)) alist))))
-	(message "Wrote %s" laws-recent-file)
-	(setq laws-recent-alist nil)
-	(laws-recent-alist)))))
+	(message "Wrote %s" japanlaw-recent-file)
+	(setq japanlaw-recent-alist nil)
+	(japanlaw-recent-alist)))))
 
 ;; Opened
 
-(defun laws-opened-alist ()
+(defun japanlaw-opened-alist ()
   "現在開いている法令データの連想リストを返す。"
   ;; 法令データかどうかは、パスファイル名が法令データのパスファイル名と等しい
   ;; かどうかで判定。ディレクトリは大文字、urlは小文字。
-  (laws-make-alist-from-name
+  (japanlaw-make-alist-from-name
    (lambda ()
-     (laws-labels ((nameof (file) (laws-file-sans-name file)))
+     (japanlaw-labels ((nameof (file) (japanlaw-file-sans-name file)))
        (mapcar #'nameof
-	       (laws:filter
+	       (japanlaw:filter
 		(lambda (file)
-		  (string= (laws-expand-data-file (nameof file))
+		  (string= (japanlaw-expand-data-file (nameof file))
 			   file))
 		(delete nil (mapcar #'buffer-file-name (buffer-list)))))))))
 
 ;; Recent
-(defun laws-recent-alist ()
+(defun japanlaw-recent-alist ()
   "最近開いたファイルの連想リストを返す。"
-  (or laws-recent-alist
-      (and (file-exists-p laws-recent-file)
-	   (setq laws-recent-alist
+  (or japanlaw-recent-alist
+      (and (file-exists-p japanlaw-recent-file)
+	   (setq japanlaw-recent-alist
 		 (with-temp-buffer
-		   (insert-file-contents laws-recent-file)
+		   (insert-file-contents japanlaw-recent-file)
 		   (read (current-buffer)))))))
 
-(defun laws-recent-add ()
+(defun japanlaw-recent-add ()
   (ignore-errors
-    (let ((name (upcase (laws-file-sans-name (buffer-file-name)))))
+    (let ((name (upcase (japanlaw-file-sans-name (buffer-file-name)))))
       (when (string= (buffer-file-name)
-		     (laws-expand-data-file name))
-	(setq laws-recent-alist (cons name (delete name (laws-recent-alist))))
-	(when (> (length laws-recent-alist) laws-recent-max)
-	  (setq laws-recent-alist
-		(butlast laws-recent-alist
-			 (- (length laws-recent-alist) laws-recent-max))))))))
+		     (japanlaw-expand-data-file name))
+	(setq japanlaw-recent-alist (cons name (delete name (japanlaw-recent-alist))))
+	(when (> (length japanlaw-recent-alist) japanlaw-recent-max)
+	  (setq japanlaw-recent-alist
+		(butlast japanlaw-recent-alist
+			 (- (length japanlaw-recent-alist) japanlaw-recent-max))))))))
 
-(defun laws-recent-save ()
-  "最近開いた法令ファイル: `laws-recent-file'に
-`laws-recent-alist'を出力する。変更がなかった場合は出力しない。"
+(defun japanlaw-recent-save ()
+  "最近開いた法令ファイル: `japanlaw-recent-file'に
+`japanlaw-recent-alist'を出力する。変更がなかった場合は出力しない。"
   (ignore-errors
-    (when (and laws-recent-file
-	       (file-exists-p (file-name-directory laws-recent-file)))
+    (when (and japanlaw-recent-file
+	       (file-exists-p (file-name-directory japanlaw-recent-file)))
       (with-temp-buffer
 	(save-excursion
-	  (if (file-exists-p laws-recent-file)
-	      (insert-file-contents laws-recent-file)
+	  (if (file-exists-p japanlaw-recent-file)
+	      (insert-file-contents japanlaw-recent-file)
 	    (princ nil (current-buffer))))
-	(unless (equal (read (current-buffer)) (laws-recent-alist))
-	  (with-temp-file laws-recent-file
-	    (insert (format "%S" laws-recent-alist))
-	    (message "Wrote %s" laws-recent-file))
+	(unless (equal (read (current-buffer)) (japanlaw-recent-alist))
+	  (with-temp-file japanlaw-recent-file
+	    (insert (format "%S" japanlaw-recent-alist))
+	    (message "Wrote %s" japanlaw-recent-file))
 	  t)))))
 
 ;;
 ;; Insert contents
 ;;
-(defun laws-index-insert-contents (mode)
+(defun japanlaw-index-insert-contents (mode)
   "各モードごとにツリーの挿入処理を分岐する。"
-  ;;(laws-save-)
-  (laws-with-buffer-read-only (erase-buffer))
+  ;;(japanlaw-save-)
+  (japanlaw-with-buffer-read-only (erase-buffer))
   (case mode
-    (Opened	(laws-index-insert-opened))
-    (Recent	(laws-index-insert-recent))
-    (Search	(laws-index-insert-search))
-    (Bookmark	(laws-index-insert-bookmark))
-    (Index	(laws-index-insert-index))
-    (Directory	(laws-index-insert-directory))
-    (Abbrev	(laws-index-insert-abbrev))))
+    (Opened	(japanlaw-index-insert-opened))
+    (Recent	(japanlaw-index-insert-recent))
+    (Search	(japanlaw-index-insert-search))
+    (Bookmark	(japanlaw-index-insert-bookmark))
+    (Index	(japanlaw-index-insert-index))
+    (Directory	(japanlaw-index-insert-directory))
+    (Abbrev	(japanlaw-index-insert-abbrev))))
 
 ;; Common
-(defun laws-make-alist-from-name (lfunc)
+(defun japanlaw-make-alist-from-name (lfunc)
   "NAME(\"M29HO089\"のような形式)から法令名とNAMEの連想リストを生成する関数。
 LFUNCは、NAMEからなるリストを返す関数。"
   (mapcar (lambda (name)
 	    (or (block nil
-		  (do ((xs (laws-alist) (cdr xs)))
+		  (do ((xs (japanlaw-alist) (cdr xs)))
 		      ((null xs))
 		    (let ((cell (rassoc (upcase name) (cdar xs))))
 		      (when cell
@@ -2067,15 +2067,15 @@ LFUNCは、NAMEからなるリストを返す関数。"
 		(cons "未登録法令" name)))
 	  (funcall lfunc)))
 
-(defun laws-index-insert-alist-function (func)
+(defun japanlaw-index-insert-alist-function (func)
   "Index,Directoryで、ツリーの挿入処理をする関数。"
   (let ((alist (funcall func)))
-    (case laws-index-local-mode
+    (case japanlaw-index-local-mode
       ((Index Directory)
-       (laws-with-buffer-read-only
+       (japanlaw-with-buffer-read-only
 	;; Test:
 	;; (error Lisp nesting exceeds `max-lisp-eval-depth')
-	;; (laws-index-search-insert-func alist)
+	;; (japanlaw-index-search-insert-func alist)
 	(while alist
 	  (let ((cel (car alist))
 		(opened (car (cdar alist))))
@@ -2087,10 +2087,10 @@ LFUNCは、NAMEからなるリストを返す関数。"
 	  (pop alist)))
        )
       ((Abbrev)
-       (laws-with-buffer-read-only
+       (japanlaw-with-buffer-read-only
 	;; Test:
 	;; (error Lisp nesting exceeds `max-lisp-eval-depth')
-	;; (laws-index-search-insert-func alist)
+	;; (japanlaw-index-search-insert-func alist)
 	(do ((xs alist (cdr xs)))
 	    ((null xs))
 	  (let ((opened (car (cdar xs))))
@@ -2106,25 +2106,25 @@ LFUNCは、NAMEからなるリストを返す関数。"
 		      (insert (format "%S\n" `("    -" ,(caar zs) ,(cdar zs))))))))))))
        )
       ((Bookmark Opened Recent)
-       (laws-with-buffer-read-only
+       (japanlaw-with-buffer-read-only
 	(while alist
 	  (insert (format "%S\n" `(" -" ,(caar alist) ,(cdar alist))))
 	  (pop alist))))
       ((Search)
-       (laws-with-buffer-read-only
-	(laws-index-search-insert-func alist))
-       (laws-index-highlight-search-buffer))
+       (japanlaw-with-buffer-read-only
+	(japanlaw-index-search-insert-func alist))
+       (japanlaw-index-highlight-search-buffer))
       )))
 
 ;; recursion
-(defun laws-index-search-insert-func (alist)
+(defun japanlaw-index-search-insert-func (alist)
   (unless (null alist)
     (let* ((cell (car alist))
 	   (opened (cadr cell)))
       ;; 検索式
       (insert (format "%S\n" `(,(if opened "-" "+") ,(car cell))))
       ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
-      (laws-labels
+      (japanlaw-labels
 	  ((rec (ls)
                 (unless (null ls)
                   (let* ((cell (car ls))
@@ -2149,239 +2149,239 @@ LFUNCは、NAMEからなるリストを返す関数。"
                                                     ,(cdar ys))))))))))))
                   (rec (cdr ls)))))
 	(when opened (rec (cddr cell)))))
-    (laws-index-search-insert-func (cdr alist))))
+    (japanlaw-index-search-insert-func (cdr alist))))
 
 ;; Opened
-(defun laws-index-insert-opened ()
-  (laws-index-insert-alist-function #'laws-opened-alist))
+(defun japanlaw-index-insert-opened ()
+  (japanlaw-index-insert-alist-function #'japanlaw-opened-alist))
 
 ;; Recent
-(defun laws-index-insert-recent ()
-  (laws-index-insert-alist-function
-   (lambda () (laws-make-alist-from-name #'laws-recent-alist))))
+(defun japanlaw-index-insert-recent ()
+  (japanlaw-index-insert-alist-function
+   (lambda () (japanlaw-make-alist-from-name #'japanlaw-recent-alist))))
 
 ;; Search
-(defun laws-index-insert-search ()
-  (laws-index-insert-alist-function #'laws-search-alist))
+(defun japanlaw-index-insert-search ()
+  (japanlaw-index-insert-alist-function #'japanlaw-search-alist))
 
 ;; Bookmark
-(defun laws-index-insert-bookmark ()
-  (laws-index-insert-alist-function
-   (lambda () (laws-make-alist-from-name #'laws-bookmark-alist))))
+(defun japanlaw-index-insert-bookmark ()
+  (japanlaw-index-insert-alist-function
+   (lambda () (japanlaw-make-alist-from-name #'japanlaw-bookmark-alist))))
 
 ;; Index
-(defun laws-index-insert-index ()
+(defun japanlaw-index-insert-index ()
   "Indexで、バッファにツリーを挿入する。"
-  (laws-index-insert-alist-function #'laws-index-alist))
+  (japanlaw-index-insert-alist-function #'japanlaw-index-alist))
 
 ;; Directory
-(defun laws-index-insert-directory ()
+(defun japanlaw-index-insert-directory ()
   "Directoryで、バッファにツリーを挿入する。"
-  (laws-index-insert-alist-function #'laws-directory-alist))
+  (japanlaw-index-insert-alist-function #'japanlaw-directory-alist))
 
 ;; Abbrev
-(defun laws-index-insert-abbrev ()
+(defun japanlaw-index-insert-abbrev ()
   "Abbrevで、バッファにツリーを挿入する。"
-  (laws-index-insert-alist-function #'laws-abbrev-alist))
+  (japanlaw-index-insert-alist-function #'japanlaw-abbrev-alist))
 
 ;;
 ;; Open or close
 ;;
 
 ;; Common
-(defsubst laws-index-folder-level ()
-  (let ((level (member (laws-get-values #'car)
+(defsubst japanlaw-index-folder-level ()
+  (let ((level (member (japanlaw-get-values #'car)
 		       '("+" "-" "  +" "  -" "    +" "    -" "      -"))))
     (if level
 	(/ (1- (length (car level))) 2)
       -1)))
 
-(defsubst laws-index-folder-level-0 ()
+(defsubst japanlaw-index-folder-level-0 ()
   "folderの階層が最上位なら非nilを返す。"
-  (zerop (laws-index-folder-level)))
+  (zerop (japanlaw-index-folder-level)))
 
-(defsubst laws-index-folder-level-1 ()
+(defsubst japanlaw-index-folder-level-1 ()
   "folderの階層が1番目なら非nilを返す。"
-  (= (laws-index-folder-level) 1))
+  (= (japanlaw-index-folder-level) 1))
 
-(defsubst laws-index-folder-level-2 ()
+(defsubst japanlaw-index-folder-level-2 ()
   "フォルダの階層が2番目なら非nilを返す。"
-  (= (laws-index-folder-level) 2))
+  (= (japanlaw-index-folder-level) 2))
 
-(defsubst laws-index-folder-level-3 ()
+(defsubst japanlaw-index-folder-level-3 ()
   "フォルダの階層が3番目なら非nilを返す。"
-  (= (laws-index-folder-level) 3))
+  (= (japanlaw-index-folder-level) 3))
 
-(defsubst laws-index-not-folder-p ()
+(defsubst japanlaw-index-not-folder-p ()
   "アイテムがフォルダでないとき真を返す。"
-  (and (not (laws-index-folder-level-0))
-       (not (laws-index-folder-level-1))
-       (not (laws-index-folder-level-2))))
+  (and (not (japanlaw-index-folder-level-0))
+       (not (japanlaw-index-folder-level-1))
+       (not (japanlaw-index-folder-level-2))))
 
-(defsubst laws-index-folder-open-p ()
+(defsubst japanlaw-index-folder-open-p ()
   "folderが開いていれば非nilを、閉じていればnilを返す。"
   (save-excursion
     (forward-line 0)
     (and (re-search-forward "\" *-\"" (line-end-position) t) t)))
 
-(defun laws-index-open-or-close ()
+(defun japanlaw-index-open-or-close ()
   "フォルダなら開閉し、法令ならその法令を開くコマンド。"
   (interactive)
   (apply #'funcall
-	 (let ((mode laws-index-local-mode))
+	 (let ((mode japanlaw-index-local-mode))
 	   (case mode
-	     (Opened		`(laws-index-opened-oc))
-	     (Recent		`(laws-index-recent-oc))
-	     (Search		`(laws-index-search-oc))
-	     (Bookmark		`(laws-index-bookmark-oc))
-	     (Index		`(laws-index-index-oc))
-	     (Directory		`(laws-index-directory-oc))
-	     (Abbrev		`(laws-index-abbrev-oc)))))
+	     (Opened		`(japanlaw-index-opened-oc))
+	     (Recent		`(japanlaw-index-recent-oc))
+	     (Search		`(japanlaw-index-search-oc))
+	     (Bookmark		`(japanlaw-index-bookmark-oc))
+	     (Index		`(japanlaw-index-index-oc))
+	     (Directory		`(japanlaw-index-directory-oc))
+	     (Abbrev		`(japanlaw-index-abbrev-oc)))))
   ;; 開いた場合、次が実行されるのは問題か。
-  (laws-index-move-to-column))
+  (japanlaw-index-move-to-column))
 
-(defun laws-index-browse-at-point ()
+(defun japanlaw-index-browse-at-point ()
   ;; メニューコマンド
   (interactive)
-  (let ((id (car (nth 2 (laws-get-values)))))
+  (let ((id (car (nth 2 (japanlaw-get-values)))))
     (if id
-	(browse-url (laws-expand-htmldata-url id))
+	(browse-url (japanlaw-expand-htmldata-url id))
       (message "No url at point."))))
 
-(defun laws-index-mouse-open-or-close (event)
+(defun japanlaw-index-mouse-open-or-close (event)
   "マウスでフォルダの開閉、法令を開くコマンド。"
   (interactive "e")
   (set-buffer (window-buffer (posn-window (event-end event))))
   (goto-char (posn-point (event-end event)))
-  (laws-index-open-or-close)
-  (when (laws-index-folder-level-0) (recenter 0)))
+  (japanlaw-index-open-or-close)
+  (when (japanlaw-index-folder-level-0) (recenter 0)))
 
-(defun laws-retrieve-index ()
+(defun japanlaw-retrieve-index ()
   "インデックスファイルを取得し直す。最後に取得してから更新があっ
 た場合、番号付きバックアップを生成する。"
   (interactive)
-  (unless (eq major-mode 'laws-index-mode)
-    (error "Try in laws-index-mode."))
-  (let ((updated (laws-make-index-files 'regenerate))
+  (unless (eq major-mode 'japanlaw-index-mode)
+    (error "Try in japanlaw-index-mode."))
+  (let ((updated (japanlaw-make-index-files 'regenerate))
 	msg)
     ;; Abbreves
     (cond ((cdr updated)
-	   (setq laws-abbrev-alist nil)
+	   (setq japanlaw-abbrev-alist nil)
 	   (push "Abbrevs was updated." msg))
 	  (t (push "Abbrevs was not updated." msg)))
     ;; Index
     (cond ((car updated)
-	   (setq laws-alist nil)
+	   (setq japanlaw-alist nil)
 	   (push "Index was updated." msg))
 	  (t (push "Index was not updated." msg)))
     (when (and (or (car updated) (cdr updated))
-	       (get-buffer laws-index-buffer))
-      (kill-buffer laws-index-buffer)
-      (laws-index))
+	       (get-buffer japanlaw-index-buffer))
+      (kill-buffer japanlaw-index-buffer)
+      (japanlaw-index))
     (message (mapconcat 'identity msg "  "))))
 
-(defun laws-retrieve-html ()
+(defun japanlaw-retrieve-html ()
   "ポイント位置のHTMLデータを再取得。最後に取得してから更新があっ
 た場合、番号付きバックアップを生成する。"
   (interactive)
-  (let ((id (cond ((eq major-mode 'laws-index-mode)
-		   (car (nth 2 (laws-get-values))))
-		  ((eq major-mode 'laws-mode)
-		   (upcase (laws-file-sans-name (buffer-file-name))))
-		  (t (error "Try in laws-index-mode or laws-mode.")))))
-    (when (and (laws-get-name id)
-	       (or laws-online-mode
-		   (laws-online-mode-message #'error))
+  (let ((id (cond ((eq major-mode 'japanlaw-index-mode)
+		   (car (nth 2 (japanlaw-get-values))))
+		  ((eq major-mode 'japanlaw-mode)
+		   (upcase (japanlaw-file-sans-name (buffer-file-name))))
+		  (t (error "Try in japanlaw-index-mode or japanlaw-mode.")))))
+    (when (and (japanlaw-get-name id)
+	       (or japanlaw-online-mode
+		   (japanlaw-online-mode-message #'error))
 	       (y-or-n-p "Retrieve htmldata from egov? "))
-      (let ((html (laws-expand-htmldata-file id))
-	    (file (laws-expand-data-file id)))
-	(laws-htmldata-retrieve id 'force)
+      (let ((html (japanlaw-expand-htmldata-file id))
+	    (file (japanlaw-expand-data-file id)))
+	(japanlaw-htmldata-retrieve id 'force)
 	(let ((buffer (get-file-buffer file)))
 	  (when (and buffer
 		     ;; 更新された場合 => nil
 		     (not (verify-visited-file-modtime buffer)))
 	    (kill-buffer buffer)))
-	(laws-open-file id)))))
+	(japanlaw-open-file id)))))
 
-(defun laws-index-open-all ()
+(defun japanlaw-index-open-all ()
   "`Index'で、すべてのフォルダを開くコマンド。"
   (interactive)
   (apply #'funcall
-	 (let ((mode laws-index-local-mode))
+	 (let ((mode japanlaw-index-local-mode))
 	   (case mode
-	     ;;(Opened `(laws-index-opened-oc ,mode))
-	     ;;(Recent `(laws-index-recent-oc ,mode))
-	     ;;(Search `(laws-index-search-oc ,mode))
-	     ;;(Bookmark `(laws-index-bookmark-oc ,mode))
-	     (Index `(laws-index-index-oc-all t))
-	     (Directory `(laws-index-directory-oc-all t))
-	     (Abbrev `(laws-index-abbrev-oc-all t))
+	     ;;(Opened `(japanlaw-index-opened-oc ,mode))
+	     ;;(Recent `(japanlaw-index-recent-oc ,mode))
+	     ;;(Search `(japanlaw-index-search-oc ,mode))
+	     ;;(Bookmark `(japanlaw-index-bookmark-oc ,mode))
+	     (Index `(japanlaw-index-index-oc-all t))
+	     (Directory `(japanlaw-index-directory-oc-all t))
+	     (Abbrev `(japanlaw-index-abbrev-oc-all t))
 	     (t (error "Not supported."))))))
 
-(defun laws-index-close-all ()
+(defun japanlaw-index-close-all ()
   "`Index'で、すべてのフォルダを閉じるコマンド。"
   (interactive)
   (apply #'funcall
-	 (let ((mode laws-index-local-mode))
+	 (let ((mode japanlaw-index-local-mode))
 	   (case mode
-	     ;;(Opened `(laws-index-opened-oc nil))
-	     ;;(Recent `(laws-index-recent-oc nil))
-	     ;;(Search `(laws-index-search-oc nil))
-	     ;;(Bookmark `(laws-index-bookmark-oc nil))
-	     (Index `(laws-index-index-oc-all nil))
-	     (Directory `(laws-index-directory-oc-all nil))
-	     (Abbrev `(laws-index-abbrev-oc-all nil))
+	     ;;(Opened `(japanlaw-index-opened-oc nil))
+	     ;;(Recent `(japanlaw-index-recent-oc nil))
+	     ;;(Search `(japanlaw-index-search-oc nil))
+	     ;;(Bookmark `(japanlaw-index-bookmark-oc nil))
+	     (Index `(japanlaw-index-index-oc-all nil))
+	     (Directory `(japanlaw-index-directory-oc-all nil))
+	     (Abbrev `(japanlaw-index-abbrev-oc-all nil))
 	     (t (error "Not supported."))))))
 
-(defun laws-index-folder-toggle-state ()
+(defun japanlaw-index-folder-toggle-state ()
   "フォルダの開閉フラグをトグルする。"
   (forward-line 0)
   (when (re-search-forward "[+-]" (line-end-position) t)
     (replace-match
      (string (+ (- ?- (string-to-char (match-string 0))) ?+)))))
 
-(defun laws-index-upper-level ()
+(defun japanlaw-index-upper-level ()
   "ひとつ上の階層に移動するコマンド。"
   (interactive)
-  (let ((level (laws-index-folder-level)))
+  (let ((level (japanlaw-index-folder-level)))
     (when (> level 0)
-      (while (> (1+ (laws-index-folder-level)) level)
+      (while (> (1+ (japanlaw-index-folder-level)) level)
 	(forward-line -1))
-      (laws-index-move-to-column))))
+      (japanlaw-index-move-to-column))))
 
 ;; Index and Directory
-(defun laws-index-set-alist (name opened func)
+(defun japanlaw-index-set-alist (name opened func)
   "連想リストのキーがNAMEのフォルダの開閉フラグを(not opened)にセットする。
 FUNCは連想リストを返す関数。"
   (let ((cell (cdr (assoc name (funcall func)))))
     (setcar cell (not opened))
     (cdr cell)))
 
-(defun laws-index-folder (name opened func)
+(defun japanlaw-index-folder (name opened func)
   "`Index'と`Directory'で、フォルダの開閉を処理する関数。"
-  (let ((cell (laws-index-set-alist name opened func)))
+  (let ((cell (japanlaw-index-set-alist name opened func)))
     (if opened
-	(laws-with-buffer-read-only
+	(japanlaw-with-buffer-read-only
 	 (let ((start (progn (forward-line 1) (point)))
 	       (end (progn (while (and (not (eobp))
-				       (not (laws-index-folder-level-0)))
+				       (not (japanlaw-index-folder-level-0)))
 			     (forward-line 1))
 			   (point))))
 	   (unless (= start end)
 	     (delete-region start end)
 	     (forward-line -1)
-	     (laws-index-folder-toggle-state))))
+	     (japanlaw-index-folder-toggle-state))))
       ;; closed
-      (laws-with-buffer-read-only
-       (laws-index-folder-toggle-state)
+      (japanlaw-with-buffer-read-only
+       (japanlaw-index-folder-toggle-state)
        (forward-line 1)
        (do ((xs cell (cdr xs)))
 	   ((null xs))
 	 (insert (format "%S\n" `("  -" ,(caar xs) ,(cdar xs)))))
-       (laws-index-upper-level)))))
+       (japanlaw-index-upper-level)))))
 
-(defun laws-open-file (id)
-  (let* ((file (laws-expand-data-file id))
+(defun japanlaw-open-file (id)
+  (let* ((file (japanlaw-expand-data-file id))
 	 (buffer (get-file-buffer file)))
     (switch-to-buffer
      (or buffer
@@ -2389,144 +2389,144 @@ FUNCは連想リストを返す関数。"
 		 (find-file-noselect
 		  (if (file-exists-p file)
 		      file
-		    (laws-make-data id 'force))))
-	   (laws-mode))))
-    (laws-recent-add)))
+		    (japanlaw-make-data id 'force))))
+	   (japanlaw-mode))))
+    (japanlaw-recent-add)))
 
-(defun laws-index-index-oc-function (func)
+(defun japanlaw-index-index-oc-function (func)
   "`Index',`Directory'で、フォルダなら開閉をし法令名なら開く。"
-  (let* ((values (laws-get-values))
+  (let* ((values (japanlaw-get-values))
 	 (name (cadr values))
 	 (id (car (nth 2 values))))
-    (if (laws-index-folder-level-0)
+    (if (japanlaw-index-folder-level-0)
 	;; folder open or close
-	(laws-index-folder name (laws-index-folder-open-p) func)
+	(japanlaw-index-folder name (japanlaw-index-folder-open-p) func)
       ;; file open
       (unless id (error "Not a law data."))
       (save-excursion
 	(forward-line 0)
-	(laws-open-file id)))))
+	(japanlaw-open-file id)))))
 
-(defun laws-index-index-oc-all-function (open afunc ifunc)
+(defun japanlaw-index-index-oc-all-function (open afunc ifunc)
   "`Index',`Directory'で、すべてのフォルダの開閉をする。
 AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をする関数。"
   (save-excursion
     (do ((alist (funcall afunc) (cdr alist)))
 	((null alist))
       (setcar (cdar alist) open))
-    (laws-with-buffer-read-only (erase-buffer))
+    (japanlaw-with-buffer-read-only (erase-buffer))
     (funcall ifunc)))
 
 ;; Opened
 
 ;; Recent
 
-(defun laws-index-search-oc ()
+(defun japanlaw-index-search-oc ()
   "`Search'で、フォルダなら開閉をし、法令名なら開く。"
-  (let ((name (laws-get-values #'cadr))
+  (let ((name (japanlaw-get-values #'cadr))
 	(keys nil))
     (unless name (error "Not a law data."))
-    (if (laws-get-values (lambda (x) (nth 2 x)))
-	(laws-open-file (car (laws-get-values (lambda (x) (nth 2 x)))))
+    (if (japanlaw-get-values (lambda (x) (nth 2 x)))
+	(japanlaw-open-file (car (japanlaw-get-values (lambda (x) (nth 2 x)))))
       (let ((cell (save-excursion
-		    (dotimes (x (laws-index-folder-level))
-		      (laws-index-upper-level)
-		      (push (laws-get-values #'cadr) keys))
-		    (assoc (laws-get-values #'cadr) (laws-search-alist)))))
-	(laws-index-set-search-alist
-	 cell keys name (laws-index-folder-open-p))))))
+		    (dotimes (x (japanlaw-index-folder-level))
+		      (japanlaw-index-upper-level)
+		      (push (japanlaw-get-values #'cadr) keys))
+		    (assoc (japanlaw-get-values #'cadr) (japanlaw-search-alist)))))
+	(japanlaw-index-set-search-alist
+	 cell keys name (japanlaw-index-folder-open-p))))))
 
-(defun laws-index-set-search-alist (cell keys name opened)
-  "`laws-search-alist'のCELLの中でキーがNAMEのフォルダの開閉フラグ
+(defun japanlaw-index-set-search-alist (cell keys name opened)
+  "`japanlaw-search-alist'のCELLの中でキーがNAMEのフォルダの開閉フラグ
 を(not opened)に変更してバッファを更新する。"
   (case (length keys)
     (0 (setcar (cdr cell) (not opened)))
     (1 (setcar (cdr (assoc name cell)) (not opened)))
     (2 (setcar (cdr (assoc name (cdr (assoc (cadr keys) cell))))
 	       (not opened))))
-  (unless (laws-index-goto-mode 'Search)
+  (unless (japanlaw-index-goto-mode 'Search)
     (let ((line (line-number-at-pos)))
-      (laws-with-buffer-read-only
+      (japanlaw-with-buffer-read-only
        (erase-buffer)
-       (laws-index-search-insert-func (laws-search-alist)))
-      (laws-index-highlight-search-buffer)
-      (laws-goto-line line))))
+       (japanlaw-index-search-insert-func (japanlaw-search-alist)))
+      (japanlaw-index-highlight-search-buffer)
+      (japanlaw-goto-line line))))
 
 ;; Opened
-(defun laws-index-opened-oc ()
+(defun japanlaw-index-opened-oc ()
   "`Opened'で、法令ファイルに切り替える。"
-  (laws-index-index-oc-function #'laws-opened-alist))
+  (japanlaw-index-index-oc-function #'japanlaw-opened-alist))
 
 ;; Recent
-(defun laws-index-recent-oc ()
+(defun japanlaw-index-recent-oc ()
   "`Recent'で、法令ファイルに切り替える。"
-  (laws-index-index-oc-function
-   (lambda () (laws-make-alist-from-name #'laws-recent-alist))))
+  (japanlaw-index-index-oc-function
+   (lambda () (japanlaw-make-alist-from-name #'japanlaw-recent-alist))))
 
 ;; Bookmark
-(defun laws-index-bookmark-oc ()
+(defun japanlaw-index-bookmark-oc ()
   "`Bookmark'で、法令ファイルを開く。"
-  (laws-index-index-oc-function
-   (lambda () (laws-make-alist-from-name #'laws-bookmark-alist))))
+  (japanlaw-index-index-oc-function
+   (lambda () (japanlaw-make-alist-from-name #'japanlaw-bookmark-alist))))
 
 ;; Index
-(defun laws-index-index-oc ()
+(defun japanlaw-index-index-oc ()
   "`Index'で、フォルダの開閉をする。"
-  (laws-index-index-oc-function #'laws-index-alist))
+  (japanlaw-index-index-oc-function #'japanlaw-index-alist))
 
-(defun laws-index-index-oc-all (open)
+(defun japanlaw-index-index-oc-all (open)
   "`Index'で、すべてのフォルダの開閉をする。"
-  (laws-index-index-oc-all-function
-   open #'laws-index-alist #'laws-index-insert-index))
+  (japanlaw-index-index-oc-all-function
+   open #'japanlaw-index-alist #'japanlaw-index-insert-index))
 
 ;; Directory
-(defun laws-index-directory-oc ()
+(defun japanlaw-index-directory-oc ()
   "`Directory'で、フォルダの開閉をする。"
-  (laws-index-index-oc-function #'laws-directory-alist))
+  (japanlaw-index-index-oc-function #'japanlaw-directory-alist))
 
-(defun laws-index-directory-oc-all (open)
+(defun japanlaw-index-directory-oc-all (open)
   "`Directory'で、すべてのフォルダの開閉をする。"
-  (laws-index-index-oc-all-function
-   open #'laws-directory-alist #'laws-index-insert-directory))
+  (japanlaw-index-index-oc-all-function
+   open #'japanlaw-directory-alist #'japanlaw-index-insert-directory))
 
 ;; Abbrev
-(defun laws-index-set-abbrev-alist (name opened)
-  "`laws-abbrev-alist'のフォルダの開閉フラグをセットする関数。"
-  (cond ((laws-index-folder-level-1)
+(defun japanlaw-index-set-abbrev-alist (name opened)
+  "`japanlaw-abbrev-alist'のフォルダの開閉フラグをセットする関数。"
+  (cond ((japanlaw-index-folder-level-1)
 	 ;; sub folder
 	 (save-excursion
-	   (laws-index-upper-level)
+	   (japanlaw-index-upper-level)
 	   (let ((cell
-		  (cdr (assoc (laws-get-values #'cadr) (laws-abbrev-alist)))))
+		  (cdr (assoc (japanlaw-get-values #'cadr) (japanlaw-abbrev-alist)))))
 	     (let ((cell (cdr (assoc name cell))))
 	       (setcar cell (not opened))
 	       (cdr cell)))))
-	((laws-index-folder-level-0)
+	((japanlaw-index-folder-level-0)
 	 ;; folder
-	 (let ((cell (cdr (assoc name (laws-abbrev-alist)))))
+	 (let ((cell (cdr (assoc name (japanlaw-abbrev-alist)))))
 	   (setcar cell (not opened))
 	   (cdr cell)))))
 
-(defun laws-index-abbrev-folder (name opened sub)
+(defun japanlaw-index-abbrev-folder (name opened sub)
   "`Abbrev'で、フォルダの開閉を処理する関数。"
-  (let ((cell (laws-index-set-abbrev-alist name opened)))
-    (unless (> (laws-index-folder-level) 1)
+  (let ((cell (japanlaw-index-set-abbrev-alist name opened)))
+    (unless (> (japanlaw-index-folder-level) 1)
       (if opened
-	  (laws-with-buffer-read-only
+	  (japanlaw-with-buffer-read-only
 	   (let ((start (progn (forward-line 1) (point)))
 		 (end (progn (while (and (not (eobp))
 					 (not (if sub
-						  (/= (laws-index-folder-level) 2)
-						(laws-index-folder-level-0))))
+						  (/= (japanlaw-index-folder-level) 2)
+						(japanlaw-index-folder-level-0))))
 			       (forward-line 1))
 			     (point))))
 	     (unless (= start end)
 	       (delete-region start end)
 	       (forward-line -1)
-	       (laws-index-folder-toggle-state))))
+	       (japanlaw-index-folder-toggle-state))))
 	;; closed
-	(laws-with-buffer-read-only
-	 (laws-index-folder-toggle-state)
+	(japanlaw-with-buffer-read-only
+	 (japanlaw-index-folder-toggle-state)
 	 (forward-line 1)
 	 (if sub
 	     ;; sub folder
@@ -2542,58 +2542,58 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 		 (do ((zs (cdr (cdar ys)) (cdr zs)))
 		     ((null zs))
 		   (insert (format "%S\n" `("    -" ,(caar zs) ,(cdar zs)))))))))
-	 (laws-index-upper-level))))))
+	 (japanlaw-index-upper-level))))))
 
-(defun laws-index-abbrev-oc ()
+(defun japanlaw-index-abbrev-oc ()
   "`Abbrev'で、フォルダなら開閉し法令なら開く。"
-  (let* ((values (laws-get-values))
+  (let* ((values (japanlaw-get-values))
 	 (name (cadr values))
 	 (id (nth 2 values)))
-    (if (< (laws-index-folder-level) 2)
+    (if (< (japanlaw-index-folder-level) 2)
 	;; menu open or close
-	(laws-index-abbrev-folder
-	 name (laws-index-folder-open-p) (laws-index-folder-level-1))
+	(japanlaw-index-abbrev-folder
+	 name (japanlaw-index-folder-open-p) (japanlaw-index-folder-level-1))
       ;; file open
-      (laws-open-file (car id)))))
+      (japanlaw-open-file (car id)))))
 
-(defun laws-index-abbrev-oc-all (open)
+(defun japanlaw-index-abbrev-oc-all (open)
   "`Abbrev'で、すべてのフォルダの開閉をする。"
-  (laws-index-index-oc-all-function
-   open #'laws-abbrev-alist #'laws-index-insert-abbrev))
+  (japanlaw-index-index-oc-all-function
+   open #'japanlaw-abbrev-alist #'japanlaw-index-insert-abbrev))
 
 ;;
 ;; Search
 ;;
-(defalias 'laws-search 'laws-index-search
+(defalias 'japanlaw-search 'japanlaw-index-search
   "法令名(略称法令名を含む)を検索するコマンド。引数付きで実行した
 場合は、以前の検索結果を初期化しない。")
 
-(defun laws-index-search (rx &optional noclear)
+(defun japanlaw-index-search (rx &optional noclear)
   "法令名(略称法令名を含む)を検索するコマンド。引数付きで実行した
 場合は、以前の検索結果を初期化しない。"
-  (interactive (laws-index-search-interactive))
-  (laws-labels
+  (interactive (japanlaw-index-search-interactive))
+  (japanlaw-labels
       ((display-result (rx names abbreves complete noclear)
-                       (unless noclear (setq laws-search-alist nil))
+                       (unless noclear (setq japanlaw-search-alist nil))
                        ;; t: opened flag
                        (push
                         (list (format "検索式 `%s'" rx) t
                               `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
                               `(,(format "略称法令名検索 該当件数 %d" (length abbreves)) t ,@abbreves)
                               `(,(format "法令名検索 該当件数 %d" (length names)) t ,@names))
-                        laws-search-alist)
+                        japanlaw-search-alist)
                        ;; バッファ更新
-                       ;; laws-index-goto-mode: Return nil if same local-mode.
-                       (unless (laws-index-goto-mode 'Search)
-                         (laws-with-buffer-read-only (erase-buffer))
-                         (laws-index-insert-alist-function #'laws-search-alist))))
+                       ;; japanlaw-index-goto-mode: Return nil if same local-mode.
+                       (unless (japanlaw-index-goto-mode 'Search)
+                         (japanlaw-with-buffer-read-only (erase-buffer))
+                         (japanlaw-index-insert-alist-function #'japanlaw-search-alist))))
     (let ((complete nil))
       (message "Searching...")
       (display-result
        ;; 検索式
        rx
        ;; 法令名検索
-       (do ((xs (car (laws-names-alist)) (cdr xs))
+       (do ((xs (car (japanlaw-names-alist)) (cdr xs))
 	    (names-search nil))
 	   ((null xs) names-search)
 	 (let ((name (car (caar xs)))
@@ -2618,7 +2618,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 			   (member match complete))
 		 (push match names-search))))))
        ;; 略称法令名検索
-       (do ((xs (cdr (laws-names-alist)) (cdr xs))
+       (do ((xs (cdr (japanlaw-names-alist)) (cdr xs))
 	    (abbrev-search nil))
 	   ((null xs) abbrev-search)
 	 (when (string-match rx (caar xs))
@@ -2630,24 +2630,24 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
        noclear)
       (message (concat (current-message) "done")))))
 
-(defun laws-index-search-interactive ()
-  (unless (file-exists-p laws-index-file)
-    (error "Try `M-x laws'"))
-  (when laws-setup-p (laws-setup))
-  (let ((rx (read-string "Search: " nil 'laws-search-history)))
+(defun japanlaw-index-search-interactive ()
+  (unless (file-exists-p japanlaw-index-file)
+    (error "Try `M-x japanlaw'"))
+  (when japanlaw-setup-p (japanlaw-setup))
+  (let ((rx (read-string "Search: " nil 'japanlaw-search-history)))
     (when (equal rx "")
       (error ""))
-    (unless (eq major-mode 'laws-index-mode)
-      (if (get-buffer laws-index-buffer)
-	  (switch-to-buffer laws-index-buffer)
-	(laws-index)))
-    (when (assoc (format "検索式 `%s'" rx) laws-search-alist)
+    (unless (eq major-mode 'japanlaw-index-mode)
+      (if (get-buffer japanlaw-index-buffer)
+	  (switch-to-buffer japanlaw-index-buffer)
+	(japanlaw-index)))
+    (when (assoc (format "検索式 `%s'" rx) japanlaw-search-alist)
       (error "`%s' is retrieved." rx))
     (list rx current-prefix-arg)))
 
 ;; Searchモードで検索結果をハイライトする
-(defun laws-index-highlight-search-buffer ()
-  (laws-labels
+(defun japanlaw-index-highlight-search-buffer ()
+  (japanlaw-labels
       ((put-overlay ()
                     (let ((rx (and (re-search-forward
                                     "`\\(.+?\\)'" (line-end-position) t)
@@ -2656,15 +2656,15 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
                       (overlay-put
                        (car (push (make-overlay (match-beginning 1)
                                                 (match-end 1))
-                                  laws-index-search-overlaies))
+                                  japanlaw-index-search-overlaies))
                        'face '(:foreground "red"))
                       ;; 検索結果
                       (forward-line 1)
-                      (while (and (/= (laws-index-folder-level) 0)
+                      (while (and (/= (japanlaw-index-folder-level) 0)
                                   (not (eobp)))
-                        (while (= (laws-index-folder-level) 1)
+                        (while (= (japanlaw-index-folder-level) 1)
                           (forward-line 1))
-                        (when (>= (laws-index-folder-level) 2)
+                        (when (>= (japanlaw-index-folder-level) 2)
                           (let* ((end (re-search-forward "[-+]\" \"\\(.+?\\)\""
                                                          (line-end-position) t))
                                  (beg (and end (match-beginning 1))))
@@ -2674,13 +2674,13 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
                               (overlay-put
                                (car (push (make-overlay (+ beg (match-beginning 0))
                                                         (+ beg (match-end 0)))
-                                          laws-index-search-overlaies))
+                                          japanlaw-index-search-overlaies))
                                'face 'match)))
                           (forward-line 1)))
-                      (and (= (laws-index-folder-level) 0)
+                      (and (= (japanlaw-index-folder-level) 0)
                            (put-overlay)))))
-    (mapc 'delete-overlay laws-index-search-overlaies)
-    (setq laws-index-search-overlaies nil)
+    (mapc 'delete-overlay japanlaw-index-search-overlaies)
+    (setq japanlaw-index-search-overlaies nil)
     (save-excursion
       (goto-char (point-min))
       (unless (eobp) (put-overlay)))))
@@ -2688,26 +2688,26 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 ;;
 ;; Bookmark
 ;;
-(defun laws-index-bookmark-add ()
+(defun japanlaw-index-bookmark-add ()
   "ブックマークに法令名を追加するコマンド。
-ファイル:`laws-bookmark-file'に書き出す。"
+ファイル:`japanlaw-bookmark-file'に書き出す。"
   (interactive)
-  (unless (eq laws-index-local-mode 'Bookmark)
+  (unless (eq japanlaw-index-local-mode 'Bookmark)
     (condition-case err
-	(destructuring-bind (flag name id) (laws-get-values)
+	(destructuring-bind (flag name id) (japanlaw-get-values)
 	  (unless id (error "Not a law data."))
 	  (let ((id (car id)))
-	    (if (member id (laws-bookmark-alist))
+	    (if (member id (japanlaw-bookmark-alist))
 		(message "Already exists in Bookmark.")
-	      (push id laws-bookmark-alist)
+	      (push id japanlaw-bookmark-alist)
 	      (message "Add to Bookmark `%s'" name))))
       (error nil))))
 
-(defun laws-index-put-deletion-flag ()
+(defun japanlaw-index-put-deletion-flag ()
   "Bookmark,Opened,Recentで削除マークを付ける。"
   (interactive)
-  (when (member laws-index-local-mode '(Opened Recent Bookmark))
-    (laws-with-buffer-read-only
+  (when (member japanlaw-index-local-mode '(Opened Recent Bookmark))
+    (japanlaw-with-buffer-read-only
      (forward-line 0)
      (when (re-search-forward "\\([ D]\\)-" (line-end-position) t)
        (replace-match
@@ -2715,65 +2715,65 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 	nil nil nil 1)))
     (forward-line 1)
     (when (eobp) (goto-char (point-min)))
-    (laws-index-move-to-column)))
+    (japanlaw-index-move-to-column)))
 
-(defun laws-index-get-cells (&optional marks)
+(defun japanlaw-index-get-cells (&optional marks)
   "バッファからブックマークの各項目を取得して返す。
 MARKSが非nilなら削除マークが付いた項目のみ。"
   (save-excursion
     (let ((result nil))
       (goto-char (point-min))
       (while (search-forward (if marks "\"D-" " -") nil t)
-	(destructuring-bind (flag name id) (laws-get-values)
+	(destructuring-bind (flag name id) (japanlaw-get-values)
 	  (push (car id) result)))
       (nreverse result))))
 
-(defun laws-index-do-delete-marks ()
+(defun japanlaw-index-do-delete-marks ()
   "Bookmark,Opened,Recentで、削除マーク`D'が付いた項目を削除する。
-Bookmarkの場合、ファイル:`laws-bookmark-file'に書き出す。
+Bookmarkの場合、ファイル:`japanlaw-bookmark-file'に書き出す。
 Openedの場合、ファイルを閉じる。"
   (interactive)
-  (laws-labels
+  (japanlaw-labels
       ((delalist (alist &optional form)
                  ;; ALIST is a symbol. Return a function.
                  `(lambda ()
                     (mapc (lambda (cel)
                             (setq ,alist (delete cel (funcall (function ,alist)))))
-                          (or ,form (laws-index-get-cells 'marks))))))
-    (case laws-index-local-mode
+                          (or ,form (japanlaw-index-get-cells 'marks))))))
+    (case japanlaw-index-local-mode
       (Bookmark
        (funcall
-	(delalist 'laws-bookmark-alist
+	(delalist 'japanlaw-bookmark-alist
 		  '(mapcar (lambda (x) (upcase x))
-                           (laws-index-get-cells 'marks))))
-       (laws-with-buffer-read-only (erase-buffer))
-       (laws-index-insert-bookmark))
+                           (japanlaw-index-get-cells 'marks))))
+       (japanlaw-with-buffer-read-only (erase-buffer))
+       (japanlaw-index-insert-bookmark))
       (Opened
        (mapc (lambda (cel)
 	       (kill-buffer
-		(get-file-buffer (laws-expand-data-file cel))))
+		(get-file-buffer (japanlaw-expand-data-file cel))))
 	     ;; mapc(delalist) returns it's arg identical.
-	     (funcall (delalist 'laws-opened-alist)))
-       (laws-with-buffer-read-only (erase-buffer))
-       (laws-index-insert-opened))
+	     (funcall (delalist 'japanlaw-opened-alist)))
+       (japanlaw-with-buffer-read-only (erase-buffer))
+       (japanlaw-index-insert-opened))
       (Recent
        (funcall
-	(delalist 'laws-recent-alist
+	(delalist 'japanlaw-recent-alist
 		  '(mapcar (lambda (x) (upcase x))
-                           (laws-index-get-cells 'marks))))
-       (laws-with-buffer-read-only (erase-buffer))
-       (laws-index-insert-recent)))))
+                           (japanlaw-index-get-cells 'marks))))
+       (japanlaw-with-buffer-read-only (erase-buffer))
+       (japanlaw-index-insert-recent)))))
 
-(defun laws-index-bookmark-move-up ()
+(defun japanlaw-index-bookmark-move-up ()
   "項目を1行上に移動する。"
   (interactive)
-  (laws-index-bookmark-move-down t))
+  (japanlaw-index-bookmark-move-down t))
 
-(defun laws-index-bookmark-move-down (&optional up)
+(defun japanlaw-index-bookmark-move-down (&optional up)
   "項目を1行下に移動する。"
   (interactive)
-  (when (eq laws-index-local-mode 'Bookmark)
-    (laws-with-buffer-read-only
+  (when (eq japanlaw-index-local-mode 'Bookmark)
+    (japanlaw-with-buffer-read-only
      (let* ((start (progn (forward-line 0) (point)))
 	    (end   (progn (forward-line 1) (point)))
 	    (line  (buffer-substring start end)))
@@ -2782,60 +2782,60 @@ Openedの場合、ファイルを閉じる。"
        (insert line)))
     (forward-line (if up -2 1))
     (when (eobp) (forward-line -1))
-    (laws-index-move-to-column)
-    (setq laws-bookmark-alist (laws-index-get-cells))))
+    (japanlaw-index-move-to-column)
+    (setq japanlaw-bookmark-alist (japanlaw-index-get-cells))))
 
 ;;
 ;; Scroll commands
 ;;
-(defun laws-index-move-to-column ()
+(defun japanlaw-index-move-to-column ()
   "フォルダの開閉を表わすマーク位置に移動する関数。"
   (forward-line 0)
   (re-search-forward "[+-]" nil t)
   (ignore-errors (backward-char 1)))
 
-(defun laws-index-previous-line (n)
+(defun japanlaw-index-previous-line (n)
   "前の行に移動するコマンド。"
   (interactive "p")
   (let ((p (point)))
     (if (> 0 (forward-line (- n)))
 	(goto-char p)
-      (laws-index-move-to-column))))
+      (japanlaw-index-move-to-column))))
 
-(defun laws-index-next-line (n)
+(defun japanlaw-index-next-line (n)
   "次の行に移動するコマンド。"
   (interactive "p")
   (forward-line n)
   (when (eobp) (forward-line -1))
-  (laws-index-move-to-column))
+  (japanlaw-index-move-to-column))
 
-(defun laws-index-scroll-up-line (n)
+(defun japanlaw-index-scroll-up-line (n)
   "N行前方にスクロールするコマンド。"
   (interactive "p")
   (ignore-errors
     (scroll-up n)
-    (laws-index-move-to-column)))
+    (japanlaw-index-move-to-column)))
 
-(defun laws-index-scroll-down-line (n)
+(defun japanlaw-index-scroll-down-line (n)
   "N行後方にスクロールするコマンド。"
   (interactive "p")
   (ignore-errors
     (scroll-down n)
-    (laws-index-move-to-column)))
+    (japanlaw-index-move-to-column)))
 
-(defun laws-index-previous-folder ()
+(defun japanlaw-index-previous-folder ()
   "ポイントと同じレベルの前のフォルダに移動する。"
   (interactive)
-  (laws-index-next-folder t))
+  (japanlaw-index-next-folder t))
 
-(defun laws-index-next-folder (&optional previous)
+(defun japanlaw-index-next-folder (&optional previous)
   "ポイントと同じレベルの次のフォルダに移動する。"
   (interactive)
-  (let ((func (laws-any-function
-	       '(laws-index-folder-level-0
-		 laws-index-folder-level-1
-		 laws-index-folder-level-2
-		 laws-index-folder-level-3)))
+  (let ((func (japanlaw-any-function
+	       '(japanlaw-index-folder-level-0
+		 japanlaw-index-folder-level-1
+		 japanlaw-index-folder-level-2
+		 japanlaw-index-folder-level-3)))
 	(move-to (point)))
     (when (functionp func)
       (save-excursion
@@ -2845,217 +2845,217 @@ Openedの場合、ファイルを閉じる。"
 			(bobp)))
 	  (forward-line (if previous -1 1)))
 	(when (funcall func)
-	  (laws-index-move-to-column)
+	  (japanlaw-index-move-to-column)
 	  (setq move-to (point))))
       (goto-char move-to))))
 
-(defun laws-completion-list (afunc)
+(defun japanlaw-completion-list (afunc)
   "補完リストを返す関数。AFUNCは連想リストを返す関数。"
   (do ((xs (funcall afunc) (cdr xs))
        (result nil (cons (caar xs) result)))
       ((null xs) result)))
 
-(defun laws-index-goto-folder (folder)
+(defun japanlaw-index-goto-folder (folder)
   "補完リストから、最上位の階層に選択的に移動するコマンド。
-`laws-use-iswitchb'がtなら`iswitchb'を利用する。"
+`japanlaw-use-iswitchb'がtなら`iswitchb'を利用する。"
   (interactive
    (list (funcall
-	  (if laws-use-iswitchb
-	      #'laws-icompleting-read
+	  (if japanlaw-use-iswitchb
+	      #'japanlaw-icompleting-read
 	    #'completing-read)
-	  (if (memq laws-index-local-mode '(Index Directory Abbrev))
+	  (if (memq japanlaw-index-local-mode '(Index Directory Abbrev))
 	      "Goto folder: " "Goto name: ")
-	  (laws-completion-list
-	   (cond ((eq laws-index-local-mode 'Index)     #'laws-index-alist)
-		 ((eq laws-index-local-mode 'Directory) #'laws-directory-alist)
-		 ((eq laws-index-local-mode 'Abbrev)    #'laws-abbrev-alist)
-		 ((eq laws-index-local-mode 'Bookmark)
-		  (lambda () (laws-make-alist-from-name #'laws-bookmark-alist)))
-		 ((eq laws-index-local-mode 'Recent)
-		  (lambda () (laws-make-alist-from-name #'laws-recent-alist)))
-		 ((eq laws-index-local-mode 'Opened)    #'laws-opened-alist)
+	  (japanlaw-completion-list
+	   (cond ((eq japanlaw-index-local-mode 'Index)     #'japanlaw-index-alist)
+		 ((eq japanlaw-index-local-mode 'Directory) #'japanlaw-directory-alist)
+		 ((eq japanlaw-index-local-mode 'Abbrev)    #'japanlaw-abbrev-alist)
+		 ((eq japanlaw-index-local-mode 'Bookmark)
+		  (lambda () (japanlaw-make-alist-from-name #'japanlaw-bookmark-alist)))
+		 ((eq japanlaw-index-local-mode 'Recent)
+		  (lambda () (japanlaw-make-alist-from-name #'japanlaw-recent-alist)))
+		 ((eq japanlaw-index-local-mode 'Opened)    #'japanlaw-opened-alist)
 		 (t (error "Not supported.")))))))
   (unless (string= folder "")
     (goto-char
      (save-excursion
        (goto-char (point-min))
        (re-search-forward (format "[+-]\" \"%s\"" folder))))
-    (laws-index-move-to-column)))
+    (japanlaw-index-move-to-column)))
 
-(defun laws-index-beginning-of-buffer ()
+(defun japanlaw-index-beginning-of-buffer ()
   (interactive)
   (goto-char (point-min))
-  (laws-index-move-to-column))
+  (japanlaw-index-move-to-column))
 
-(defun laws-index-end-of-buffer ()
+(defun japanlaw-index-end-of-buffer ()
   (interactive)
   (goto-char (point-max))
   (forward-line -1)
-  (laws-index-move-to-column))
+  (japanlaw-index-move-to-column))
 
 ;;
-;; laws index menu
+;; japanlaw index menu
 ;;
-(easy-menu-define laws-index-mode-menu
-    laws-index-mode-map
-  "laws-index-menu"
-  '("Laws"
-    ["Open or Close Item"	laws-index-open-or-close t]
-    ["Browse This URL"		laws-index-browse-at-point t]
-    ["Search Law Name"		laws-index-search t]
-    ["Laws Iswitchb"		laws-iswitchb t]
+(easy-menu-define japanlaw-index-mode-menu
+    japanlaw-index-mode-map
+  "japanlaw-index-menu"
+  '("JapanLaw"
+    ["Open or Close Item"	japanlaw-index-open-or-close t]
+    ["Browse This URL"		japanlaw-index-browse-at-point t]
+    ["Search Law Name"		japanlaw-index-search t]
+    ["JapanLaw Iswitchb"		japanlaw-iswitchb t]
     "-"
-    ["Update Buffer"		laws-index-update t]
+    ["Update Buffer"		japanlaw-index-update t]
     "-"
-    ["Bookmark Add"		laws-index-bookmark-add t]
-    ["Move Up Bookmark Item"	laws-index-bookmark-move-up t]
-    ["Move Down Bookmark Item"	laws-index-bookmark-move-down t]
+    ["Bookmark Add"		japanlaw-index-bookmark-add t]
+    ["Move Up Bookmark Item"	japanlaw-index-bookmark-move-up t]
+    ["Move Down Bookmark Item"	japanlaw-index-bookmark-move-down t]
     "-"
-    ["Put Deletion Mark"	laws-index-put-deletion-flag t]
-    ["Delete Marked Items"	laws-index-do-delete-marks t]
+    ["Put Deletion Mark"	japanlaw-index-put-deletion-flag t]
+    ["Delete Marked Items"	japanlaw-index-do-delete-marks t]
     "-"
-    ["Upper Level"		laws-index-upper-level t]
-    ["Previous Same Level"	laws-index-previous-folder t]
-    ["Next Same Level"		laws-index-next-folder t]
-    ["Select Folder"		laws-index-goto-folder t]
+    ["Upper Level"		japanlaw-index-upper-level t]
+    ["Previous Same Level"	japanlaw-index-previous-folder t]
+    ["Next Same Level"		japanlaw-index-next-folder t]
+    ["Select Folder"		japanlaw-index-goto-folder t]
     "-"
-    ["Open All Folder"		laws-index-open-all t]
-    ["Close All Folder"		laws-index-close-all t]
+    ["Open All Folder"		japanlaw-index-open-all t]
+    ["Close All Folder"		japanlaw-index-close-all t]
     "-"
-    ["Previous Item"		laws-index-previous-line t]
-    ["Next Item"		laws-index-next-line t]
-    ["Scroll Up Line"		laws-index-scroll-up-line t]
-    ["Scroll Down Line"		laws-index-scroll-down-line t]
-;;     ["Beginning of Buffer"	laws-index-beginning-of-buffer t]
-;;     ["End of Buffer"		laws-index-end-of-buffer t]
+    ["Previous Item"		japanlaw-index-previous-line t]
+    ["Next Item"		japanlaw-index-next-line t]
+    ["Scroll Up Line"		japanlaw-index-scroll-up-line t]
+    ["Scroll Down Line"		japanlaw-index-scroll-down-line t]
+;;     ["Beginning of Buffer"	japanlaw-index-beginning-of-buffer t]
+;;     ["End of Buffer"		japanlaw-index-end-of-buffer t]
     "-"
-    ["Help"			laws-index-help t]
+    ["Help"			japanlaw-index-help t]
     ("Other"
-     ["Make Index Files"	laws-retrieve-index t]
+     ["Make Index Files"	japanlaw-retrieve-index t]
      "-"
-     ["Retrieve HTML Data"	 laws-retrieve-html t]
-     ;;["法令ファイルの再作成"	 laws-menu-data-create t]
+     ["Retrieve HTML Data"	 japanlaw-retrieve-html t]
+     ;;["法令ファイルの再作成"	 japanlaw-menu-data-create t]
      )
     "-"
     ["Close Index"		bury-buffer t]
-    ["Laws Exit"		laws-exit t]))
+    ["JapanLaw Exit"		japanlaw-exit t]))
 
 ;;
 ;; Index mode
 ;;
 ;;;###autoload
-(defalias 'laws 'laws-index)
+(defalias 'japanlaw 'japanlaw-index)
 
 ;;;###autoload
-(defun laws-index ()
+(defun japanlaw-index ()
   "法令データにアクセスするためのインターフェイス。"
   (interactive)
-  (unless (file-exists-p laws-index-file)
-    (unless laws-online-mode
-      (error "Try `M-x laws-online-or-offline', and turn to online mode."))
-    (laws-make-index-files))
+  (unless (file-exists-p japanlaw-index-file)
+    (unless japanlaw-online-mode
+      (error "Try `M-x japanlaw-online-or-offline', and turn to online mode."))
+    (japanlaw-make-index-files))
   (switch-to-buffer
-   (or (get-buffer laws-index-buffer)
+   (or (get-buffer japanlaw-index-buffer)
        (prog1
-	   (set-buffer (get-buffer-create laws-index-buffer))
-	 (laws-index-mode)))))
+	   (set-buffer (get-buffer-create japanlaw-index-buffer))
+	 (japanlaw-index-mode)))))
 
-(defun laws-index-mode ()
-  "`laws-index'のためのメジャーモード。"
+(defun japanlaw-index-mode ()
+  "`japanlaw-index'のためのメジャーモード。"
   (kill-all-local-variables)
-  (use-local-map laws-index-mode-map)
-  (setq mode-name laws-index-mode-name)
-  (setq major-mode 'laws-index-mode)
-  (set (make-local-variable 'laws-index-local-mode)
-       laws-index-initial-mode)
-  (set (make-local-variable 'laws-index-conf) nil)
-  (set (make-local-variable 'laws-search-alist) nil)
-  (set (make-local-variable 'laws-names-alist) nil)
-  ;;(set (make-local-variable 'laws-search-history) nil)
-  ;;(set (make-local-variable 'laws-alist) nil)
-  ;;(set (make-local-variable 'laws-abbrev) nil)
-  ;;(set (make-local-variable 'laws-abbrev-alist) nil)
-  (set (make-local-variable 'laws-index-alist) nil)
-  (set (make-local-variable 'laws-directory-alist) nil)
-  (set (make-local-variable 'laws-index-search-overlaies) nil)
-  (laws-index-goto-mode laws-index-initial-mode)
+  (use-local-map japanlaw-index-mode-map)
+  (setq mode-name japanlaw-index-mode-name)
+  (setq major-mode 'japanlaw-index-mode)
+  (set (make-local-variable 'japanlaw-index-local-mode)
+       japanlaw-index-initial-mode)
+  (set (make-local-variable 'japanlaw-index-conf) nil)
+  (set (make-local-variable 'japanlaw-search-alist) nil)
+  (set (make-local-variable 'japanlaw-names-alist) nil)
+  ;;(set (make-local-variable 'japanlaw-search-history) nil)
+  ;;(set (make-local-variable 'japanlaw-alist) nil)
+  ;;(set (make-local-variable 'japanlaw-abbrev) nil)
+  ;;(set (make-local-variable 'japanlaw-abbrev-alist) nil)
+  (set (make-local-variable 'japanlaw-index-alist) nil)
+  (set (make-local-variable 'japanlaw-directory-alist) nil)
+  (set (make-local-variable 'japanlaw-index-search-overlaies) nil)
+  (japanlaw-index-goto-mode japanlaw-index-initial-mode)
   (setq buffer-read-only t)
   (set (make-local-variable 'font-lock-defaults)
-       '(laws-index-font-lock-keywords))
+       '(japanlaw-index-font-lock-keywords))
   (turn-on-font-lock)
   (setq truncate-lines t)
-  (easy-menu-add laws-index-mode-menu)
-  (and laws-mode-line
-       (setq mode-line-buffer-identification laws-mode-line))
-  (run-hooks 'laws-index-mode-hook)
+  (easy-menu-add japanlaw-index-mode-menu)
+  (and japanlaw-mode-line
+       (setq mode-line-buffer-identification japanlaw-mode-line))
+  (run-hooks 'japanlaw-index-mode-hook)
   )
 
 ;; display icon on mode-line
-(defun laws-online-or-offline ()
-  "Turn on or off `laws-online-mode'."
+(defun japanlaw-online-or-offline ()
+  "Turn on or off `japanlaw-online-mode'."
   (interactive)
-  (setq laws-online-mode (not laws-online-mode))
-  (setq laws-icon
-	(if laws-online-mode
-	    laws-online-icon
-	  laws-offline-icon))
+  (setq japanlaw-online-mode (not japanlaw-online-mode))
+  (setq japanlaw-icon
+	(if japanlaw-online-mode
+	    japanlaw-online-icon
+	  japanlaw-offline-icon))
   (force-mode-line-update)
-  (laws-online-mode-message #'message))
+  (japanlaw-online-mode-message #'message))
 
-(defun laws-online-mode-message (message-fun)
-  (funcall message-fun (if laws-online-mode "On line mode." "Off line mode.")))
+(defun japanlaw-online-mode-message (message-fun)
+  (funcall message-fun (if japanlaw-online-mode "On line mode." "Off line mode.")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-;;; laws
+;;; japanlaw
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
 ;;
 ;; search
 ;;
-(defun laws-push-mouse-2 (e)
+(defun japanlaw-push-mouse-2 (e)
   (interactive "e")
   (mouse-set-point e)
-  (call-interactively 'laws-search-or-push-anchor))
+  (call-interactively 'japanlaw-search-or-push-anchor))
 
-(defun laws-search-or-push-anchor (n)
+(defun japanlaw-search-or-push-anchor (n)
   (interactive "p")
   (if current-prefix-arg
       ;; search
-      (let ((kanji (laws-to-kanji-number n)))
+      (let ((kanji (japanlaw-to-kanji-number n)))
 	(when kanji
 	  (goto-char
 	   (save-excursion
-	     (laws-move-to-article `(,(format "^第%s条" kanji)))))
-	  (laws-winconf-add 'force)))
+	     (japanlaw-move-to-article `(,(format "^第%s条" kanji)))))
+	  (japanlaw-winconf-add 'force)))
     ;; anchor push
-    (laws-push-anchor)))
+    (japanlaw-push-anchor)))
 
-(defun laws-push-anchor (&optional new-window)
+(defun japanlaw-push-anchor (&optional new-window)
   (interactive "P")
   (cond ( ;; リージョンが活性の場合(罫線表内部で実行)
 	 (and mark-active transient-mark-mode)
-	 (laws-display-anchor
-	  (laws-rectangle-anchor (region-beginning) (region-end))
+	 (japanlaw-display-anchor
+	  (japanlaw-rectangle-anchor (region-beginning) (region-end))
 	  new-window))
 	( ;; 全角括弧
 	 (eq (char-after) ?\（)
-	 (laws-compose-paren-toggle))
+	 (japanlaw-compose-paren-toggle))
 	( ;; 通常のアンカーの場合
 	 (memq (get-text-property (point) 'face)
-	       '(laws-anchor-name-face
-		 laws-anchor-article-face))
-	 (laws-display-anchor (laws-anchor-at-point) new-window))
+	       '(japanlaw-anchor-name-face
+		 japanlaw-anchor-article-face))
+	 (japanlaw-display-anchor (japanlaw-anchor-at-point) new-window))
 	( ;; アウトラインヘッダ
-	 (laws-outline-header-p)
-	 (laws-heading-jump))
+	 (japanlaw-outline-header-p)
+	 (japanlaw-heading-jump))
 	(t (princ "No anchor at point."))))
 
-(defun laws-rectangle-anchor (start end)
+(defun japanlaw-rectangle-anchor (start end)
   "罫線表の中の複数行に跨ったリージョンから法令名・条文番号等を文
 字列で返す。"
   (save-excursion
     (goto-char start)
-    (laws-labels
+    (japanlaw-labels
         ((trim (anchor)
                (let* ((kanji "[一二三四五六七八九十]")
                       (regexp (concat
@@ -3100,101 +3100,101 @@ Openedの場合、ファイルを閉じる。"
 		      (move-to-column back-to)))
 	     count-back))))))))
 
-(defun laws-display-anchor (anchor new-window)
+(defun japanlaw-display-anchor (anchor new-window)
   (multiple-value-bind (name article paragraph item)
-      (laws-parse-anchor anchor)
+      (japanlaw-parse-anchor anchor)
     (setq name
 	  ;; If non nil, 法令名に変換。
-	  (and name			;(laws-anchor-convert-to-ref name)
-	       (laws-anchor-convert-entry-name name))
+	  (and name			;(japanlaw-anchor-convert-to-ref name)
+	       (japanlaw-anchor-convert-entry-name name))
 	  ;; If non nil, 正規表現文字列に変換。
 	  article
-	  (laws-anchor-article article)
+	  (japanlaw-anchor-article article)
 	  ;; If non nil, 正規表現文字列に変換。
 	  paragraph
-	  (laws-anchor-paragraph paragraph)
+	  (japanlaw-anchor-paragraph paragraph)
 	  ;; If non nil, 正規表現文字列に変換。
 	  item
-	  (laws-anchor-item item))
+	  (japanlaw-anchor-item item))
     (when (and (not new-window) (not (one-window-p)))
       (let ((lst (save-selected-window
-		   (laws-other-window)
-		   (list major-mode (laws-current-buffer-law-name)))))
-	(if (eq (car lst) 'laws-mode)
+		   (japanlaw-other-window)
+		   (list major-mode (japanlaw-current-buffer-law-name)))))
+	(if (eq (car lst) 'japanlaw-mode)
 	    (progn (and (null name)
 			(setq name (cadr lst)))
 		   (save-selected-window
-		     (laws-other-window)
+		     (japanlaw-other-window)
 		     (delete-window)
 		     (setq new-window t)))
 	  (setq new-window t))))
     (unless name
       ;; If nil, 参照しているのは現在のファイル。
-      (setq name (laws-current-buffer-law-name)))
-    (laws-display (let* ((id (laws-get-id name))
-			 (file (laws-expand-data-file id)))
+      (setq name (japanlaw-current-buffer-law-name)))
+    (japanlaw-display (let* ((id (japanlaw-get-id name))
+			 (file (japanlaw-expand-data-file id)))
 		    (cond ((and name (eq id nil))
 			   (error "Parse error: %S" (list name id)))
 			  ((eq id nil)	; 未登録法令
-			   (or (and (equal (laws-current-buffer-law-name)
+			   (or (and (equal (japanlaw-current-buffer-law-name)
 					   name)
 				    (buffer-file-name))
 			       (error "Not visited file.")))
 			  ((file-exists-p file) file)
-			  (t (laws-make-data id))))
+			  (t (japanlaw-make-data id))))
 		  (list article paragraph item)
 		  1)
     (sit-for 0.1)			;Test:
-    (if (eq (laws-compare-winconf)
+    (if (eq (japanlaw-compare-winconf)
 	    'different)
-	(laws-winconf-add 'force)
+	(japanlaw-winconf-add 'force)
       (princ '==))))
 
-(defun laws-display (filename &optional search recenter select)
+(defun japanlaw-display (filename &optional search recenter select)
   "Return window."
-  (let* ((buffer (laws-get-buffer filename))
-	 (window (laws-split-window-vertically buffer)))
+  (let* ((buffer (japanlaw-get-buffer filename))
+	 (window (japanlaw-split-window-vertically buffer)))
     (when search
       (save-selected-window
 	(set-window-buffer (select-window window) buffer)
-	(laws-move-to-article search recenter)))
+	(japanlaw-move-to-article search recenter)))
     (when select (select-window window))
     window))
 
-(defun laws-split-window-vertically (buffer &optional size)
+(defun japanlaw-split-window-vertically (buffer &optional size)
   "Return the created window."
   (let ((window (split-window-vertically
-		 (- (or size laws-window-height)))))
+		 (- (or size japanlaw-window-height)))))
     (set-window-buffer window buffer)
     window))
 
-(defun laws-set-window-height (height)
+(defun japanlaw-set-window-height (height)
   (shrink-window (- (window-height) height 1)))
 
-(defun laws-get-buffer (filename)
+(defun japanlaw-get-buffer (filename)
   "FILENAME is the path/filename."
   (or (get-file-buffer filename)
       (prog1
 	  (set-buffer (find-file-noselect filename))
-	(laws-mode))))
+	(japanlaw-mode))))
 
-(defun laws-digit-argument-suffix (prefix)
+(defun japanlaw-digit-argument-suffix (prefix)
   (interactive "p")
   (when (not current-prefix-arg)
     (error "/"))
   (let ((args (split-string
-	       (concat (laws-digit-argument)) "-" t)))
+	       (concat (japanlaw-digit-argument)) "-" t)))
     (mapc (lambda (x)
 	    (when (zerop (string-to-number x))
 	      (error "//")))
 	  args)
     (goto-char
      (save-excursion
-       (laws-move-to-article
-	(laws-make-article-regexp prefix args))))
-    (laws-winconf-add 'force)))
+       (japanlaw-move-to-article
+	(japanlaw-make-article-regexp prefix args))))
+    (japanlaw-winconf-add 'force)))
 
-(defun laws-digit-argument (&optional events)
+(defun japanlaw-digit-argument (&optional events)
   (let ((ev (read-event)))
     (cond
       ((not (memq ev '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?- 32 10 13 return)))
@@ -3202,19 +3202,19 @@ Openedの場合、ファイルを閉じる。"
       ((memq ev '(32 10 13 return))
        (reverse events))
       (t
-       (laws-digit-argument (cons ev events))))))
+       (japanlaw-digit-argument (cons ev events))))))
 
-(defun laws-make-article-regexp (prefix args)
+(defun japanlaw-make-article-regexp (prefix args)
   (list
    (format "^第%s条%s"
-	   (laws-to-kanji-number prefix)
+	   (japanlaw-to-kanji-number prefix)
 	   (mapconcat (lambda (x)
 			(format "[のノ]%s"
-				(laws-to-kanji-number (string-to-number x))))
+				(japanlaw-to-kanji-number (string-to-number x))))
 		      args ""))))
 
-(defun laws-to-kanji-number (n)
-  (laws-labels
+(defun japanlaw-to-kanji-number (n)
+  (japanlaw-labels
       ((split (n)
               (if (zerop (/ n 10))
                   (list (% n 10))
@@ -3223,13 +3223,13 @@ Openedの場合、ファイルを閉じる。"
               (nth n '("零" "一" "二" "三" "四" "五" "六" "七" "八" "九"))))
     (apply #'concat
 	   (nreverse
-	    (laws:map (lambda (i s)
+	    (japanlaw:map (lambda (i s)
 			(and (> i 0) (string= s "一") (setq s ""))
 			(if (string= s "零") ""
 			  (concat s (nth i '("" "十" "百" "千")))))
 		      '(0 1 2 3) (mapcar #'kanji (split n)))))))
 
-(defun laws-to-arabic-number (kanji &optional em-size)
+(defun japanlaw-to-arabic-number (kanji &optional em-size)
   (if (string-match "[一二三四五六七八九十百千]+" kanji)
       (setq kanji (match-string 0 kanji))
     (error "Argument is not Chinese numeral"))
@@ -3277,19 +3277,19 @@ Openedの場合、ファイルを閉じる。"
 ;;
 ;; common
 ;;
-(defun laws-recenter (&optional n)
+(defun japanlaw-recenter (&optional n)
   (interactive "p")
   (let ((line (cond ((numberp n) n)
 		    ((null n) nil)
-		    (t laws-reposition-line))))
+		    (t japanlaw-reposition-line))))
     (when line
       ;;(sit-for 0)
       (recenter line))
     line))
 
-(defun laws-scan-buffer (regexp direction count &optional recenter limit)
+(defun japanlaw-scan-buffer (regexp direction count &optional recenter limit)
   (let ((found t))
-    (laws-labels
+    (japanlaw-labels
         ((scan (s)
                (setq found
                      (case direction
@@ -3303,27 +3303,27 @@ Openedの場合、ファイルを閉じる。"
       (while (and found (> count 0))
 	(scan regexp))
       (forward-line 0)
-      (when found (laws-recenter recenter))
+      (when found (japanlaw-recenter recenter))
       found)))
 
-;; (defun laws-current-article ()
-;;   ;; ^$ ではなく、laws-article-regexp で判断するよう変更する。
+;; (defun japanlaw-current-article ()
+;;   ;; ^$ ではなく、japanlaw-article-regexp で判断するよう変更する。
 ;;   (let (beg end)
 ;;     (save-excursion
 ;;       (or (and (looking-at "^$")
 ;; 	       (setq end (point)
-;; 		     beg (or (re-search-backward laws-article-regexp nil t)
+;; 		     beg (or (re-search-backward japanlaw-article-regexp nil t)
 ;; 			     (point-min))))
 ;; 	  (setq end (or (re-search-forward "^$" nil t)
 ;; 			(point-max))
-;; 		beg (or (re-search-backward laws-article-regexp nil t)
+;; 		beg (or (re-search-backward japanlaw-article-regexp nil t)
 ;; 			(point-min)))))
 ;;     (list beg end)))
 
-;; (defun laws-current-article ()
+;; (defun japanlaw-current-article ()
 ;;   (let ((end-point
 ;; 	 (lambda ()
-;; 	   (cond ((re-search-forward laws-article-regexp nil t)
+;; 	   (cond ((re-search-forward japanlaw-article-regexp nil t)
 ;; 		  (while (not (looking-at "^$"))
 ;; 		    (forward-line -1))
 ;; 		  (when (>= beg (point))
@@ -3335,11 +3335,11 @@ Openedの場合、ファイルを閉じる。"
 ;; 	beg end)
 ;;     (save-excursion
 ;;       (forward-line 0)
-;;       (cond ((looking-at laws-article-regexp)
+;;       (cond ((looking-at japanlaw-article-regexp)
 ;; 	     (setq beg (point))
 ;; 	     (forward-line 1)
 ;; 	     (setq end (funcall end-point)))
-;; 	    ((re-search-backward laws-article-regexp nil t)
+;; 	    ((re-search-backward japanlaw-article-regexp nil t)
 ;; 	     (setq beg (point))
 ;; 	     (forward-line 1)
 ;; 	     (setq end (funcall end-point)))
@@ -3348,13 +3348,13 @@ Openedの場合、ファイルを閉じる。"
 ;; 	       (setq end (funcall end-point)))))
 ;;     (list beg end)))
 
-(defun laws-current-article ()
+(defun japanlaw-current-article ()
   ;; Test:
-  (laws-labels
+  (japanlaw-labels
       ((end-point (p)
                   (cond ((re-search-forward
                           (concat
-                           "\\(" laws-article-regexp "\\|" outline-regexp "\\)")
+                           "\\(" japanlaw-article-regexp "\\|" outline-regexp "\\)")
                           nil t)
                          (forward-line 0)
                          (or (looking-at outline-regexp)
@@ -3369,11 +3369,11 @@ Openedの場合、ファイルを閉じる。"
     (let (beg end)
       (save-excursion
 	(forward-line 0)
-	(cond ((looking-at laws-article-regexp)
+	(cond ((looking-at japanlaw-article-regexp)
 	       (setq beg (point))
 	       (forward-line 1)
 	       (setq end (end-point beg)))
-	      ((re-search-backward laws-article-regexp nil t)
+	      ((re-search-backward japanlaw-article-regexp nil t)
 	       (setq beg (point))
 	       (forward-line 1)
 	       (setq end (end-point beg)))
@@ -3385,7 +3385,7 @@ Openedの場合、ファイルを閉じる。"
 ;;
 ;; Move to article and paragraph
 ;;
-(defun laws-move-to-article (args &optional recenter)
+(defun japanlaw-move-to-article (args &optional recenter)
   (let ((article   (car  args))
 	(paragraph (cadr args))
 	(item      (nth 2  args)))
@@ -3393,7 +3393,7 @@ Openedの場合、ファイルを閉じる。"
     (when article
       (if (re-search-forward article nil t)
 	  (when (or paragraph item)
-	    (let ((limit (cdr (laws-current-article))))
+	    (let ((limit (cdr (japanlaw-current-article))))
 	      (mapc (lambda (rx)
 		      (and rx (or (re-search-forward rx limit t)
 				  (error "Not found."))))
@@ -3401,76 +3401,76 @@ Openedの場合、ファイルを閉じる。"
 	(error "Not found.")))
     ;; found
     (forward-line 0)
-    (laws-recenter (or recenter t))
+    (japanlaw-recenter (or recenter t))
     (point)))
 
-(defun laws-forward-article (n)
+(defun japanlaw-forward-article (n)
   (interactive "p")
   ;; ポイントがアウトラインヘッダ上にあるかどうかで分岐
   ;; 同一階層間の移動
-  (if (laws-outline-header-p)
-      (laws-forward-same-level n)
+  (if (japanlaw-outline-header-p)
+      (japanlaw-forward-same-level n)
     ;; 次の条文へ移動
-    (or (laws-scan-buffer laws-article-regexp 'forward n t)
+    (or (japanlaw-scan-buffer japanlaw-article-regexp 'forward n t)
 	(goto-char (point-max)))))
 
-(defun laws-backward-article (n)
+(defun japanlaw-backward-article (n)
   (interactive "p")
   ;; ポイントがアウトラインヘッダ上にあるかどうかで分岐
   ;; 同一階層間の移動
-  (if (laws-outline-header-p)
-      (laws-backward-same-level n)
+  (if (japanlaw-outline-header-p)
+      (japanlaw-backward-same-level n)
     ;; 前の条文へ移動
-    (or (laws-scan-buffer laws-article-regexp 'backward n t)
+    (or (japanlaw-scan-buffer japanlaw-article-regexp 'backward n t)
 	(goto-char (point-min)))))
 
-(defun laws-forward-paragraph (n)
+(defun japanlaw-forward-paragraph (n)
   (interactive "p")
   (save-selected-window
     (when (not (one-window-p))
       (select-window
        (cadr (memq (selected-window) (window-list)))))
-    (if (eq major-mode 'laws-mode)
+    (if (eq major-mode 'japanlaw-mode)
 	(let ((limit (progn (when (looking-at "^$")
 			      (error "/"))
-			    (cdr (laws-current-article)))))
-	  (or (laws-scan-buffer
-	       laws-paragraph-regexp 'forward n nil limit)
+			    (cdr (japanlaw-current-article)))))
+	  (or (japanlaw-scan-buffer
+	       japanlaw-paragraph-regexp 'forward n nil limit)
 	      (error "Last paragraph.")))
       (scroll-up))))
 
-(defun laws-backward-paragraph (n)
+(defun japanlaw-backward-paragraph (n)
   (interactive "p")
   (save-selected-window
     (when (not (one-window-p))
       (select-window
        (cadr (memq (selected-window) (window-list)))))
-    (if (eq major-mode 'laws-mode)
-	(let ((limit (let ((beg (car (laws-current-article))))
+    (if (eq major-mode 'japanlaw-mode)
+	(let ((limit (let ((beg (car (japanlaw-current-article))))
 		       (and (< (point) beg)
 			    (error "/"))
 		       beg)))
-	  (or (laws-scan-buffer
-	       laws-paragraph-regexp 'backward n nil limit)
+	  (or (japanlaw-scan-buffer
+	       japanlaw-paragraph-regexp 'backward n nil limit)
 	      (error "First paragraph.")))
       (scroll-down))))
 
 ;;
 ;; Move to anchor
 ;;
-(defun laws-forward-anchor ()
+(defun japanlaw-forward-anchor ()
   (interactive)
-  (laws-move-to-anchor 'forward))
+  (japanlaw-move-to-anchor 'forward))
 
-(defun laws-backward-anchor ()
+(defun japanlaw-backward-anchor ()
   (interactive)
-  (laws-move-to-anchor 'backward))
+  (japanlaw-move-to-anchor 'backward))
 
 ;;
 ;; anchor
 ;;
-(defun laws-move-to-anchor (direction)
-  (laws-labels
+(defun japanlaw-move-to-anchor (direction)
+  (japanlaw-labels
       ((point-face (&optional point)
                    (get-text-property (or point (point)) 'face))
        (scanner ()
@@ -3479,32 +3479,32 @@ Openedの場合、ファイルを閉じる。"
                   (backward (previous-property-change (point))))))
     (let ((back-to (point)))
       (while (memq (point-face)
-		   '(laws-anchor-article-face laws-anchor-name-face))
+		   '(japanlaw-anchor-article-face japanlaw-anchor-name-face))
 	(condition-case err
 	    (goto-char (scanner))
 	  (wrong-type-argument
 	   (error "There is no anchor any further."))))
       (while (or (not (memq (point-face)
-			    '(laws-anchor-article-face laws-anchor-name-face)))
+			    '(japanlaw-anchor-article-face japanlaw-anchor-name-face)))
 		 (and (eq (char-before) ?\）)
 		      (eq (point-face (- (scan-lists (point) -1 0) 1))
-			  laws-anchor-name-face)))
+			  japanlaw-anchor-name-face)))
 	(condition-case err
 	    (goto-char (scanner))
 	  (wrong-type-argument
 	   (goto-char back-to)
 	   (error "There is no anchor any further."))))
-      (when (eq (point-face (1- (point))) 'laws-anchor-name-face)
+      (when (eq (point-face (1- (point))) 'japanlaw-anchor-name-face)
 	(goto-char (previous-property-change (point)))))))
 
-(defun laws-anchor-at-point ()
-  (let ((anchor (laws-current-anchor)))
+(defun japanlaw-anchor-at-point ()
+  (let ((anchor (japanlaw-current-anchor)))
     (when anchor
       (replace-regexp-in-string
        "（.+?）" ""
        (buffer-substring-no-properties (car anchor) (cdr anchor))))))
 
-(defun laws-parse-anchor (anchor)
+(defun japanlaw-parse-anchor (anchor)
   (let* ((kanji "[一二三四五六七八九十]")
 	 (regexp (concat
 		  "\\(第[一二三四五六七八九十百千]+条"
@@ -3529,38 +3529,38 @@ Openedの場合、ファイルを閉じる。"
 			(substring anchor 0 (match-beginning 0))))))
     (list name article paragraph item)))
 
-(defun laws-get-name (id)
+(defun japanlaw-get-name (id)
   "ID(\"m29ho089\"のような形式)から法令名を取得して返す。"
   (block nil
-    (let ((xs (laws-alist)))
+    (let ((xs (japanlaw-alist)))
       (while xs
 	(let ((cell (rassoc id (cdar xs))))
 	  (when cell
 	    (return (caar cell))))
 	(pop xs)))))
 
-(defun laws-current-buffer-law-name ()
+(defun japanlaw-current-buffer-law-name ()
   "カレントファイルの法令名を返す。"
-  (laws-get-name (upcase (laws-file-sans-name (buffer-file-name)))))
+  (japanlaw-get-name (upcase (japanlaw-file-sans-name (buffer-file-name)))))
 
-(defun laws-get-local-name (name id)
+(defun japanlaw-get-local-name (name id)
   (or (plist-get (cdr
-		  (assoc (laws-get-name (upcase id)) laws-local-names-plist))
+		  (assoc (japanlaw-get-name (upcase id)) japanlaw-local-names-plist))
 		 (intern (concat ":" name)))
       (save-excursion
 	(goto-char (point-min))
 	(when (search-forward (concat "以下「" name "」という。") nil t)
-	  (laws-backward-anchor)
+	  (japanlaw-backward-anchor)
 	  (buffer-substring-no-properties
 	   (point)
 	   (goto-char (next-property-change (point))))))
       (error "Not entried.")))
 
-(defun laws-get-id (name)
+(defun japanlaw-get-id (name)
   "法令名NAMEから参照先を返す。"
   (block nil
     ;; 登録法令名
-    (let ((xs (laws-alist)))
+    (let ((xs (japanlaw-alist)))
       (while xs
 	(let ((ys (cdar xs)))
 	  (while ys
@@ -3570,7 +3570,7 @@ Openedの場合、ファイルを閉じる。"
 	    (pop ys)))
 	(pop xs)))
     ;; 略称法令名
-    (let ((xs (laws-abbrev)))
+    (let ((xs (japanlaw-abbrev)))
       (while xs
 	(let ((ys (cdar xs)))
 	  (while ys
@@ -3588,14 +3588,14 @@ Openedの場合、ファイルを閉じる。"
 	    (pop ys)))
 	(pop xs)))))
 
-(defun laws-anchor-convert-entry-name (name)
+(defun japanlaw-anchor-convert-entry-name (name)
   ;; nameに対応する法令ファイル名を返す。
-  (cond ((member name laws-local-name-list)
+  (cond ((member name japanlaw-local-name-list)
 	 ;; 「法」「令」「規則」「新法」「旧法」等、具体的な法令名に変換する。
-	 (laws-anchor-convert-entry-name
-	  (laws-get-local-name name (laws-file-sans-name (buffer-file-name)))))
+	 (japanlaw-anchor-convert-entry-name
+	  (japanlaw-get-local-name name (japanlaw-file-sans-name (buffer-file-name)))))
 	;; 「附則」への対応(法令を開くのみ)。
-	;; `laws-anchor-at-point'で条数、項数等は取得しない。
+	;; `japanlaw-anchor-at-point'で条数、項数等は取得しない。
 	((string= name "同法附則")
 	 (error "Not supported."))
 	((string-match "^\\(.+?\\)附則$" name)
@@ -3604,46 +3604,46 @@ Openedの場合、ファイルを閉じる。"
 	((string= name "同法")
 	 (save-excursion
 	   (goto-char (next-property-change (point)))
-	   (dotimes (x 1) (laws-move-to-anchor 'backward))
+	   (dotimes (x 1) (japanlaw-move-to-anchor 'backward))
 	   (while (or (not (eq (get-text-property (point) 'face)
-			       laws-anchor-name-face))
+			       japanlaw-anchor-name-face))
 		      (looking-at "同法"))
-	     (laws-move-to-anchor 'backward))
-	   (laws-anchor-convert-entry-name
-	    (car (laws-parse-anchor (laws-anchor-at-point))))))
+	     (japanlaw-move-to-anchor 'backward))
+	   (japanlaw-anchor-convert-entry-name
+	    (car (japanlaw-parse-anchor (japanlaw-anchor-at-point))))))
 	;; 「憲法」等、登録名称に変換。
-	((assoc name laws-unentry-names)
-	 (laws-anchor-convert-entry-name
-	  (cdr (assoc name laws-unentry-names))))
+	((assoc name japanlaw-unentry-names)
+	 (japanlaw-anchor-convert-entry-name
+	  (cdr (assoc name japanlaw-unentry-names))))
 	;; 未施行法令の場合w3mでdumpする。
-	((assoc name laws-mishikou-list)
-	 (unless laws-online-mode
-	   (laws-online-mode-message #'error))
+	((assoc name japanlaw-mishikou-list)
+	 (unless japanlaw-online-mode
+	   (japanlaw-online-mode-message #'error))
 	 (shell-command
-	  (concat ;;(funcall laws-w3m-dump-command laws-w3m-dump-cols)
+	  (concat ;;(funcall japanlaw-w3m-dump-command japanlaw-w3m-dump-cols)
 		  "w3m -dump "
 		  (format " %s%s%s"
-			  laws-egov-url
-			  laws-htmldata-directory
-			  (cdr (assoc name laws-mishikou-list)))))
+			  japanlaw-egov-url
+			  japanlaw-htmldata-directory
+			  (cdr (assoc name japanlaw-mishikou-list)))))
 	 (error "/"))
 	;; 登録法令名、略称法令名
 	(t name)))
 
-(defun laws-anchor-article (article)
+(defun japanlaw-anchor-article (article)
   (when article
     (setq article
 	  (replace-regexp-in-string "[のノ]" "[のノ]" article))
     (concat "^" article "[ 　]*")))
 
-(defun laws-anchor-paragraph (paragraph)
+(defun japanlaw-anchor-paragraph (paragraph)
   (when paragraph
     (setq paragraph
-	  (laws-to-arabic-number paragraph 'em-size))
+	  (japanlaw-to-arabic-number paragraph 'em-size))
     (and (not (string= "１" paragraph))
 	 (format "^\\(%s\\|[○◯]%s\\)" paragraph paragraph))))
 
-(defun laws-anchor-item (item)
+(defun japanlaw-anchor-item (item)
   (and item
        (string-match "\
 第\\([一二三四五六七八九十]+\\)号\\(\\([のノ][一二三四五六七八九十]+\\)*\\)" item)
@@ -3651,53 +3651,53 @@ Openedの場合、ファイルを閉じる。"
 
 
 
-(defun laws-file-sans-name (file)
+(defun japanlaw-file-sans-name (file)
   "ファイル名の主部(m29ho089)を返す。"
   (when file
     (file-name-nondirectory (file-name-sans-extension file))))
 
-(defun laws-buffer-file-laws-name (&optional full)
+(defun japanlaw-buffer-file-laws-name (&optional full)
   "buffer-file-nameからdirectoryとextentionを除いた法令名を返す。
 FULL が非-nilなら path/file を返す。"
   (let ((visitp (buffer-file-name)))
     (or (and (not visitp)
 	     (error "Buffer not visiting any file."))
 	(or (and full visitp)
-	    (laws-file-sans-name (buffer-file-name))))))
+	    (japanlaw-file-sans-name (buffer-file-name))))))
 
-(defun laws-rename-buffer ()
-  "`laws-use-buffer-law-name'が非nilなら、法令ファイルのバッファ名
-を法令名とする。法令名の長さが`laws-name-length'より大きければ、
-`laws-name-suffix'を付加してバッファ名を縮小する。"
-  (let* ((id (laws-file-sans-name (buffer-file-name)))
-	 (name (laws-get-name (upcase id))))
-    (when (and name laws-use-buffer-law-name)
-      (when (> (length name) laws-name-length)
+(defun japanlaw-rename-buffer ()
+  "`japanlaw-use-buffer-law-name'が非nilなら、法令ファイルのバッファ名
+を法令名とする。法令名の長さが`japanlaw-name-length'より大きければ、
+`japanlaw-name-suffix'を付加してバッファ名を縮小する。"
+  (let* ((id (japanlaw-file-sans-name (buffer-file-name)))
+	 (name (japanlaw-get-name (upcase id))))
+    (when (and name japanlaw-use-buffer-law-name)
+      (when (> (length name) japanlaw-name-length)
 	(setq name
-	      (concat (substring name 0 laws-name-length)
-		      laws-name-suffix)))
+	      (concat (substring name 0 japanlaw-name-length)
+		      japanlaw-name-suffix)))
       (rename-buffer name 'uniq))))
 
-(defun laws-display-toggle ()
+(defun japanlaw-display-toggle ()
   (interactive)
-  (if (and (one-window-p) laws-display-toggle-winconf)
+  (if (and (one-window-p) japanlaw-display-toggle-winconf)
       ;; restore
       (let ((buffer (current-buffer))
 	    (winstart (window-start))
 	    (pos (point)))
-	(laws-restore-winconf laws-display-toggle-winconf)
+	(japanlaw-restore-winconf japanlaw-display-toggle-winconf)
 	(set-window-buffer (selected-window) buffer)
 	(set-window-start (selected-window) winstart)
 	(goto-char pos))
     ;; store
     (when (not (one-window-p))
-      (setq laws-display-toggle-winconf (laws-current-winconf))
+      (setq japanlaw-display-toggle-winconf (japanlaw-current-winconf))
       (delete-other-windows))))
 
 ;;
 ;; Window change
 ;;
-(defun laws-other-window (&optional window)
+(defun japanlaw-other-window (&optional window)
   (interactive)
   (when (not (one-window-p))
     (select-window
@@ -3707,221 +3707,221 @@ FULL が非-nilなら path/file を返す。"
 ;;
 ;; Scroll
 ;;
-(defun laws-scroll-up-screen (n)
+(defun japanlaw-scroll-up-screen (n)
   (interactive "p")
   (scroll-up n))
 
-(defun laws-scroll-down-screen (n)
+(defun japanlaw-scroll-down-screen (n)
   (interactive "p")
   (scroll-down n))
 
 ;;
 ;; other
 ;;
-(defun laws-browse-current-url ()
+(defun japanlaw-browse-current-url ()
   (interactive)
-  (let ((url (laws-expand-htmldata-url
-	      (laws-file-sans-name (buffer-file-name)))))
+  (let ((url (japanlaw-expand-htmldata-url
+	      (japanlaw-file-sans-name (buffer-file-name)))))
     (if (not (string= url ""))
 	(browse-url url)
       (message "No url in this file."))))
 
-(defun laws-view-quit ()
+(defun japanlaw-view-quit ()
   (interactive)
   (bury-buffer)
-  (laws-index))
+  (japanlaw-index))
 
 ;;
 ;; window configuration
 ;;
-(defalias 'laws-current-winconf 'current-window-configuration-printable)
-(defalias 'laws-restore-winconf 'restore-window-configuration)
+(defalias 'japanlaw-current-winconf 'current-window-configuration-printable)
+(defalias 'japanlaw-restore-winconf 'restore-window-configuration)
 
-;; (defalias 'laws-current-winconf 'current-window-configuration)
-;; (defalias 'laws-restore-winconf 'set-window-configuration)
+;; (defalias 'japanlaw-current-winconf 'current-window-configuration)
+;; (defalias 'japanlaw-restore-winconf 'set-window-configuration)
 
-(defun laws-winconf-override ()
+(defun japanlaw-winconf-override ()
   (interactive)
-  (if (and laws-winconf-list
-	   (not (laws-winconf-equalp))
+  (if (and japanlaw-winconf-list
+	   (not (japanlaw-winconf-equalp))
 	   (y-or-n-p (format "%s Override winconf? "
-			     (progn (laws-winconf-message)
+			     (progn (japanlaw-winconf-message)
 				    (current-message)))))
       (progn
-	(setcar (nthcdr laws-winconf-index laws-winconf-list)
-		(laws-current-winconf))
-	(laws-winconf-message '=))
-    (laws-winconf-message)))
+	(setcar (nthcdr japanlaw-winconf-index japanlaw-winconf-list)
+		(japanlaw-current-winconf))
+	(japanlaw-winconf-message '=))
+    (japanlaw-winconf-message)))
 
-(defun laws-winconf-insert ()
+(defun japanlaw-winconf-insert ()
   (interactive)
-  (if (and laws-winconf-list
-	   (not (laws-winconf-equalp))
+  (if (and japanlaw-winconf-list
+	   (not (japanlaw-winconf-equalp))
 	   (y-or-n-p "Insert winconf? "))
       (progn
-	(push (laws-current-winconf)
-	      (nthcdr laws-winconf-index laws-winconf-list))
-	(when (/= laws-winconf-index 0)
-	  (setq laws-winconf-index (- laws-winconf-index 1)))
-	(laws-winconf-message '+))
-    (laws-winconf-message)))
+	(push (japanlaw-current-winconf)
+	      (nthcdr japanlaw-winconf-index japanlaw-winconf-list))
+	(when (/= japanlaw-winconf-index 0)
+	  (setq japanlaw-winconf-index (- japanlaw-winconf-index 1)))
+	(japanlaw-winconf-message '+))
+    (japanlaw-winconf-message)))
 
-(defun laws-winconf-add (&optional force)
+(defun japanlaw-winconf-add (&optional force)
   (interactive)
-  (if (and (not (laws-winconf-equalp))
+  (if (and (not (japanlaw-winconf-equalp))
 	   (or force (y-or-n-p "Add winconf? ")))
       (progn
-	(push (laws-current-winconf)
-	      (nthcdr (+ laws-winconf-index
-			 (or (and (= (length laws-winconf-list) 0) 0)
+	(push (japanlaw-current-winconf)
+	      (nthcdr (+ japanlaw-winconf-index
+			 (or (and (= (length japanlaw-winconf-list) 0) 0)
 			     1))
-		      laws-winconf-list))
-	(setq laws-winconf-index
-	      (+ laws-winconf-index
-		 (or (and (= (length laws-winconf-list) 1) 0)
+		      japanlaw-winconf-list))
+	(setq japanlaw-winconf-index
+	      (+ japanlaw-winconf-index
+		 (or (and (= (length japanlaw-winconf-list) 1) 0)
 		     1)))
-	(laws-winconf-message '+))
-    (laws-winconf-message)))
+	(japanlaw-winconf-message '+))
+    (japanlaw-winconf-message)))
 
-(defun laws-winconf-delete ()
+(defun japanlaw-winconf-delete ()
   (interactive)
-  (if (and laws-winconf-list
+  (if (and japanlaw-winconf-list
 	   (y-or-n-p "Delete winconf? "))
       (progn
-	(setf (nthcdr laws-winconf-index laws-winconf-list)
-	      (nthcdr (+ laws-winconf-index 1) laws-winconf-list))
-	(when (and (= (length laws-winconf-list) laws-winconf-index)
-		   (/= laws-winconf-index 0))
-	  (setq laws-winconf-index (- laws-winconf-index 1)))
-	(laws-winconf-message '-))
-    (laws-winconf-message)))
+	(setf (nthcdr japanlaw-winconf-index japanlaw-winconf-list)
+	      (nthcdr (+ japanlaw-winconf-index 1) japanlaw-winconf-list))
+	(when (and (= (length japanlaw-winconf-list) japanlaw-winconf-index)
+		   (/= japanlaw-winconf-index 0))
+	  (setq japanlaw-winconf-index (- japanlaw-winconf-index 1)))
+	(japanlaw-winconf-message '-))
+    (japanlaw-winconf-message)))
 
-(defun laws-winconf-delete-all ()
+(defun japanlaw-winconf-delete-all ()
   (interactive)
-  (if (and laws-winconf-list
+  (if (and japanlaw-winconf-list
 	   (y-or-n-p "Delete all winconf? "))
-      (progn (setq laws-winconf-list nil
-		   laws-winconf-index 0)
+      (progn (setq japanlaw-winconf-list nil
+		   japanlaw-winconf-index 0)
 	     (princ 'Done))
-    (laws-winconf-message)))
+    (japanlaw-winconf-message)))
 
-(defun laws-winconf-backward-delete ()
+(defun japanlaw-winconf-backward-delete ()
   (interactive)
-  (if (and laws-winconf-list
-	   (/= laws-winconf-index 0)
+  (if (and japanlaw-winconf-list
+	   (/= japanlaw-winconf-index 0)
 	   (y-or-n-p "Delete backward winconf? "))
       (progn
-	(setf (nthcdr (- laws-winconf-index 1) laws-winconf-list)
-	      (nthcdr laws-winconf-index laws-winconf-list))
-	(setq laws-winconf-index (- laws-winconf-index 1))
-	(laws-winconf-message '-))
-    (laws-winconf-message)))
+	(setf (nthcdr (- japanlaw-winconf-index 1) japanlaw-winconf-list)
+	      (nthcdr japanlaw-winconf-index japanlaw-winconf-list))
+	(setq japanlaw-winconf-index (- japanlaw-winconf-index 1))
+	(japanlaw-winconf-message '-))
+    (japanlaw-winconf-message)))
 
-(defun laws-forward-winconf ()
+(defun japanlaw-forward-winconf ()
   (interactive)
-  (if laws-winconf-list
-      (if (= (- (length laws-winconf-list) 1)
-	     laws-winconf-index)
-	  (laws-winconf-message)
-	(laws-restore-winconf
-	 (nth (+ laws-winconf-index 1) laws-winconf-list))
-	(setq laws-winconf-index (+ laws-winconf-index 1))
-	(laws-winconf-message))
-    (laws-winconf-message)))
+  (if japanlaw-winconf-list
+      (if (= (- (length japanlaw-winconf-list) 1)
+	     japanlaw-winconf-index)
+	  (japanlaw-winconf-message)
+	(japanlaw-restore-winconf
+	 (nth (+ japanlaw-winconf-index 1) japanlaw-winconf-list))
+	(setq japanlaw-winconf-index (+ japanlaw-winconf-index 1))
+	(japanlaw-winconf-message))
+    (japanlaw-winconf-message)))
 
-(defun laws-backward-winconf ()
+(defun japanlaw-backward-winconf ()
   (interactive)
-  (if laws-winconf-list
-      (if (= laws-winconf-index 0)
-	  (laws-winconf-message)
-	(laws-restore-winconf
-	 (nth (- laws-winconf-index 1) laws-winconf-list))
-	(setq laws-winconf-index (- laws-winconf-index 1))
-	(laws-winconf-message))
-    (laws-winconf-message)))
+  (if japanlaw-winconf-list
+      (if (= japanlaw-winconf-index 0)
+	  (japanlaw-winconf-message)
+	(japanlaw-restore-winconf
+	 (nth (- japanlaw-winconf-index 1) japanlaw-winconf-list))
+	(setq japanlaw-winconf-index (- japanlaw-winconf-index 1))
+	(japanlaw-winconf-message))
+    (japanlaw-winconf-message)))
 
-(defun laws-restore-current-winconf ()
+(defun japanlaw-restore-current-winconf ()
   (interactive)
-  (if laws-winconf-list
-      (progn (laws-restore-winconf
-	      (nth laws-winconf-index laws-winconf-list))
-	     (laws-winconf-message '=))
-    (laws-winconf-message)))
+  (if japanlaw-winconf-list
+      (progn (japanlaw-restore-winconf
+	      (nth japanlaw-winconf-index japanlaw-winconf-list))
+	     (japanlaw-winconf-message '=))
+    (japanlaw-winconf-message)))
 
-(defun laws-restore-first-winconf ()
+(defun japanlaw-restore-first-winconf ()
   (interactive)
-  (if laws-winconf-list
-      (progn (laws-restore-winconf (nth 0 laws-winconf-list))
-	     (setq laws-winconf-index 0)
-	     (laws-winconf-message))
-    (laws-winconf-message)))
+  (if japanlaw-winconf-list
+      (progn (japanlaw-restore-winconf (nth 0 japanlaw-winconf-list))
+	     (setq japanlaw-winconf-index 0)
+	     (japanlaw-winconf-message))
+    (japanlaw-winconf-message)))
 
-(defun laws-restore-last-winconf ()
+(defun japanlaw-restore-last-winconf ()
   (interactive)
-  (if laws-winconf-list
-      (progn (laws-restore-winconf
-	      (nth (- (length laws-winconf-list) 1)
-		   laws-winconf-list))
-	     (setq laws-winconf-index (- (length laws-winconf-list) 1))
-	     (laws-winconf-message))
-    (laws-winconf-message)))
+  (if japanlaw-winconf-list
+      (progn (japanlaw-restore-winconf
+	      (nth (- (length japanlaw-winconf-list) 1)
+		   japanlaw-winconf-list))
+	     (setq japanlaw-winconf-index (- (length japanlaw-winconf-list) 1))
+	     (japanlaw-winconf-message))
+    (japanlaw-winconf-message)))
 
-(defun laws-restore-nth-winconf (n)
-  (when (and laws-winconf-list
-	     (<= 0 n) (< n (length laws-winconf-list)))
-    (laws-restore-winconf (nth n laws-winconf-list))
-    (setq laws-winconf-index n)
-    (laws-winconf-message)))
+(defun japanlaw-restore-nth-winconf (n)
+  (when (and japanlaw-winconf-list
+	     (<= 0 n) (< n (length japanlaw-winconf-list)))
+    (japanlaw-restore-winconf (nth n japanlaw-winconf-list))
+    (setq japanlaw-winconf-index n)
+    (japanlaw-winconf-message)))
 
-(defun laws-winconf-equalp ()
+(defun japanlaw-winconf-equalp ()
   (when (equal
-	 (nth laws-winconf-index laws-winconf-list)
-	 (laws-current-winconf))
+	 (nth japanlaw-winconf-index japanlaw-winconf-list)
+	 (japanlaw-current-winconf))
     (message "==")
     (sit-for 0.5)))
 
-(defun laws-current-anchor ()
+(defun japanlaw-current-anchor ()
   (if (and mark-active transient-mark-mode)
       ;; 罫線表内でリージョンが活性の場合への対応
       (progn
 	(deactivate-mark)
 	(cons (region-beginning) (region-end)))
     ;; 通常のアンカーの場合
-    (laws-labels
+    (japanlaw-labels
         ((point-face (p) (get-text-property p 'face))
          (next (p) (goto-char (next-property-change p))))
       (when (memq (point-face (point))
-		  '(laws-anchor-name-face laws-anchor-article-face))
+		  '(japanlaw-anchor-name-face japanlaw-anchor-article-face))
 	(let ((back-to (point))
 	      (face (point-face (point)))
 	      start end)
 	  (save-excursion
 	    (setq end (next back-to))
 	    (cond ((and (= (following-char) ?\（)
-			(eq face 'laws-anchor-name-face))
+			(eq face 'japanlaw-anchor-name-face))
 		   ;; ○○法（○○○）第○○条第○号
 		   (forward-sexp)
-		   (and (eq (point-face (point)) 'laws-anchor-article-face)
+		   (and (eq (point-face (point)) 'japanlaw-anchor-article-face)
 			(setq end (next (point)))))
-		  ((eq (point-face (point)) 'laws-anchor-article-face)
+		  ((eq (point-face (point)) 'japanlaw-anchor-article-face)
 		   ;; ○○法第○○条第○号
 		   (setq end (next (point)))))
-	    (laws-move-to-anchor 'backward)
+	    (japanlaw-move-to-anchor 'backward)
 	    (setq start (point)))
 	  (cons start end))))))
 
-(defun laws-compare-winconf ()
-  (let ((stored (nth laws-winconf-index laws-winconf-list))
-	(current (laws-current-winconf)))
+(defun japanlaw-compare-winconf ()
+  (let ((stored (nth japanlaw-winconf-index japanlaw-winconf-list))
+	(current (japanlaw-current-winconf)))
     (cond
-      ((and (equal (nth laws-winconf-index laws-winconf-list)
-		   (laws-current-winconf))
+      ((and (equal (nth japanlaw-winconf-index japanlaw-winconf-list)
+		   (japanlaw-current-winconf))
 	    'identical))
       ((and (/= (length (nth 3 stored))
 		(length (nth 3 current)))
 	    'different))
       (t
-       (let ((diffs (laws-winconf-diffs stored current)))
+       (let ((diffs (japanlaw-winconf-diffs stored current)))
 	 (or (and (> (length diffs) 1)
 		  'different)
 	     (let* ((buf (member (buffer-name) (car diffs)))
@@ -3936,7 +3936,7 @@ FULL が非-nilなら path/file を返す。"
 		       (and (not pos)
 			    'different))
                    (save-excursion
-                     (let ((anchor (laws-current-anchor)))
+                     (let ((anchor (japanlaw-current-anchor)))
                        (or (and (>= (cadr points) (car anchor))
                                 (<= (cadr points) (cdr anchor))
                                 (>= (car  points) (car anchor))
@@ -3944,7 +3944,7 @@ FULL が非-nilなら path/file を返す。"
                                 'identical)
                            'different)))))))))))
 
-(defun laws-winconf-diffs (stored current)
+(defun japanlaw-winconf-diffs (stored current)
   (let ((sbuflst (nth 3 stored))
 	(cbuflst (nth 3 current))
 	sbuf cbuf sbuffer cbuffer swinst cwinst spos cpos diffs)
@@ -3968,88 +3968,88 @@ FULL が非-nilなら path/file を返す。"
 	      cbuflst (cdr cbuflst))))
     diffs))
 
-(defun laws-winconf-message (&optional arg)
+(defun japanlaw-winconf-message (&optional arg)
   (interactive)
   (message
-   (if laws-winconf-list
+   (if japanlaw-winconf-list
        (format "%s[%d/%d]"
 	       (if arg (concat "(" (symbol-name arg) ")") "")
-	       (+ laws-winconf-index
-		  (if laws-winconf-list
+	       (+ japanlaw-winconf-index
+		  (if japanlaw-winconf-list
 		      1
 		    0))
-	       (length laws-winconf-list))
+	       (length japanlaw-winconf-list))
      "Not stored.")))
 
 ;;
 ;; parenthesis
 ;;
-(defun laws-forward-paren (arg)
+(defun japanlaw-forward-paren (arg)
   (interactive "P")
   (cond
    (current-prefix-arg
-    (laws-backward-paren))
+    (japanlaw-backward-paren))
    ((eq (char-after) ?\（)
     (forward-list)
-    (laws-forward-paren nil))
+    (japanlaw-forward-paren nil))
    ((re-search-forward ".（" nil t)
     (backward-char))))
 
-(defun laws-backward-paren ()
+(defun japanlaw-backward-paren ()
   (and (re-search-backward ".（" nil t)
        (forward-char)))
 
-(defun laws-fontify-or-defontify-paren ()
+(defun japanlaw-fontify-or-defontify-paren ()
   (interactive)
-  (destructuring-bind (beg . end) (laws-current-article)
-    (or (let ((pos (and laws-paren-overlays
-			(overlay-start (car laws-paren-overlays)))))
+  (destructuring-bind (beg . end) (japanlaw-current-article)
+    (or (let ((pos (and japanlaw-paren-overlays
+			(overlay-start (car japanlaw-paren-overlays)))))
 	  ;; overlayが設定済みか
 	  ;; overlayの位置が現在の条文内か
 	  (and pos
 	       (< beg pos)
 	       (< pos end)
 	       ;; defontify
-	       (laws-defontify-paren)))
-	(or (and laws-paren-overlays
+	       (japanlaw-defontify-paren)))
+	(or (and japanlaw-paren-overlays
 		 ;; 他の条項でoverlayが設定済み
 		 ;; defontify other
-		 (laws-defontify-paren)
+		 (japanlaw-defontify-paren)
 		 ;; fontify
-		 (laws-fontify-paren))
+		 (japanlaw-fontify-paren))
 	    ;; 通常のケース
 	    ;; fontify
-	    (laws-fontify-paren)))))
+	    (japanlaw-fontify-paren)))))
 
-(defun laws-fontify-paren (&optional beg end)
+(defun japanlaw-fontify-paren (&optional beg end)
   (interactive)
   (or (and beg end)
-      (destructuring-bind (bg . ed) (laws-current-article)
+      (destructuring-bind (bg . ed) (japanlaw-current-article)
 	(setq beg bg end ed)))
-  (let ((paren (laws-matching-parens beg end)))
+  (let ((paren (japanlaw-matching-parens beg end)))
     (save-excursion
       (mapc (lambda (x)
-	      (laws-paren-overlay-put (goto-char (car x)) (cdr x)))
+	      (japanlaw-paren-overlay-put (goto-char (car x)) (cdr x)))
 	    paren))))
 
-(defun laws-defontify-paren ()
+(defun japanlaw-defontify-paren ()
   (interactive)
-  (when laws-paren-overlays
-    (mapc #'delete-overlay laws-paren-overlays)))
+  (when japanlaw-paren-overlays
+    (mapc #'delete-overlay japanlaw-paren-overlays)))
 
-(defun laws-paren-overlay-put (beg end)
-  (or (looking-at laws-paren-exclude-regexp)
+(defun japanlaw-paren-overlay-put (beg end)
+  (or (looking-at japanlaw-paren-exclude-regexp)
 ;      (looking-at "（[^）]*?」")
-      (let ((overlays '(laws-paren1-face
-			laws-paren2-face
-			laws-paren3-face
-			laws-paren4-face
-			laws-paren5-face
-			laws-paren6-face)))
+      (let ((overlays '(japanlaw-paren1-face
+			japanlaw-paren2-face
+			japanlaw-paren3-face
+			japanlaw-paren4-face
+			japanlaw-paren5-face
+			japanlaw-paren6-face)))
 	(let ((ov (memq (get-char-property (point) 'face)
 			overlays)))
 	  (overlay-put (car (push (make-overlay beg end)
-				  laws-paren-overlays))
+				  japanlaw-paren-overlays))
 		       'face
 		       (or (and ov
 				(or (and (eq (car ov)
@@ -4058,12 +4058,12 @@ FULL が非-nilなら path/file を返す。"
 				    (cadr ov)))
 			   (car overlays)))))))
 
-(defun laws-matching-parens (begin end &optional outside-only)
+(defun japanlaw-matching-parens (begin end &optional outside-only)
   ;; Invalid search bound (wrong side of point)
   (save-excursion
     (goto-char begin)
     (let (parens)
-      (while (re-search-forward laws-parens end t)
+      (while (re-search-forward japanlaw-parens end t)
 	(push (cons (match-beginning 0)
 		    (scan-lists (match-beginning 0) 1 0)) parens)
 	(goto-char (or (and outside-only
@@ -4071,33 +4071,33 @@ FULL が非-nilなら path/file を返す。"
 		       (+ (match-beginning 0) 1))))
       (nreverse parens))))
 
-(defun laws-compose-paren-toggle ()
+(defun japanlaw-compose-paren-toggle ()
   (interactive)
   (let ((end (cadr (get-text-property (point) 'composition)))
 	(beg (point)))
     (and (eq (char-after) ?\（)
 	 (if end
 	     (decompose-region beg (+ beg end))
-	   (laws-compose-paren (point) (scan-lists (point) 1 0))))))
+	   (japanlaw-compose-paren (point) (scan-lists (point) 1 0))))))
 
-(defun laws-compose-paren (&optional beg end)
+(defun japanlaw-compose-paren (&optional beg end)
   (interactive)
   (or (and beg end)
-      (destructuring-bind (bg . ed) (laws-current-article)
+      (destructuring-bind (bg . ed) (japanlaw-current-article)
 	(setq beg bg end ed)))
-  (let ((parens (laws-matching-parens beg end 'outside-only)))
+  (let ((parens (japanlaw-matching-parens beg end 'outside-only)))
     (save-excursion
       (mapc (lambda (x)
-	      (laws-compose-region (goto-char (car x)) (cdr x)))
+	      (japanlaw-compose-region (goto-char (car x)) (cdr x)))
 	    parens))))
 
-(defun laws-compose-region (beg end)
-  (or (looking-at laws-paren-exclude-regexp)
-      (compose-region beg end laws-compose-paren-char)))
+(defun japanlaw-compose-region (beg end)
+  (or (looking-at japanlaw-paren-exclude-regexp)
+      (compose-region beg end japanlaw-compose-paren-char)))
 
-(defun laws-decompose-paren ()
+(defun japanlaw-decompose-paren ()
   (interactive)
-  (destructuring-bind (beg . end) (laws-current-article)
+  (destructuring-bind (beg . end) (japanlaw-current-article)
     (and current-prefix-arg
 	 (setq beg (point-min) end (point-max)))
     (decompose-region beg end)))
@@ -4106,20 +4106,20 @@ FULL が非-nilなら path/file を返す。"
 ;; information
 ;;
 
-;; (defun laws-display-file-info ()
+;; (defun japanlaw-display-file-info ()
 ;;   (interactive)
 ;;   (pop-to-buffer
-;;    (with-current-buffer (get-buffer-create "*LawsInfo*")
-;;      (laws-with-buffer-read-only
+;;    (with-current-buffer (get-buffer-create "*JapanLawInfo*")
+;;      (japanlaw-with-buffer-read-only
 ;;       (insert
 ;;        (apply #'format
 ;; 	      (mapconcat (lambda (s) (format "%-20s%%s" s))
 ;; 			 '("法令名" "URL" "HTML" "ファイル名" "日付") "\n")
-;; 	      (laws-file-info (buffer-file-name)))))
+;; 	      (japanlaw-file-info (buffer-file-name)))))
 ;;      (current-buffer))))
 
-;; (defun laws-file-info (file)
-;;   (let ((data (laws-read-init-file file)))
+;; (defun japanlaw-file-info (file)
+;;   (let ((data (japanlaw-read-init-file file)))
 ;;     (let ((name (plist-get data :name))
 ;; 	  (url  (plist-get data :url))
 ;; 	  (html (plist-get data :html))
@@ -4127,27 +4127,27 @@ FULL が非-nilなら path/file を返す。"
 ;; 	  (date (plist-get data :date)))
 ;;       (list name url html file date))))
 
-(defun laws-describe-bindings (keymap)
+(defun japanlaw-describe-bindings (keymap)
   (let ((name (symbol-name keymap)))
-    (help-setup-xref (list #'laws-describe-bindings keymap)
+    (help-setup-xref (list #'japanlaw-describe-bindings keymap)
                      nil)
     (with-output-to-temp-buffer "*Help*"
       (princ name) (terpri)
       (princ (make-string (length name) ?-)) (terpri) (terpri)
       (princ (substitute-command-keys (concat "\\{" name "}"))))))
 
-(defun laws-help ()
+(defun japanlaw-help ()
   (interactive)
-  (laws-describe-bindings 'laws-mode-map))
+  (japanlaw-describe-bindings 'japanlaw-mode-map))
 
-(defun laws-index-help ()
+(defun japanlaw-index-help ()
   (interactive)
-  (laws-describe-bindings 'laws-index-mode-map))
+  (japanlaw-describe-bindings 'japanlaw-index-mode-map))
 
 ;;
 ;; outline
 ;;
-(defun laws-outline-regexps ()
+(defun japanlaw-outline-regexps ()
   (let ((number "[一二三四五六七八九十]"))
     (setq outline-regexp
 	  (concat ;; 目次
@@ -4173,9 +4173,9 @@ FULL が非-nilなら path/file を返す。"
 	   "\\|\\(第"  number "+目"
 	   "\\([のノ]" number "\\)*\\)　"
 	   "\\|附則　?.*$\\)")))
-  (setq outline-level 'laws-outline-level))
+  (setq outline-level 'japanlaw-outline-level))
 
-(defun laws-outline-level ()
+(defun japanlaw-outline-level ()
   (save-excursion
     (let ((str (if (looking-at outline-regexp) (match-string 1) ""))
 	  (number "[一二三四五六七八九十]"))
@@ -4185,10 +4185,10 @@ FULL が非-nilなら path/file を返す。"
        ((string-match (concat "第" number "+節") str) 3)
        ((string-match (concat "第" number "+款") str) 4)
        ((string-match (concat "第" number "+目") str) 5)
-       ((string-match "附　?則" str) laws-supplementary-level)
+       ((string-match "附　?則" str) japanlaw-supplementary-level)
        (t 0)))))
 
-(defun laws-outline-forward-same-level (n)
+(defun japanlaw-outline-forward-same-level (n)
   ;; from outline.el
   (outline-back-to-heading)
   (catch 'loop
@@ -4203,7 +4203,7 @@ FULL が非-nilなら path/file を返す。"
 		 (prog1 t
 		   (message "No following same-level heading."))))))))
 
-(defun laws-outline-up-heading (n)
+(defun japanlaw-outline-up-heading (n)
   ;; from outline.el
   (outline-back-to-heading)
   (if (eq (funcall outline-level) 1)
@@ -4217,19 +4217,19 @@ FULL が非-nilなら path/file を返す。"
 	(outline-previous-visible-heading 1))
       (setq n (- n 1)))))
 
-(defun laws-outline-header-p ()
+(defun japanlaw-outline-header-p ()
   (memq (get-text-property (point) 'face)
-	'(laws-volume-face
-	  laws-chapter-face
-	  laws-section-face
-	  laws-subsection-face
-	  laws-subsection2-face)))
+	'(japanlaw-volume-face
+	  japanlaw-chapter-face
+	  japanlaw-section-face
+	  japanlaw-subsection-face
+	  japanlaw-subsection2-face)))
 
-(defun laws-previous-visible-heading (n)
+(defun japanlaw-previous-visible-heading (n)
   (interactive "p")
   (forward-line 0)
   (if (and
-       (laws-heading-level)
+       (japanlaw-heading-level)
        (not (looking-at outline-regexp)))
       (progn
 	(forward-line -1)
@@ -4238,13 +4238,13 @@ FULL が非-nilなら path/file を返す。"
 	     (forward-line)
 	     (error "No previous heading.")))
     (outline-previous-visible-heading n)
-    (laws-recenter t)))
+    (japanlaw-recenter t)))
 
-(defun laws-next-visible-heading (n)
+(defun japanlaw-next-visible-heading (n)
   (interactive "p")
   (forward-line 0)
   (if (and
-       (laws-heading-level)
+       (japanlaw-heading-level)
        (not (looking-at outline-regexp)))
       (progn
 	(forward-line)
@@ -4253,16 +4253,16 @@ FULL が非-nilなら path/file を返す。"
 	     (forward-line -1)
 	     (error "No following heading.")))
     (outline-next-visible-heading n)
-    (laws-recenter t)))
+    (japanlaw-recenter t)))
 
-(defun laws-forward-same-level (n)
+(defun japanlaw-forward-same-level (n)
   (interactive "p")
-  ;; when laws-heading-level
-  (and (laws-heading-level)
+  ;; when japanlaw-heading-level
+  (and (japanlaw-heading-level)
        (if (looking-at outline-regexp)
 	   ;; outline heading
 	   (progn (outline-forward-same-level n)
-		  (laws-recenter t))
+		  (japanlaw-recenter t))
 	 ;; not outline heading
 	 (if (save-excursion (forward-line)
 			     (looking-at "^$"))
@@ -4270,15 +4270,15 @@ FULL が非-nilなら path/file を返す。"
 	     (error "No following same-level heading.")
 	   ;; not blank line
 	   (let ((pt (point)))
-	     ;; error if forward-line is laws-supplementary-level
-	     (if (and (/= (car (laws-heading-level))
-			  laws-supplementary-level)
+	     ;; error if forward-line is japanlaw-supplementary-level
+	     (if (and (/= (car (japanlaw-heading-level))
+			  japanlaw-supplementary-level)
 		      (save-excursion (forward-line)
-				      (= (car (laws-heading-level))
-					 laws-supplementary-level)))
+				      (= (car (japanlaw-heading-level))
+					 japanlaw-supplementary-level)))
 		 (error "No following same-level heading.")
 	       (condition-case err
-		   (laws-forward-same-level-2)
+		   (japanlaw-forward-same-level-2)
 		 (error
 		  ;; Return to the position, if no following same level.
 		  (goto-char pt)
@@ -4288,72 +4288,72 @@ FULL が非-nilなら path/file を返す。"
 		 (goto-char pt)
 		 (error "No following same-level heading."))))))))
 
-(defun laws-forward-same-level-2 ()
-  (let ((level (car (laws-heading-level)))
+(defun japanlaw-forward-same-level-2 ()
+  (let ((level (car (japanlaw-heading-level)))
 	(pt (point)))
-    (laws-next-visible-heading 1)
-    (if (> level (car (laws-heading-level)))
+    (japanlaw-next-visible-heading 1)
+    (if (> level (car (japanlaw-heading-level)))
 	(progn
-	  (laws-previous-visible-heading 1)
+	  (japanlaw-previous-visible-heading 1)
 	  (error "No following same-level heading."))
-      (while (< level (car (laws-heading-level)))
-	(laws-next-visible-heading 1))
+      (while (< level (car (japanlaw-heading-level)))
+	(japanlaw-next-visible-heading 1))
       (and
-       (> level (car (laws-heading-level)))
+       (> level (car (japanlaw-heading-level)))
        (goto-char pt)
        (error "No following same-level heading.")))))
 
-(defun laws-backward-same-level (n)
+(defun japanlaw-backward-same-level (n)
   (interactive "p")
   (and
-   (laws-heading-level)
+   (japanlaw-heading-level)
    (if (looking-at outline-regexp)
        (progn
 	 (outline-backward-same-level n)
-	 (laws-recenter t))
+	 (japanlaw-recenter t))
      (if (save-excursion (forward-line -1)
-			 (not (laws-heading-level)))
+			 (not (japanlaw-heading-level)))
 	 (error "No previous same-level heading.")
-       (laws-backward-same-level-2)))))
+       (japanlaw-backward-same-level-2)))))
 
-(defun laws-backward-same-level-2 ()
-  (let ((level (car (laws-heading-level))))
-    (laws-previous-visible-heading 1)
-    (if (> level (car (laws-heading-level)))
+(defun japanlaw-backward-same-level-2 ()
+  (let ((level (car (japanlaw-heading-level))))
+    (japanlaw-previous-visible-heading 1)
+    (if (> level (car (japanlaw-heading-level)))
 	(progn
-	  (laws-next-visible-heading 1)
+	  (japanlaw-next-visible-heading 1)
 	  (error "No previous same-level heading."))
-      (while (< level (car (laws-heading-level)))
-	(laws-previous-visible-heading 1)))))
+      (while (< level (car (japanlaw-heading-level)))
+	(japanlaw-previous-visible-heading 1)))))
 
-(defun laws-up-heading (n)
+(defun japanlaw-up-heading (n)
   (interactive "p")
-  (if (laws-heading-level)
+  (if (japanlaw-heading-level)
       (if (or ;; top-level or second-level(but not exists top-level)
-	      (eq (car (funcall 'laws-heading-level)) 1)
-		  (and (eq (car (funcall 'laws-heading-level)) 2)
+	      (eq (car (funcall 'japanlaw-heading-level)) 1)
+		  (and (eq (car (funcall 'japanlaw-heading-level)) 2)
 		       (not (re-search-backward
 			     "^　+第[一二三四五六七八九十]+編" nil t))))
 	  (error "Already at top level of the outline.")
-	(if (= 0 (laws-outline-level))
-	    (laws-up-heading-2)
+	(if (= 0 (japanlaw-outline-level))
+	    (japanlaw-up-heading-2)
 	  (condition-case err
 	      (outline-up-heading n)
 	    (error nil))
-	  (laws-recenter t)))
+	  (japanlaw-recenter t)))
     (outline-back-to-heading)
-    (laws-recenter t)))
+    (japanlaw-recenter t)))
 
-(defun laws-up-heading-2 ()
+(defun japanlaw-up-heading-2 ()
   (if (looking-at "^　+第[一二三四五六七八九]+編")
       (error "")
-  (let ((level (car (laws-heading-level))))
-    (while (<= level (car (laws-heading-level)))
-      (laws-previous-visible-heading 1)))))
+  (let ((level (car (japanlaw-heading-level))))
+    (while (<= level (car (japanlaw-heading-level)))
+      (japanlaw-previous-visible-heading 1)))))
 
-(defun laws-heading-level ()
+(defun japanlaw-heading-level ()
   (save-excursion
-    (let ((str (if (looking-at laws-heading-regexp) (match-string 1) ""))
+    (let ((str (if (looking-at japanlaw-heading-regexp) (match-string 1) ""))
 	  (number "[一二三四五六七八九十]"))
       (cond
        ((string-match (concat "第" number "+編") str)
@@ -4371,35 +4371,35 @@ FULL が非-nilなら path/file を返す。"
 	 (concat "第" number "+目\\([のノ]" number "\\)*") str)
 	(cons 5 (match-string 0 str)))
        ((string-match "附　?則" str)
-	(cons laws-supplementary-level (match-string 0 str)))
+	(cons japanlaw-supplementary-level (match-string 0 str)))
        (t nil)))))
 
-(defun laws-heading-list ()
-  (let* ((heading (laws-heading-level))
+(defun japanlaw-heading-list ()
+  (let* ((heading (japanlaw-heading-level))
 	 (level (car heading))
 	 (header-string-list (cons (cdr heading) '())))
     (cond
      ((null heading)
       (error "Not header line point."))
      ((= level 1) nil)			 ; 編
-     ((= laws-supplementary-level level) ; 附則
+     ((= japanlaw-supplementary-level level) ; 附則
       (setq header-string-list (list "附　?則")))
      (t
       (catch 'loop
 	(save-excursion
 	  (while (< 0 level)
-	    (if (re-search-backward laws-heading-regexp nil t)
-		(when (= (1- level) (car (laws-heading-level)))
+	    (if (re-search-backward japanlaw-heading-regexp nil t)
+		(when (= (1- level) (car (japanlaw-heading-level)))
 		  (setq level (1- level)
-			header-string-list (cons (cdr (laws-heading-level))
+			header-string-list (cons (cdr (japanlaw-heading-level))
 						 header-string-list)))
 	      (throw 'loop nil)))))))
     header-string-list))
 
-(defun laws-heading-jump ()
+(defun japanlaw-heading-jump ()
   (interactive)
   (forward-line 0)
-  (let ((lst (laws-heading-list)))
+  (let ((lst (japanlaw-heading-list)))
     (when lst
       (and
        (looking-at outline-regexp)
@@ -4413,9 +4413,9 @@ FULL が非-nilなら path/file を返す。"
       (forward-line 0)
       (and
        (looking-at outline-regexp)
-       (laws-recenter t)))))
+       (japanlaw-recenter t)))))
 
-(defun laws-goto-toc ()
+(defun japanlaw-goto-toc ()
   "目次に移動するコマンド。"
   (interactive)
   (let ((pt (save-excursion
@@ -4427,7 +4427,7 @@ FULL が非-nilなら path/file を返す。"
       (forward-line 0)
       (recenter 1))))
 
-(defun laws-move-to-tables ()
+(defun japanlaw-move-to-tables ()
   "罫線表に移動するコマンド。"
   (interactive)
   (let ((backto (point)))
@@ -4440,262 +4440,262 @@ FULL が非-nilなら path/file を返す。"
 ;;
 ;; Bookmark
 ;;
-(defun laws-bookmark-this-file ()
+(defun japanlaw-bookmark-this-file ()
   (interactive)
-  (let ((id (laws-get-id (laws-current-buffer-law-name))))
-    (if (member id (laws-bookmark-alist))
+  (let ((id (japanlaw-get-id (japanlaw-current-buffer-law-name))))
+    (if (member id (japanlaw-bookmark-alist))
 	(message "Already exists in Bookmark.")
-      (push id laws-bookmark-alist)
-      (message "Add to Bookmark `%s'" (laws-current-buffer-law-name)))))
+      (push id japanlaw-bookmark-alist)
+      (message "Add to Bookmark `%s'" (japanlaw-current-buffer-law-name)))))
 
 ;;
 ;; iswitchb
 ;;
-(defun laws-icompleting-read (prompt choices)
+(defun japanlaw-icompleting-read (prompt choices)
   ;; See iswitchb.el commentary.
   (let ((minibuffer-setup-hook 'iswitchb-minibuffer-setup)
 	(iswitchb-make-buflist-hook
          (lambda ()
            (setq iswitchb-temp-buflist choices)))
-	(max-mini-window-height laws-max-mini-window-height))
+	(max-mini-window-height japanlaw-max-mini-window-height))
     (iswitchb-read-buffer prompt)))
 
-(defun laws-iswitchb (subject)
+(defun japanlaw-iswitchb (subject)
   "iswitchbで法令ファイルを開く。
 ローマ字によるインクリメンタル検索(migemo)を利用するため、
 migemoとiswitchbの設定が必要。"
-  (interactive (laws-iswitchb-interactive))
+  (interactive (japanlaw-iswitchb-interactive))
   (message "Reading names...")
   (let ((name (funcall
-	       (if laws-use-iswitchb
-		   #'laws-icompleting-read
+	       (if japanlaw-use-iswitchb
+		   #'japanlaw-icompleting-read
 		 #'completing-read)
 	       (format "[%S] Switch to: " subject)
 	       (case subject
-		 (all		(laws-names-list))
-		 (bookmark	(laws-iswitchb-bookmark-list))
-		 (download	(laws-iswitchb-download-list))
+		 (all		(japanlaw-names-list))
+		 (bookmark	(japanlaw-iswitchb-bookmark-list))
+		 (download	(japanlaw-iswitchb-download-list))
 		 (t		(error "error: %S" subject))))))
-    (laws-open-file (or (laws-get-id name) (error "No match.")))))
+    (japanlaw-open-file (or (japanlaw-get-id name) (error "No match.")))))
 
-(defun laws-iswitchb-interactive ()
-  (unless (file-exists-p laws-index-file)
-    (error "Try `M-x laws'"))
-  (when laws-setup-p (laws-setup))
+(defun japanlaw-iswitchb-interactive ()
+  (unless (file-exists-p japanlaw-index-file)
+    (error "Try `M-x japanlaw'"))
+  (when japanlaw-setup-p (japanlaw-setup))
   (list (if current-prefix-arg
-	    (setq laws-iswitchb-present-list
+	    (setq japanlaw-iswitchb-present-list
 		  (intern
 		   (let* ((collection '("all" "bookmark" "download"))
 			  (subject
 			   (completing-read "Select a list: "
 					    collection nil t)))
 		     (or (car (member subject collection))
-			 laws-iswitchb-present-list
+			 japanlaw-iswitchb-present-list
 			 'all))))
-	  (or laws-iswitchb-present-list laws-iswitchb-initial-list))))
+	  (or japanlaw-iswitchb-present-list japanlaw-iswitchb-initial-list))))
 
-(defun laws-directory-files-recursive (parent match ext)
-  (laws:fringe
+(defun japanlaw-directory-files-recursive (parent match ext)
+  (japanlaw:fringe
    (mapcar (lambda (dir)
 	     (directory-files dir nil ext))
-	   (laws:filter 'file-directory-p (directory-files parent t match)))))
+	   (japanlaw:filter 'file-directory-p (directory-files parent t match)))))
 
-(defun laws-names-list ()
+(defun japanlaw-names-list ()
   "登録法令名と略称法令名のリストを返す。"
-  (or laws-names-list
-      (setq laws-names-list
+  (or japanlaw-names-list
+      (setq japanlaw-names-list
 	    (let ((result nil))
 	      ;; 登録法令名
-	      (do ((xs (laws-alist) (cdr xs)))
+	      (do ((xs (japanlaw-alist) (cdr xs)))
 		  ((null xs))
 		(do ((ys (cdar xs) (cdr ys)))
 		    ((null ys))
 		  (push (car (caar ys)) result)))
 	      ;; 略称法令名
-	      (do ((xs (laws-abbrev) (cdr xs)))
+	      (do ((xs (japanlaw-abbrev) (cdr xs)))
 		  ((null xs) (delete-dups (nreverse result)))
 		(do ((ys (cdar xs) (cdr ys)))
 		    ((null ys) result)
 		  (push (substring (caar ys) 1 -1) result)))))))
 
-(defun laws-download-list (type)
-  (when (file-exists-p laws-htmldata-path)
+(defun japanlaw-download-list (type)
+  (when (file-exists-p japanlaw-htmldata-path)
     (let ((func
 	   (case type
 	     (id (lambda (f)
 		   (upcase (file-name-sans-extension f))))
 	     (name (lambda (f)
-		     (laws-get-name (upcase (file-name-sans-extension f))))))))
+		     (japanlaw-get-name (upcase (file-name-sans-extension f))))))))
       (mapcar func
-	      (laws-directory-files-recursive
-	       laws-htmldata-path "\\`[MTSH][0-9]+\\'"
+	      (japanlaw-directory-files-recursive
+	       japanlaw-htmldata-path "\\`[MTSH][0-9]+\\'"
 	       (concat "\\.html\\'"))))))
 
-(defun laws-iswitchb-download-list () (laws-download-list 'name))
+(defun japanlaw-iswitchb-download-list () (japanlaw-download-list 'name))
 
-(defun laws-iswitchb-bookmark-list ()
-  (mapcar (lambda (x) (laws-get-name x)) (laws-bookmark-alist)))
+(defun japanlaw-iswitchb-bookmark-list ()
+  (mapcar (lambda (x) (japanlaw-get-name x)) (japanlaw-bookmark-alist)))
 
 
 ;;
-;; laws-mode
+;; japanlaw-mode
 ;;
-(easy-menu-define laws-mode-menu
-    laws-mode-map
-  "laws-mode-menu"
-  '("Laws"
+(easy-menu-define japanlaw-mode-menu
+    japanlaw-mode-map
+  "japanlaw-mode-menu"
+  '("JapanLaw"
     ["Digit Argument 0..9 -" nil]
-    ["Search And Push Anchor" laws-search-or-push-anchor t]
-    ["Laws Iswitchb" laws-iswitchb t]
-    ["Forward Anchor" laws-forward-anchor t]
-    ["Backward Anchor" laws-backward-anchor t]
+    ["Search And Push Anchor" japanlaw-search-or-push-anchor t]
+    ["JapanLaw Iswitchb" japanlaw-iswitchb t]
+    ["Forward Anchor" japanlaw-forward-anchor t]
+    ["Backward Anchor" japanlaw-backward-anchor t]
     "-"
-    ["Browse This URL" laws-browse-current-url t]
+    ["Browse This URL" japanlaw-browse-current-url t]
     "-"
-    ["Toggle Fontify Parens" laws-fontify-or-defontify-paren t]
-    ["Compose Parens" laws-compose-paren t]
-    ["Decompose Parens" laws-decompose-paren t]
+    ["Toggle Fontify Parens" japanlaw-fontify-or-defontify-paren t]
+    ["Compose Parens" japanlaw-compose-paren t]
+    ["Decompose Parens" japanlaw-decompose-paren t]
     "-"
-    ["Winconf Add" laws-winconf-add t]
-    ["Winconf Insert" laws-winconf-insert t]
-    ["Winconf Override" laws-winconf-override t]
-    ["Winconf Delete" laws-winconf-delete t]
-    ["Winconf Backward Delete" laws-winconf-backward-delete t]
-    ["Winconf Delete All" laws-winconf-delete-all t]
-    ["Winconf Message" laws-winconf-message t]
+    ["Winconf Add" japanlaw-winconf-add t]
+    ["Winconf Insert" japanlaw-winconf-insert t]
+    ["Winconf Override" japanlaw-winconf-override t]
+    ["Winconf Delete" japanlaw-winconf-delete t]
+    ["Winconf Backward Delete" japanlaw-winconf-backward-delete t]
+    ["Winconf Delete All" japanlaw-winconf-delete-all t]
+    ["Winconf Message" japanlaw-winconf-message t]
     "-"
-    ["Restore Current Winconf" laws-restore-current-winconf t]
-    ["Restore First Winconf" laws-restore-first-winconf t]
-    ["Restore Last Winconf" laws-restore-last-winconf t]
-    ["Forward Winconf" laws-forward-winconf t]
-    ["Backward Winconf" laws-backward-winconf t]
+    ["Restore Current Winconf" japanlaw-restore-current-winconf t]
+    ["Restore First Winconf" japanlaw-restore-first-winconf t]
+    ["Restore Last Winconf" japanlaw-restore-last-winconf t]
+    ["Forward Winconf" japanlaw-forward-winconf t]
+    ["Backward Winconf" japanlaw-backward-winconf t]
     "-"
-    ["Display Other buffer" laws-display-toggle t]
-    ["Other Window" laws-other-window t]
+    ["Display Other buffer" japanlaw-display-toggle t]
+    ["Other Window" japanlaw-other-window t]
     "-"
-    ["Forward Parens" laws-forward-paren t]
-    ["Forward Article" laws-forward-article t]
-    ["Backward Article" laws-backward-article t]
-    ["Forward Paragraph" laws-forward-paragraph t]
-    ["Backward Paragraph" laws-backward-paragraph t]
+    ["Forward Parens" japanlaw-forward-paren t]
+    ["Forward Article" japanlaw-forward-article t]
+    ["Backward Article" japanlaw-backward-article t]
+    ["Forward Paragraph" japanlaw-forward-paragraph t]
+    ["Backward Paragraph" japanlaw-backward-paragraph t]
     "-"
-    ["Help" laws-help t]
-    ["View Quit And Return Index" laws-view-quit t]
+    ["Help" japanlaw-help t]
+    ["View Quit And Return Index" japanlaw-view-quit t]
     ))
 
-(defun laws-mode ()
+(defun japanlaw-mode ()
   (interactive)
   (unless (buffer-file-name)
     (error "No visited file."))
-  (unless (equal (laws-expand-data-file
+  (unless (equal (japanlaw-expand-data-file
 		  (file-name-sans-extension
 		   (file-name-nondirectory (buffer-file-name))))
 		 (buffer-file-name))
     (message "File `%s' is irregular law's path name." (buffer-file-name))
     (sleep-for 3))
   (kill-all-local-variables)
-  (use-local-map laws-mode-map)
-  (setq mode-name laws-mode-name)
-  (setq major-mode 'laws-mode)
+  (use-local-map japanlaw-mode-map)
+  (setq mode-name japanlaw-mode-name)
+  (setq major-mode 'japanlaw-mode)
   (setq buffer-read-only t)
-  (set (make-local-variable 'laws-paren-overlays) nil)
+  (set (make-local-variable 'japanlaw-paren-overlays) nil)
   (set (make-local-variable 'font-lock-defaults)
-       '(laws-font-lock-keywords))
-  (let ((init (laws-read-init-file)))
+       '(japanlaw-font-lock-keywords))
+  (let ((init (japanlaw-read-init-file)))
     ;; font-lock-keywords
-    (setq laws-font-lock-keywords
-	  (append laws-font-lock-keywords-0
-		  laws-font-lock-keywords-1
+    (setq japanlaw-font-lock-keywords
+	  (append japanlaw-font-lock-keywords-0
+		  japanlaw-font-lock-keywords-1
 		  (let ((regs (car init)))
-		    ;; `laws-font-lock-keywords-2'
+		    ;; `japanlaw-font-lock-keywords-2'
 		    ;; 法令ファイルごとにバッファローカルな設定。
-		    ;; `laws-anchor-clickable'
-		    (cond ((and regs laws-anchor-clickable)
-			   (list `(,regs (0 laws-anchor-name-face t))
-				 `(,regs ,(laws-set-mouse-face-2 0))))
-			  (regs (list `(,regs (0 laws-anchor-name-face t))))
+		    ;; `japanlaw-anchor-clickable'
+		    (cond ((and regs japanlaw-anchor-clickable)
+			   (list `(,regs (0 japanlaw-anchor-name-face t))
+				 `(,regs ,(japanlaw-set-mouse-face-2 0))))
+			  (regs (list `(,regs (0 japanlaw-anchor-name-face t))))
 			  (t nil)))))
     ;; iimage
     (when (nth 2 init)
       (iimage-mode 1))
     ;; 未施行法令のリンク先設定
-    (set (make-local-variable 'laws-mishikou-list)
-	 (cadr (laws-read-init-file))))
+    (set (make-local-variable 'japanlaw-mishikou-list)
+	 (cadr (japanlaw-read-init-file))))
   (turn-on-font-lock)
-  (setq line-spacing laws-line-space)
+  (setq line-spacing japanlaw-line-space)
   ;; imenu
   (setq imenu-generic-expression
 	'((nil "^第[一二三四五六七八九十百千のノ]+条.\\{1,20\\}" 0)))
   (imenu-add-to-menubar "Articles")
-  (easy-menu-add laws-mode-menu)
+  (easy-menu-add japanlaw-mode-menu)
   ;; outline
   (make-local-variable 'outline-regexp)
   (make-local-variable 'outline-level)
-  (laws-outline-regexps)
-  (and laws-mode-line
-       (setq mode-line-buffer-identification laws-mode-line))
-  (run-hooks 'laws-mode-hook))
+  (japanlaw-outline-regexps)
+  (and japanlaw-mode-line
+       (setq mode-line-buffer-identification japanlaw-mode-line))
+  (run-hooks 'japanlaw-mode-hook))
 
-(defvar laws-setup-p t
+(defvar japanlaw-setup-p t
   "Non-nil means do setup, else not setup.")
 
-(defun laws-setup ()
-  (when laws-setup-p
+(defun japanlaw-setup ()
+  (when japanlaw-setup-p
 
-    (when laws-use-buffer-law-name
-      (add-hook 'laws-mode-hook 'laws-rename-buffer))
+    (when japanlaw-use-buffer-law-name
+      (add-hook 'japanlaw-mode-hook 'japanlaw-rename-buffer))
 
     ;; Read bookmark file.
-    (laws-bookmark-alist)
+    (japanlaw-bookmark-alist)
 
     ;; Read Recent file.
-    (laws-recent-alist)
+    (japanlaw-recent-alist)
 
-    ;; `laws-bookmark-alist'
-    (add-hook 'kill-emacs-hook 'laws-bookmark-save)
+    ;; `japanlaw-bookmark-alist'
+    (add-hook 'kill-emacs-hook 'japanlaw-bookmark-save)
 
-    ;; `laws-recent-alist'
-    (add-hook 'kill-emacs-hook 'laws-recent-save)
+    ;; `japanlaw-recent-alist'
+    (add-hook 'kill-emacs-hook 'japanlaw-recent-save)
 
-    ;; `laws-recent-add'
-    (add-hook 'find-file-hook 'laws-recent-add)
+    ;; `japanlaw-recent-add'
+    (add-hook 'find-file-hook 'japanlaw-recent-add)
 
-    (setq laws-setup-p nil)
-    (message "Laws setup...done")))
+    (setq japanlaw-setup-p nil)
+    (message "japanlaw setup...done")))
 
-(defun laws-exit ()
+(defun japanlaw-exit ()
   (interactive)
-  (unless (memq major-mode '(laws-mode laws-index-mode))
+  (unless (memq major-mode '(japanlaw-mode japanlaw-index-mode))
     (error ""))
-  (unless (y-or-n-p "Exit laws? ")
+  (unless (y-or-n-p "Exit japanlaw? ")
     (error ""))
-  (laws-bookmark-save)
-  (laws-recent-save)
-  (remove-hook 'kill-emacs-hook 'laws-recent-save)
-  (remove-hook 'kill-emacs-hook 'laws-bookmark-save)
+  (japanlaw-bookmark-save)
+  (japanlaw-recent-save)
+  (remove-hook 'kill-emacs-hook 'japanlaw-recent-save)
+  (remove-hook 'kill-emacs-hook 'japanlaw-bookmark-save)
   (mapc (lambda (cel)
-	  (kill-buffer (get-file-buffer (laws-expand-data-file (cdr cel)))))
-	(laws-opened-alist))
-  (setq laws-alist nil
-	laws-abbrev nil
-	laws-abbrev-alist nil
-	laws-bookmark-alist nil
-	laws-recent-alist nil
-	laws-opened-alist nil
-	laws-winconf-list nil
-	laws-winconf-index 0
-	laws-display-toggle-winconf nil
-	laws-names-list nil
-	laws-iswitchb-present-list nil)
-  (setq laws-setup-p t)
-  (message "Initialize laws variables...done")
-  (when (get-buffer laws-index-buffer)
-    (kill-buffer laws-index-buffer))
-  (message "Kill all laws buffers...done"))
+	  (kill-buffer (get-file-buffer (japanlaw-expand-data-file (cdr cel)))))
+	(japanlaw-opened-alist))
+  (setq japanlaw-alist nil
+	japanlaw-abbrev nil
+	japanlaw-abbrev-alist nil
+	japanlaw-bookmark-alist nil
+	japanlaw-recent-alist nil
+	japanlaw-opened-alist nil
+	japanlaw-winconf-list nil
+	japanlaw-winconf-index 0
+	japanlaw-display-toggle-winconf nil
+	japanlaw-names-list nil
+	japanlaw-iswitchb-present-list nil)
+  (setq japanlaw-setup-p t)
+  (message "Initialize japanlaw variables...done")
+  (when (get-buffer japanlaw-index-buffer)
+    (kill-buffer japanlaw-index-buffer))
+  (message "Kill all japanlaw buffers...done"))
 
-(add-hook 'laws-index-mode-hook 'laws-setup)
-(add-hook 'laws-mode-hook 'laws-setup)
+(add-hook 'japanlaw-index-mode-hook 'japanlaw-setup)
+(add-hook 'japanlaw-mode-hook 'japanlaw-setup)
 
-(provide 'laws)
+(provide 'japanlaw)
 
-;;; laws.el ends here
+;;; japanlaw.el ends here
