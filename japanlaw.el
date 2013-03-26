@@ -38,7 +38,7 @@
 (require 'iswitchb)
 
 (defmacro japanlaw-labels (bindings &rest body)
-  (if (functionp 'cl-labels)
+  (if (fboundp 'cl-labels)
       `(cl-labels ,bindings ,@body)
     `(labels ,bindings ,@body)))
 
