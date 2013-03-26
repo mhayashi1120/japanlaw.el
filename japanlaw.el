@@ -1,4 +1,4 @@
-;;; japanlaw.el --- -*- Coding: utf-8 -*-
+;;; japanlaw.el --- Japan law from law.e-gov.go.jp -*- Coding: utf-8 -*-
 
 ;; Copyright (C) 2007, 2008  Kazushi NODA
 ;;               2012 Masahiro Hayashi <mhayashi1120@gmail.com>
@@ -8,6 +8,7 @@
 ;; Created: 2007-10-31
 ;; Version: 0.8.8
 ;; Keywords: docs help
+;; Package-Requires: 
 
 ;; This file is not part of GNU Emacs.
 
@@ -1409,7 +1410,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	     (set-buffer (japanlaw-url-retrieve (japanlaw-expand-htmldata-url id)))))
 	(with-current-buffer buffer
 	  (goto-char (point-min))
-	  ;; (save-excursion (replace-string "" ""))    ;Emacs23?
+	  ;; (save-excursion (replace-string "\r" ""))    ;Emacs23?
 	  (when (search-forward "404 Not Found" nil t)
 	    (re-search-forward "^$" nil t)
 	    (error (concat (japanlaw-expand-htmldata-url id)
