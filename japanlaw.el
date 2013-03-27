@@ -169,7 +169,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :group 'japanlaw)
 
 ;; Path names
-(defcustom japanlaw-path (expand-file-name "~/.laws.d")
+(defcustom japanlaw-path (expand-file-name "~/.japanlaw.d")
   "法令データ提供システムから取得したインデックスファイル、法令デー
 タ等の保存先パス。"
   :type 'directory
@@ -1061,6 +1061,17 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (when (file-exists-p file)
       (rename-file file (car (find-backup-file-name file))))))
 
+(defun japanlaw-solve-backward-compatibility ()
+  (cond
+   ((file-exists-p japanlaw-path))
+   ((and (boundp 'laws-path)
+         (file-directory-p laws-path))
+    ;; .emacs で旧バージョンの変数が再定義してある場合
+    (rename-file laws-path japanlaw-path))
+   ((file-directory-p "~/.laws.d")
+    ;; デフォルト値で作成されている場合
+    (rename-file "~/.laws.d" japanlaw-path)))))
+
 (defun japanlaw-make-index-files (&optional regenerate)
   (unless japanlaw-online-mode
     (japanlaw-online-mode-message #'error))
@@ -1080,6 +1091,11 @@ Opened Recent Search Bookmark Index Directory Abbrev"
               (message "Wrote %s" file))
             t))))
     (let (index-updatedp abbrev-updatedp)
+
+      ;; 互換性を維持するため過去のバージョンで作られたインデックスがあ
+      ;; れば再利用する
+      (japanlaw-solve-backward-compatibility)
+
       ;; indexファイルが存在しない場合
       ;; 再取得して更新された場合
       (when (or regenerate (not (file-exists-p japanlaw-index-file)))
