@@ -1070,7 +1070,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (rename-file laws-path japanlaw-path))
    ((file-directory-p "~/.laws.d")
     ;; デフォルト値で作成されている場合
-    (rename-file "~/.laws.d" japanlaw-path)))))
+    (rename-file "~/.laws.d" japanlaw-path))))
 
 (defun japanlaw-make-index-files (&optional regenerate)
   (unless japanlaw-online-mode
