@@ -42,12 +42,18 @@
       `(cl-labels ,bindings ,@body)
     `(labels ,bindings ,@body)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; japanlaw-vars
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defconst japanlaw-version "version 0.8.8"
   "Version of japanlaw.el")
+
+(defconst japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
+  "法令データ提供システムのcgiのURL。")
+
+(defconst japanlaw-ryaku-url
+  "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON")
 
 ;;
 ;; Customize group
@@ -261,9 +267,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'string
   :group 'japanlaw)
 
-;; 
+;;
 ;; font-lock-keyword-face
-;; 
+;;
 ;; 以下、defcustomされている`japanlaw-*-face'の値(シンボル名)を他に変更しないこと。
 (defvar japanlaw-index-flag-face 'japanlaw-index-flag-face
   "Face name to use for open or close flag of law index mode.")
@@ -352,9 +358,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-paren-error-face 'japanlaw-paren-error-face
   "Face name to use for Parentheses of the max hierarchy.")
 
-;; 
+;;
 ;; faces
-;; 
+;;
 (defface japanlaw-index-flag-face
     '((((class color) (background light))
        (:foreground "CadetBlue"))
@@ -699,6 +705,37 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defvar japanlaw-supplementary-level 6
   "附則のアウトラインレベル")
+
+(defconst japanlaw-jikoubetsu-index-alist
+  '((1 . "憲法")	(2 . "国会")
+    (3 . "行政組織")	(4 . "国家公務員")
+    (5 . "行政手続")	(6 . "統計")
+    (7 . "地方自治")	(8 . "地方財政")
+    (9 . "司法")	(10 . "民事")
+    (11 . "刑事")	(12 . "警察")
+    (13 . "消防")	(14 . "国土開発")
+    (15 . "土地")	(16 . "都市計画")
+    (17 . "道路")	(18 . "河川")
+    (19 . "災害対策")	(20 . "建築・住宅")
+    (21 . "財務通則")	(22 . "国有財産")
+    (23 . "国税")	(24 . "専売・事業")
+    (25 . "国債")	(26 . "教育")
+    (27 . "文化")	(28 . "産業通則")
+    (29 . "農業")	(30 . "林業")
+    (31 . "水産業")	(32 . "鉱業")
+    (33 . "工業")	(34 . "商業")
+    (35 . "金融・保険")	(36 . "外国為替・貿易")
+    (37 . "陸運")	(38 . "海運")
+    (39 . "航空")	(40 . "貨物運送")
+    (41 . "観光")	(42 . "郵務")
+    (43 . "電気通信")	(44 . "労働")
+    (45 . "環境保全")	(46 . "厚生")
+    (47 . "社会福祉")	(48 . "社会保険")
+    (49 . "防衛")	(50 . "外事"))
+  "事項別索引")
+
+(defvar japanlaw-setup-p t
+  "Non-nil means do setup, else not setup.")
 
 ;; japanlaw-mode
 (defvar japanlaw-mishikou-list)		;ローカル変数
@@ -1052,9 +1089,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	      `(,japanlaw-anchor-article-face-regexp3 ,(japanlaw-set-mouse-face-2 1))
 	      `("同法" ,(japanlaw-set-mouse-face-2 0)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; japanlaw-data
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun japanlaw-make-backup-file (file)
   (let ((version-control t))
@@ -1136,9 +1173,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "GETしたIDの保存先ディレクトリを返す。"
   (concat japanlaw-htmldata-path "/" (upcase (substring id 0 3))))
 
-(defvar japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
-  "法令データ提供システムのcgiのURL。")
-
 (defun japanlaw-get-index ()
   "事項別分類索引をGETして、法令名とIDのalistのリストを生成して返す。"
   (japanlaw-labels
@@ -1166,9 +1200,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 			(kill-buffer (current-buffer))
 			(cons (cdr index) (nreverse result)))))
 		(japanlaw-request-uri-list) japanlaw-jikoubetsu-index-alist))))
-
-(defvar japanlaw-ryaku-url
-  "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON")
 
 (defun japanlaw-make-abbrev-index ()
   "略称法令名をGETして、連想リストを返す。"
@@ -1210,7 +1241,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defun japanlaw-request-uri-list ()
   "URLリスト"
   (loop for (cid . name) in japanlaw-jikoubetsu-index-alist
-        collect 
+        collect
         (format (mapconcat #'identity
                            '("H_CTG_%d=%%81%%40"
                              "H_CTG_GUN=1"
@@ -1223,34 +1254,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
                              "H_RYAKU=1"
                              "H_YOMI_GUN=1") "&")
                 cid)))
-
-(defconst japanlaw-jikoubetsu-index-alist 
-  '((1 . "憲法")	(2 . "国会")
-    (3 . "行政組織")	(4 . "国家公務員")
-    (5 . "行政手続")	(6 . "統計")
-    (7 . "地方自治")	(8 . "地方財政")
-    (9 . "司法")	(10 . "民事")
-    (11 . "刑事")	(12 . "警察")
-    (13 . "消防")	(14 . "国土開発")
-    (15 . "土地")	(16 . "都市計画")
-    (17 . "道路")	(18 . "河川")
-    (19 . "災害対策")	(20 . "建築・住宅")
-    (21 . "財務通則")	(22 . "国有財産")
-    (23 . "国税")	(24 . "専売・事業")
-    (25 . "国債")	(26 . "教育")
-    (27 . "文化")	(28 . "産業通則")
-    (29 . "農業")	(30 . "林業")
-    (31 . "水産業")	(32 . "鉱業")
-    (33 . "工業")	(34 . "商業")
-    (35 . "金融・保険")	(36 . "外国為替・貿易")
-    (37 . "陸運")	(38 . "海運")
-    (39 . "航空")	(40 . "貨物運送")
-    (41 . "観光")	(42 . "郵務")
-    (43 . "電気通信")	(44 . "労働")
-    (45 . "環境保全")	(46 . "厚生")
-    (47 . "社会福祉")	(48 . "社会保険")
-    (49 . "防衛")	(50 . "外事"))
-  "事項別索引")
 
 (defun japanlaw-make-jikoubetsu-index ()
   (let ((strs nil)
@@ -1631,9 +1634,9 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       ;; 生成されたファイルの名前を返す。
       file)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; japanlaw-index
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;
 ;; Header line
@@ -1656,7 +1659,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	    (mapconcat
 	     (lambda (s)
 	       (if (string= s mode)
-		   (concat 
+		   (concat
 		    (propertize (concat (spc 5) s (spc 5))
 				'face
 				japanlaw-index-header-selected-face
@@ -3022,9 +3025,9 @@ Openedの場合、ファイルを閉じる。"
 (defun japanlaw-online-mode-message (message-fun)
   (funcall message-fun (if japanlaw-online-mode "On line mode." "Off line mode.")))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; japanlaw
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;
 ;; search
@@ -4652,9 +4655,6 @@ migemoとiswitchbの設定が必要。"
   (and japanlaw-mode-line
        (setq mode-line-buffer-identification japanlaw-mode-line))
   (run-hooks 'japanlaw-mode-hook))
-
-(defvar japanlaw-setup-p t
-  "Non-nil means do setup, else not setup.")
 
 (defun japanlaw-setup ()
   (when japanlaw-setup-p
