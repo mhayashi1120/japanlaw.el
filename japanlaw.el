@@ -1,7 +1,7 @@
 ;;; japanlaw.el --- Japan law from law.e-gov.go.jp -*- Coding: utf-8 -*-
 
 ;; Copyright (C) 2007, 2008  Kazushi NODA
-;;               2012 Masahiro Hayashi <mhayashi1120@gmail.com>
+;;               2012-2013 Masahiro Hayashi <mhayashi1120@gmail.com>
 
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
