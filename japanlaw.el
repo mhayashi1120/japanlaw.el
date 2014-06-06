@@ -8,7 +8,7 @@
 ;; Created: 2007-10-31
 ;; Version: 0.8.8
 ;; Keywords: docs help
-;; Package-Requires: ((revive "20121022.1311"))
+;; Package-Requires: ((revive "20121022.411"))
 
 ;; This file is not part of GNU Emacs.
 
