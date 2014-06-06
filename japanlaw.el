@@ -152,7 +152,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     "弁護士法"
     "調査士法")
   "法令名と法人名が重複する法令名のリスト。法の文言の中に現われる
- 「〜法人」を着色しない。"
+ 「～法人」を着色しない。"
   :type 'list
   :group 'japanlaw)
 
@@ -175,7 +175,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :group 'japanlaw)
 
 ;; Path names
-(defcustom japanlaw-path (expand-file-name "~/.japanlaw.d")
+(defcustom japanlaw-path (expand-file-name "japanlaw.d" user-emacs-directory)
   "法令データ提供システムから取得したインデックスファイル、法令デー
 タ等の保存先パス。"
   :type 'directory
@@ -1166,6 +1166,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
       (let ((coding (detect-coding-region (point-min) (point-max) t)))
 	(decode-coding-region (point-min) (point-max) coding)
 	(set-buffer-multibyte t)
+        (remove-text-properties (point-min) (point-max) '(charset))
 	(goto-char (point-min))
 	(current-buffer)))))
 
