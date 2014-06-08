@@ -175,7 +175,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :group 'japanlaw)
 
 ;; Path names
-(defcustom japanlaw-path (expand-file-name "japanlaw.d" user-emacs-directory)
+(defcustom japanlaw-path (locate-user-emacs-file "japanlaw.d" ".japanlaw.d")
   "法令データ提供システムから取得したインデックスファイル、法令デー
 タ等の保存先パス。"
   :type 'directory
