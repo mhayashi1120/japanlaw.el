@@ -1166,6 +1166,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
       (let ((coding (detect-coding-region (point-min) (point-max) t)))
 	(decode-coding-region (point-min) (point-max) coding)
 	(set-buffer-multibyte t)
+        ;;TODO とりあえず。。
+        ;; charset プロパティつきの string を (format "%S" string) しているところが
+        ;; あるので回避。
         (remove-text-properties (point-min) (point-max) '(charset))
 	(goto-char (point-min))
 	(current-buffer)))))
