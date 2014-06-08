@@ -6,7 +6,7 @@
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
-;; Version: 0.8.8
+;; Version: 0.8.9
 ;; Keywords: docs help
 ;; Package-Requires: ((revive "20121022.411"))
 
