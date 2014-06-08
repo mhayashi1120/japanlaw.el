@@ -768,6 +768,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     ;; anchor
     (define-key map "\C-i" 'japanlaw-forward-anchor)
     (define-key map "\C-\M-i" 'japanlaw-backward-anchor)
+    (define-key map "hc" 'japanlaw-print-current-url)
     ;; window
     (define-key map "v" 'japanlaw-display-toggle)
     (define-key map "o" 'japanlaw-other-window)
@@ -855,9 +856,10 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-iswitchb-present-list nil
   "`japanlaw-iswitchb'の現在の検索対象の法令リスト。")
 
-;; w3m
-(defvar japanlaw-w3m-dump-command
-  (lambda (cols) (format "w3m -dump -cols %s" cols)))
+(defcustom japanlaw-w3m-command "w3m"
+  "Path to w3m program"
+  :type 'string
+  :group 'japanlaw)
 
 ;; japanlaw-index
 (defun japanlaw-set-face-invisible (n)
@@ -1410,6 +1412,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	    (downcase (substring id 0 3)) "/" (downcase id) japanlaw-extention)))
 
 (defun japanlaw-expand-init-file (id)
+  ;; ID は "h01ho042.law" のような文字列
   (if (> 3 (length id))
       ""
     (concat japanlaw-data-path "/"
@@ -1422,21 +1425,23 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (error "File `%s' exists!" dir))
     (make-directory dir 'parent)))
 
-(defun japanlaw-htmldata-retrieve (id force)
+(defun japanlaw-htmldata-retrieve (id force &optional url)
   "IDのHTMLデータが存在しない場合と、FORCEが非nilの場合に取得する。最後
 に取得した時から変更があった場合、番号付きバックアップファイルを生成する。
 保存先のhtmlのパスファイル名を返す。"
   (let ((html-path (japanlaw-expand-htmldata-file id))
 	(file (japanlaw-expand-data-file id)))
+    (unless url
+      (setq url (japanlaw-expand-htmldata-url id)))
     (when (or force (not (file-exists-p html-path)))
       (let ((buffer
-	     (set-buffer (japanlaw-url-retrieve (japanlaw-expand-htmldata-url id)))))
+	     (set-buffer (japanlaw-url-retrieve url))))
 	(with-current-buffer buffer
 	  (goto-char (point-min))
 	  ;; (save-excursion (replace-string "\r" ""))    ;Emacs23?
 	  (when (search-forward "404 Not Found" nil t)
 	    (re-search-forward "^$" nil t)
-	    (error (concat (japanlaw-expand-htmldata-url id)
+	    (error (concat url
 			   (replace-regexp-in-string
 			    "<.+?>\\|\r\n" ""
 			    (buffer-substring (point) (point-max))))))
@@ -1527,8 +1532,12 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	      (push (cons s path) h-path)))))
       (nreverse h-path))))
 
-(defun japanlaw-w3m-dump (command htmldata)
-  (shell-command (concat command " " htmldata) t))
+(defun japanlaw-w3m-dump (htmldata &rest args)
+  (apply 'call-process
+         japanlaw-w3m-command nil (current-buffer) nil
+         "-dump"
+         "-cols" (number-to-string japanlaw-w3m-dump-cols)
+         (append args (list htmldata))))
 
 (defun japanlaw-replace-zspc ()
   (goto-char (point-min))
@@ -1577,7 +1586,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (message "Not exists japanlaw-font-lock-keywords-2 file `%s'" file)
       nil)))
 
-(defun japanlaw-make-data (id &optional force)
+(defun japanlaw-make-data (id &optional force url)
   "htmlデータをw3mでダンプする。FORCEが非nilならIDをGET、nilなら既
 にGETしたHTMLを対象とする。また、font-lockのためのタグの埋め込み等
 の加工を行なう。
@@ -1587,7 +1596,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   (message "Getting file and converting...")
   (let ((temp (concat japanlaw-temp-path "/temp.html"))
 	;; htmldata を取得。
-	(html (japanlaw-htmldata-retrieve id nil))
+	(html (japanlaw-htmldata-retrieve id nil url))
 	(file (japanlaw-expand-data-file id))
 	(regfile (japanlaw-expand-init-file id))
 	(coding-system-for-write japanlaw-coding-system-for-write)
@@ -1621,8 +1630,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     (with-temp-file file
       (japanlaw-make-directory (file-name-directory file))
       (message "Extracting data from htmldata...")
-      (japanlaw-w3m-dump
-       (funcall japanlaw-w3m-dump-command japanlaw-w3m-dump-cols) temp)
+      (japanlaw-w3m-dump temp)
       (message (concat (current-message) " done."))
       ;; 半角空白2個を全角空白に置換する。
       (message "Replacing spaces...")
@@ -3129,7 +3137,7 @@ Openedの場合、ファイルを閉じる。"
       (japanlaw-parse-anchor anchor)
     (setq name
 	  ;; If non nil, 法令名に変換。
-	  (and name			;(japanlaw-anchor-convert-to-ref name)
+	  (and name             ;(japanlaw-anchor-convert-to-ref name)
 	       (japanlaw-anchor-convert-entry-name name))
 	  ;; If non nil, 正規表現文字列に変換。
 	  article
@@ -3155,19 +3163,34 @@ Openedの場合、ファイルを閉じる。"
     (unless name
       ;; If nil, 参照しているのは現在のファイル。
       (setq name (japanlaw-current-buffer-law-name)))
-    (japanlaw-display (let* ((id (japanlaw-get-id name))
-			 (file (japanlaw-expand-data-file id)))
-		    (cond ((and name (eq id nil))
-			   (error "Parse error: %S" (list name id)))
-			  ((eq id nil)	; 未登録法令
-			   (or (and (equal (japanlaw-current-buffer-law-name)
-					   name)
-				    (buffer-file-name))
-			       (error "Not visited file.")))
-			  ((file-exists-p file) file)
-			  (t (japanlaw-make-data id))))
-		  (list article paragraph item)
-		  1)
+    (japanlaw-display
+     (let* ((id (japanlaw-get-id name))
+            file)
+       (cond
+        ((assoc name japanlaw-mishikou-list)
+         ;; 未施行法令への anchor (取得 URL が異なる)
+         ;; FIXME:
+         ;; 未施行法令を htmldata にファイルを保存するのはあんまりよくないけど。。
+         (let ((mishikou (assoc name japanlaw-mishikou-list)))
+           (setq id (concat (japanlaw-file-sans-name (cdr mishikou)) "-mishikou"))
+           (setq file (japanlaw-expand-data-file id))
+           (japanlaw-make-data id nil
+                               (concat
+                                japanlaw-egov-url
+                                japanlaw-htmldata-directory
+                                (cdr mishikou)))))
+        ((and name (eq id nil))
+         (error "Parse error: %S" (list name id)))
+        ((eq id nil)                    ; 未登録法令
+         (or (and (equal (japanlaw-current-buffer-law-name)
+                         name)
+                  (buffer-file-name))
+             (error "Not visited file.")))
+        ((file-exists-p (setq file (japanlaw-expand-data-file id)))
+         file)
+        (t (japanlaw-make-data id))))
+     (list article paragraph item)
+     1)
     (sit-for 0.1)			;Test:
     (if (eq (japanlaw-compare-winconf)
 	    'different)
@@ -3639,18 +3662,6 @@ Openedの場合、ファイルを閉じる。"
 	((assoc name japanlaw-unentry-names)
 	 (japanlaw-anchor-convert-entry-name
 	  (cdr (assoc name japanlaw-unentry-names))))
-	;; 未施行法令の場合w3mでdumpする。
-	((assoc name japanlaw-mishikou-list)
-	 (unless japanlaw-online-mode
-	   (japanlaw-online-mode-message #'error))
-	 (shell-command
-	  (concat ;;(funcall japanlaw-w3m-dump-command japanlaw-w3m-dump-cols)
-		  "w3m -dump "
-		  (format " %s%s%s"
-			  japanlaw-egov-url
-			  japanlaw-htmldata-directory
-			  (cdr (assoc name japanlaw-mishikou-list)))))
-	 (error "/"))
 	;; 登録法令名、略称法令名
 	(t name)))
 
@@ -3742,6 +3753,7 @@ FULL が非-nilなら path/file を返す。"
 ;;
 ;; other
 ;;
+
 (defun japanlaw-browse-current-url ()
   (interactive)
   (let ((url (japanlaw-expand-htmldata-url
@@ -3749,6 +3761,18 @@ FULL が非-nilなら path/file を返す。"
     (if (not (string= url ""))
 	(browse-url url)
       (message "No url in this file."))))
+
+(defun japanlaw-print-current-url ()
+  "バッファの WEB 上の URL をミニバッファに表示して `kill-ring' に追加する。"
+  (interactive)
+  (let ((url (japanlaw-expand-htmldata-url
+	      (japanlaw-file-sans-name (buffer-file-name)))))
+    (cond
+     ((not (string= url ""))
+      (kill-new url)
+      (message "%s" url))
+     (t
+      (message "No url in this file.")))))
 
 (defun japanlaw-view-quit ()
   (interactive)
@@ -4575,6 +4599,7 @@ migemoとiswitchbの設定が必要。"
     ["Backward Anchor" japanlaw-backward-anchor t]
     "-"
     ["Browse This URL" japanlaw-browse-current-url t]
+    ["Print/Copy This URL" japanlaw-print-current-url t]
     "-"
     ["Toggle Fontify Parens" japanlaw-fontify-or-defontify-paren t]
     ["Compose Parens" japanlaw-compose-paren t]
