@@ -1517,11 +1517,10 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (defun japanlaw-replace-image-tags (images)
   (let ((case-fold-search t))
     (goto-char (point-min))
-    (while images
+    (dolist (img images)
       (when (re-search-forward
-	     (format "IMG SRC=\"%s\" ALT=\\(\"\"\\)" (car images)) nil t)
-	(replace-match (format "\"<../..%s>\"" (car images)) nil nil nil 1))
-      (pop images))))
+	     (format "IMG SRC=\"%s\" ALT=\\(\"\"\\)" img) nil t)
+	(replace-match (format "\"<../..%s>\"" img) nil nil nil 1)))))
 
 (defun japanlaw-html-get-h-path ()
   "htmldataからH-PATHを抽出する。"
@@ -1553,11 +1552,10 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   (let ((xs (japanlaw-names-list))
 	(result nil))
     (save-excursion
-      (while xs
+      (dolist (x xs)
 	(goto-char (point-min))
-	(when (search-forward (car xs) nil t)
-	  (push (match-string 0) result))
-	(pop xs)))
+	(when (search-forward x nil t)
+	  (push (match-string 0) result))))
     (mapc (lambda (name)
 	    (setq result (delete name result)))
 	  japanlaw-excluded-law-names)
