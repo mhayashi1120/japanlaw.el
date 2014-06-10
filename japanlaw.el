@@ -887,84 +887,86 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 		'local-map 'japanlaw-mode-map))
 	      nil)))
 
+;;TODO とりあえずコメントアウト set-mouse なんとかが何をしているのか。
 (defvar japanlaw-index-font-lock-keywords
-  (let ((fcolor (cdr (assq 'foreground-color
-			   (frame-parameters (selected-frame))))))
-    (list `(
-	    ;;
-	    ;; Directory, Index
-	    ;;
-	    ;; folder
-	    "^\\((\"\\)\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)$"
-	    ,(japanlaw-set-face-invisible 1)
-	    (2 japanlaw-index-flag-face t)
-	    ,(japanlaw-set-mouse-face-1 2)
-	    ,(japanlaw-set-face-invisible 3)
-	    ,(japanlaw-set-face-invisible 4)
-	    (5 '(:foreground ,fcolor) t)
-	    ,(japanlaw-set-mouse-face-1 5)
-	    ,(japanlaw-set-face-invisible 6))
+  nil
+  ;; (let ((fcolor (cdr (assq 'foreground-color
+  ;;       		   (frame-parameters (selected-frame))))))
+  ;;   (list `(
+  ;;           ;;
+  ;;           ;; Directory, Index
+  ;;           ;;
+  ;;           ;; folder
+  ;;           "^\\((\"\\)\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)$"
+  ;;           ,(japanlaw-set-face-invisible 1)
+  ;;           (2 japanlaw-index-flag-face t)
+  ;;           ,(japanlaw-set-mouse-face-1 2)
+  ;;           ,(japanlaw-set-face-invisible 3)
+  ;;           ,(japanlaw-set-face-invisible 4)
+  ;;           (5 '(:foreground ,fcolor) t)
+  ;;           ,(japanlaw-set-mouse-face-1 5)
+  ;;           ,(japanlaw-set-face-invisible 6))
 
-	  ;;
-	  ;; Abbrev
-	  ;;
-	  ;; folder
-	  `("^\\((\"\\) \\{2\\}\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
-	    ,(japanlaw-set-face-invisible 1)
-	    (2 japanlaw-index-flag-face t)
-	    ,(japanlaw-set-mouse-face-1 2)
-	    ,(japanlaw-set-face-invisible 3)
-	    ,(japanlaw-set-face-invisible 4)
-	    (5 '(:foreground ,fcolor) t)
-	    ,(japanlaw-set-mouse-face-1 5)
-	    ,(japanlaw-set-face-invisible 6))
-	  ;; sub folder
-	  `("^\\((\"\\) \\{4\\}\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
-	    ,(japanlaw-set-face-invisible 1)
-	    (2 japanlaw-index-flag-face t)
-	    ,(japanlaw-set-mouse-face-1 2)
-	    ,(japanlaw-set-face-invisible 3)
-	    ,(japanlaw-set-face-invisible 4)
-	    (5 '(:foreground ,fcolor) t)
-	    ,(japanlaw-set-mouse-face-1 5)
-	    ,(japanlaw-set-face-invisible 6))
-	  `("^\\((\"\\) \\{6\\}\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
-	    ,(japanlaw-set-face-invisible 1)
-	    (2 japanlaw-index-flag-face t)
-	    ,(japanlaw-set-mouse-face-1 2)
-	    ,(japanlaw-set-face-invisible 3)
-	    ,(japanlaw-set-face-invisible 4)
-	    (5 '(:foreground ,fcolor) t)
-	    ,(japanlaw-set-mouse-face-1 5)
-	    ,(japanlaw-set-face-invisible 6))
+  ;;         ;;
+  ;;         ;; Abbrev
+  ;;         ;;
+  ;;         ;; folder
+  ;;         `("^\\((\"\\) \\{2\\}\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
+  ;;           ,(japanlaw-set-face-invisible 1)
+  ;;           (2 japanlaw-index-flag-face t)
+  ;;           ,(japanlaw-set-mouse-face-1 2)
+  ;;           ,(japanlaw-set-face-invisible 3)
+  ;;           ,(japanlaw-set-face-invisible 4)
+  ;;           (5 '(:foreground ,fcolor) t)
+  ;;           ,(japanlaw-set-mouse-face-1 5)
+  ;;           ,(japanlaw-set-face-invisible 6))
+  ;;         ;; sub folder
+  ;;         `("^\\((\"\\) \\{4\\}\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
+  ;;           ,(japanlaw-set-face-invisible 1)
+  ;;           (2 japanlaw-index-flag-face t)
+  ;;           ,(japanlaw-set-mouse-face-1 2)
+  ;;           ,(japanlaw-set-face-invisible 3)
+  ;;           ,(japanlaw-set-face-invisible 4)
+  ;;           (5 '(:foreground ,fcolor) t)
+  ;;           ,(japanlaw-set-mouse-face-1 5)
+  ;;           ,(japanlaw-set-face-invisible 6))
+  ;;         `("^\\((\"\\) \\{6\\}\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
+  ;;           ,(japanlaw-set-face-invisible 1)
+  ;;           (2 japanlaw-index-flag-face t)
+  ;;           ,(japanlaw-set-mouse-face-1 2)
+  ;;           ,(japanlaw-set-face-invisible 3)
+  ;;           ,(japanlaw-set-face-invisible 4)
+  ;;           (5 '(:foreground ,fcolor) t)
+  ;;           ,(japanlaw-set-mouse-face-1 5)
+  ;;           ,(japanlaw-set-face-invisible 6))
 
-	  ;;
-	  ;; Opened, Recent, Bookmark
-	  ;;
-	  `("^\\((\"\\)\\([ D]\\)\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\".+)\\)$"
-	    ,(japanlaw-set-face-invisible 1)
-	    (2 '(:foreground "red") t)
-	    ,(japanlaw-set-mouse-face-1 2)
-	    (3 japanlaw-index-flag-face t)
-	    ,(japanlaw-set-face-invisible 4)
-	    ,(japanlaw-set-face-invisible 5)
-	    (6 '(:foreground ,fcolor) t)
-	    ,(japanlaw-set-mouse-face-1 6)
-	    ,(japanlaw-set-face-invisible 7))
+  ;;         ;;
+  ;;         ;; Opened, Recent, Bookmark
+  ;;         ;;
+  ;;         `("^\\((\"\\)\\([ D]\\)\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\".+)\\)$"
+  ;;           ,(japanlaw-set-face-invisible 1)
+  ;;           (2 '(:foreground "red") t)
+  ;;           ,(japanlaw-set-mouse-face-1 2)
+  ;;           (3 japanlaw-index-flag-face t)
+  ;;           ,(japanlaw-set-face-invisible 4)
+  ;;           ,(japanlaw-set-face-invisible 5)
+  ;;           (6 '(:foreground ,fcolor) t)
+  ;;           ,(japanlaw-set-mouse-face-1 6)
+  ;;           ,(japanlaw-set-face-invisible 7))
 
-	  ;;
-	  ;; 法令名
-	  ;;
-	  `("^\\((\"\\) \\{2,\\}\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\".+)\\)$"
-	    ,(japanlaw-set-face-invisible 1)
-	    (2 japanlaw-index-flag-face t)
-	    ;;,(japanlaw-set-mouse-face-1 2)
-	    ,(japanlaw-set-face-invisible 3)
-	    ,(japanlaw-set-face-invisible 4)
-	    (5 '(:foreground ,fcolor) t)
-	    ,(japanlaw-set-mouse-face-1 5)
-	    ,(japanlaw-set-face-invisible 6))
-	  ))
+  ;;         ;;
+  ;;         ;; 法令名
+  ;;         ;;
+  ;;         `("^\\((\"\\) \\{2,\\}\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\".+)\\)$"
+  ;;           ,(japanlaw-set-face-invisible 1)
+  ;;           (2 japanlaw-index-flag-face t)
+  ;;           ;;,(japanlaw-set-mouse-face-1 2)
+  ;;           ,(japanlaw-set-face-invisible 3)
+  ;;           ,(japanlaw-set-face-invisible 4)
+  ;;           (5 '(:foreground ,fcolor) t)
+  ;;           ,(japanlaw-set-mouse-face-1 5)
+  ;;           ,(japanlaw-set-face-invisible 6))
+  ;;         ))
   "`japanlaw-index-mode'のための`font-lock-keywords'")
 
 (defvar japanlaw-index-mode-map
@@ -1762,10 +1764,15 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
   (save-excursion
     (forward-line 0)
     ;;TODO
-    (get-text-property (point) 'japanlaw-item-flag)
-    (get-text-property (point) 'japanlaw-item-name)
-    (get-text-property (point) 'japanlaw-item-id)
-    (read (current-buffer))))
+    (let* ((flag (get-text-property (point) 'japanlaw-item-flag))
+           (name (get-text-property (point) 'japanlaw-item-name))
+           (id (get-text-property (point) 'japanlaw-item-id))
+           (sexp (read (current-buffer)))
+           (sexp2 (if id (list flag name id) (list flag name))))
+      (unless (equal sexp2 sexp)
+        (message "Assert: Not equal %s but %s" sexp sexp2)
+        (sit-for 1))
+      sexp)))
 
 (defsubst japanlaw-get-values (&optional pointer)
   "バッファのinvisibleなS式のデータをリストで返す。
@@ -2114,9 +2121,8 @@ LFUNCは、NAMEからなるリストを返す関数。"
         ;; Test:
         ;; (error Lisp nesting exceeds `max-lisp-eval-depth')
         ;; (japanlaw-index-search-insert-func alist)
-        (while alist
-          (let* ((cell (pop alist))
-                 (opened (cadr cell)))
+        (dolist (cell alist)
+          (let ((opened (cadr cell)))
             (japanlaw-index-insert (if opened "-" "+") (car cell))
             (when opened
               (do ((xs (cddr cell) (cdr xs)))
@@ -2142,9 +2148,8 @@ LFUNCは、NAMEからなるリストを返す関数。"
 		      (japanlaw-index-insert "    -" (caar zs) (cdar zs)))))))))))
       ((Bookmark Opened Recent)
        (japanlaw-with-buffer-read-only
-	(while alist
-          (let ((cell (pop alist)))
-            (japanlaw-index-insert " -" (car cell) (cdr cell))))))
+	(dolist (cell alist)
+          (japanlaw-index-insert " -" (car cell) (cdr cell)))))
       ((Search)
        (japanlaw-with-buffer-read-only
 	(japanlaw-index-search-insert-func alist))
@@ -2369,8 +2374,15 @@ LFUNCは、NAMEからなるリストを返す関数。"
   "フォルダの開閉フラグをトグルする。"
   (forward-line 0)
   (when (re-search-forward "[+-]" (line-end-position) t)
-    (replace-match
-     (string (+ (- ?- (string-to-char (match-string 0))) ?+)))))
+    (let* ((curr-char (string-to-char (match-string 0)))
+           (next-char (if (eq curr-char ?+) ?- ?+))
+           (next (char-to-string next-char))
+           (current2 (get-text-property (point) 'japanlaw-item-flag))
+           (next2 (subst-char-in-string curr-char next-char current2)))
+      (replace-match next)
+      (put-text-property
+       (line-beginning-position) (line-end-position)
+       'japanlaw-item-flag next2))))
 
 (defun japanlaw-index-upper-level ()
   "ひとつ上の階層に移動するコマンド。"
@@ -2393,23 +2405,23 @@ FUNCは連想リストを返す関数。"
   "`Index'と`Directory'で、フォルダの開閉を処理する関数。"
   (let ((cell (japanlaw-index-set-alist name opened func)))
     (if opened
-	(japanlaw-with-buffer-read-only
-	 (let ((start (progn (forward-line 1) (point)))
-	       (end (progn (while (and (not (eobp))
-				       (not (japanlaw-index-folder-level-0)))
-			     (forward-line 1))
-			   (point))))
-	   (unless (= start end)
-	     (delete-region start end)
-	     (forward-line -1)
-	     (japanlaw-index-folder-toggle-state))))
+        (japanlaw-with-buffer-read-only
+         (let ((start (progn (forward-line 1) (point)))
+               (end (progn (while (and (not (eobp))
+                                       (not (japanlaw-index-folder-level-0)))
+                             (forward-line 1))
+                           (point))))
+           (unless (= start end)
+             (delete-region start end)
+             (forward-line -1)
+             (japanlaw-index-folder-toggle-state))))
       ;; closed
       (japanlaw-with-buffer-read-only
        (japanlaw-index-folder-toggle-state)
        (forward-line 1)
        (do ((xs cell (cdr xs)))
-	   ((null xs))
-	 (japanlaw-index-insert "  -" (caar xs) (cdar xs)))
+           ((null xs))
+         (japanlaw-index-insert "  -" (caar xs) (cdar xs)))
        (japanlaw-index-upper-level)))))
 
 (defun japanlaw-open-file (id)
@@ -2581,15 +2593,19 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
        (japanlaw-index-upper-level))))))
 
 (defun japanlaw-index-insert (flag name &optional id)
-  (let ((sexp `(,flag ,name)))
+  (let ((sexp `(,flag ,name))
+        (start (point)))
     (when id
       (setq sexp (append sexp (list id))))
-    (insert (format "%S\n" sexp))))
+    (insert (format "%S\n" sexp))
+    (put-text-property start (point) 'japanlaw-item-flag flag)
+    (put-text-property start (point) 'japanlaw-item-name name)
+    (put-text-property start (point) 'japanlaw-item-id id)))
 
 (defun japanlaw-index-abbrev-oc ()
   "`Abbrev'で、フォルダなら開閉し法令なら開く。"
   (let* ((values (japanlaw-get-values))
-	 (name (cadr values))
+	 (name (nth 1 values))
 	 (id (nth 2 values)))
     (if (< (japanlaw-index-folder-level) 2)
 	;; menu open or close
