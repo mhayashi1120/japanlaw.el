@@ -6,7 +6,7 @@
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
-;; Version: 0.8.9
+;; Version: 0.8.10
 ;; Keywords: docs help
 ;; Package-Requires: ((revive "20121022.411"))
 
@@ -175,7 +175,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :group 'japanlaw)
 
 ;; Path names
-(defcustom japanlaw-path (locate-user-emacs-file "japanlaw.d" ".japanlaw.d")
+(defcustom japanlaw-path
+  (let ((path (locate-user-emacs-file "japanlaw.d" ".japanlaw.d")))
+    (expand-file-name path))
   "法令データ提供システムから取得したインデックスファイル、法令デー
 タ等の保存先パス。"
   :type 'directory
@@ -2105,19 +2107,17 @@ LFUNCは、NAMEからなるリストを返す関数。"
     (case japanlaw-index-local-mode
       ((Index Directory)
        (japanlaw-with-buffer-read-only
-	;; Test:
-	;; (error Lisp nesting exceeds `max-lisp-eval-depth')
-	;; (japanlaw-index-search-insert-func alist)
-	(while alist
-	  (let ((cel (car alist))
-		(opened (car (cdar alist))))
-	    (insert (format "%S\n" `(,(if opened "-" "+") ,(car cel))))
-	    (when opened
-	      (do ((xs (cddr cel) (cdr xs)))
-		  ((null xs))
-		(insert (format "%S\n" `("  -" ,(caar xs) ,(cdar xs)))))))
-	  (pop alist)))
-       )
+        ;; Test:
+        ;; (error Lisp nesting exceeds `max-lisp-eval-depth')
+        ;; (japanlaw-index-search-insert-func alist)
+        (while alist
+          (let* ((cell (pop alist))
+                 (opened (cadr cell)))
+            (insert (format "%S\n" `(,(if opened "-" "+") ,(car cell))))
+            (when opened
+              (do ((xs (cddr cell) (cdr xs)))
+                  ((null xs))
+                (insert (format "%S\n" `("  -" ,(caar xs) ,(cdar xs))))))))))
       ((Abbrev)
        (japanlaw-with-buffer-read-only
 	;; Test:
@@ -2135,18 +2135,16 @@ LFUNCは、NAMEからなるリストを返す関数。"
 		  (when opened
 		    (do ((zs (cdr (cdar ys)) (cdr zs)))
 			((null zs))
-		      (insert (format "%S\n" `("    -" ,(caar zs) ,(cdar zs))))))))))))
-       )
+		      (insert (format "%S\n" `("    -" ,(caar zs) ,(cdar zs)))))))))))))
       ((Bookmark Opened Recent)
        (japanlaw-with-buffer-read-only
 	(while alist
-	  (insert (format "%S\n" `(" -" ,(caar alist) ,(cdar alist))))
-	  (pop alist))))
+          (let ((cell (pop alist)))
+            (insert (format "%S\n" `(" -" ,(car cell) ,(cdr cell))))))))
       ((Search)
        (japanlaw-with-buffer-read-only
 	(japanlaw-index-search-insert-func alist))
-       (japanlaw-index-highlight-search-buffer))
-      )))
+       (japanlaw-index-highlight-search-buffer)))))
 
 ;; recursion
 (defun japanlaw-index-search-insert-func (alist)
