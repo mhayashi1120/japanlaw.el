@@ -2542,39 +2542,43 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 (defun japanlaw-index-abbrev-folder (name opened sub)
   "`Abbrev'で、フォルダの開閉を処理する関数。"
   (let ((cell (japanlaw-index-set-abbrev-alist name opened)))
-    (unless (> (japanlaw-index-folder-level) 1)
-      (if opened
-	  (japanlaw-with-buffer-read-only
-	   (let ((start (progn (forward-line 1) (point)))
-		 (end (progn (while (and (not (eobp))
-					 (not (if sub
-						  (/= (japanlaw-index-folder-level) 2)
-						(japanlaw-index-folder-level-0))))
-			       (forward-line 1))
-			     (point))))
-	     (unless (= start end)
-	       (delete-region start end)
-	       (forward-line -1)
-	       (japanlaw-index-folder-toggle-state))))
-	;; closed
-	(japanlaw-with-buffer-read-only
-	 (japanlaw-index-folder-toggle-state)
-	 (forward-line 1)
-	 (if sub
-	     ;; sub folder
-	     (do ((zs cell (cdr zs)))
-		 ((null zs))
-               (japanlaw-index-insert "    -" (caar zs) (cdar zs)))
-	   ;; folder
-	   (do ((ys cell (cdr ys)))
-	       ((null ys))
-	     (let ((opened (car (cdar ys))))
-               (japanlaw-index-insert (if opened "  -" "  +") (caar ys))
-	       (when opened
-		 (do ((zs (cdr (cdar ys)) (cdr zs)))
-		     ((null zs))
-                   (japanlaw-index-insert "    -" (caar zs) (cdar zs)))))))
-	 (japanlaw-index-upper-level))))))
+    (cond
+     ((> (japanlaw-index-folder-level) 1)
+      ;; folder 最下層
+      )
+     (opened
+      (japanlaw-with-buffer-read-only
+       (let ((start (progn (forward-line 1) (point)))
+             (end (progn (while (and (not (eobp))
+                                     (not (if sub
+                                              (/= (japanlaw-index-folder-level) 2)
+                                            (japanlaw-index-folder-level-0))))
+                           (forward-line 1))
+                         (point))))
+         (unless (= start end)
+           (delete-region start end)
+           (forward-line -1)
+           (japanlaw-index-folder-toggle-state)))))
+     (t
+      ;; closed
+      (japanlaw-with-buffer-read-only
+       (japanlaw-index-folder-toggle-state)
+       (forward-line 1)
+       (if sub
+           ;; sub folder
+           (do ((zs cell (cdr zs)))
+               ((null zs))
+             (japanlaw-index-insert "    -" (caar zs) (cdar zs)))
+         ;; folder
+         (do ((ys cell (cdr ys)))
+             ((null ys))
+           (let ((opened (car (cdar ys))))
+             (japanlaw-index-insert (if opened "  -" "  +") (caar ys))
+             (when opened
+               (do ((zs (cdr (cdar ys)) (cdr zs)))
+                   ((null zs))
+                 (japanlaw-index-insert "    -" (caar zs) (cdar zs)))))))
+       (japanlaw-index-upper-level))))))
 
 (defun japanlaw-index-insert (flag name &optional id)
   (let ((sexp `(,flag ,name)))
