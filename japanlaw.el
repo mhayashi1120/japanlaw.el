@@ -1761,6 +1761,10 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
   "バッファのinvisibleなS式をreadする。"
   (save-excursion
     (forward-line 0)
+    ;;TODO
+    (get-text-property (point) 'japanlaw-item-flag)
+    (get-text-property (point) 'japanlaw-item-name)
+    (get-text-property (point) 'japanlaw-item-id)
     (read (current-buffer))))
 
 (defsubst japanlaw-get-values (&optional pointer)
@@ -2113,11 +2117,11 @@ LFUNCは、NAMEからなるリストを返す関数。"
         (while alist
           (let* ((cell (pop alist))
                  (opened (cadr cell)))
-            (insert (format "%S\n" `(,(if opened "-" "+") ,(car cell))))
+            (japanlaw-index-insert (if opened "-" "+") (car cell))
             (when opened
               (do ((xs (cddr cell) (cdr xs)))
                   ((null xs))
-                (insert (format "%S\n" `("  -" ,(caar xs) ,(cdar xs))))))))))
+                (japanlaw-index-insert "  -" (caar xs) (cdar xs))))))))
       ((Abbrev)
        (japanlaw-with-buffer-read-only
 	;; Test:
@@ -2126,21 +2130,21 @@ LFUNCは、NAMEからなるリストを返す関数。"
 	(do ((xs alist (cdr xs)))
 	    ((null xs))
 	  (let ((opened (car (cdar xs))))
-	    (insert (format "%S\n" `(,(if opened "-" "+") ,(caar xs))))
+	    (japanlaw-index-insert (if opened "-" "+") (caar xs))
 	    (when opened
 	      (do ((ys (cdr (cdar xs)) (cdr ys)))
 		  ((null ys))
 		(let ((opened (car (cdar ys)))) ;error
-		  (insert (format "%S\n" `(,(if opened "  -" "  +") ,(caar ys))))
+		  (japanlaw-index-insert (if opened "  -" "  +") (caar ys))
 		  (when opened
 		    (do ((zs (cdr (cdar ys)) (cdr zs)))
 			((null zs))
-		      (insert (format "%S\n" `("    -" ,(caar zs) ,(cdar zs)))))))))))))
+		      (japanlaw-index-insert "    -" (caar zs) (cdar zs)))))))))))
       ((Bookmark Opened Recent)
        (japanlaw-with-buffer-read-only
 	(while alist
           (let ((cell (pop alist)))
-            (insert (format "%S\n" `(" -" ,(car cell) ,(cdr cell))))))))
+            (japanlaw-index-insert " -" (car cell) (cdr cell))))))
       ((Search)
        (japanlaw-with-buffer-read-only
 	(japanlaw-index-search-insert-func alist))
@@ -2152,33 +2156,31 @@ LFUNCは、NAMEからなるリストを返す関数。"
     (let* ((cell (car alist))
 	   (opened (cadr cell)))
       ;; 検索式
-      (insert (format "%S\n" `(,(if opened "-" "+") ,(car cell))))
+      (japanlaw-index-insert (if opened "-" "+") (car cell))
       ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
       (japanlaw-labels
-	  ((rec (ls)
-                (unless (null ls)
-                  (let* ((cell (car ls))
-                         (opened (cadr cell)))
-                    (insert
-                     (format "%S\n" `(,(if opened "  -" "  +") ,(car cell))))
-                    (when opened
-                      (let ((cell (cddr cell)))
-                        (do ((xs cell (cdr xs)))
-                            ((null xs))
-                          (if (atom (cdar xs))
-                              (insert
-                               (format "%S\n" `("    -" ,(caar xs) ,(cdar xs))))
-                            (let ((opened (car (cdar xs))))
-                              (insert (format "%S\n" `(,(if opened "    -" "    +")
-                                                       ,(caar xs))))
-                              (when opened
-                                (do ((ys (cdr (cdar xs)) (cdr ys)))
-                                    ((null ys))
-                                  (insert
-                                   (format "%S\n" `("      -" ,(caar ys)
-                                                    ,(cdar ys))))))))))))
-                  (rec (cdr ls)))))
-	(when opened (rec (cddr cell)))))
+       ((rec (ls)
+             (unless (null ls)
+               (let* ((cell (car ls))
+                      (opened (cadr cell)))
+                 (japanlaw-index-insert (if opened "  -" "  +") (car cell))
+                 (when opened
+                   (let ((cell (cddr cell)))
+                     (do ((xs cell (cdr xs)))
+                         ((null xs))
+                       (if (atom (cdar xs))
+                           (japanlaw-index-insert "    -" (caar xs) (cdar xs))
+                         (let ((opened (car (cdar xs))))
+                           (japanlaw-index-insert (if opened "    -" "    +")
+                                                  (caar xs))
+                           (when opened
+                             (do ((ys (cdr (cdar xs)) (cdr ys)))
+                                 ((null ys))
+                               (japanlaw-index-insert
+                                "      -" (caar ys)
+                                (cdar ys))))))))))
+               (rec (cdr ls)))))
+       (when opened (rec (cddr cell)))))
     (japanlaw-index-search-insert-func (cdr alist))))
 
 ;; Opened
@@ -2407,7 +2409,7 @@ FUNCは連想リストを返す関数。"
        (forward-line 1)
        (do ((xs cell (cdr xs)))
 	   ((null xs))
-	 (insert (format "%S\n" `("  -" ,(caar xs) ,(cdar xs)))))
+	 (japanlaw-index-insert "  -" (caar xs) (cdar xs)))
        (japanlaw-index-upper-level)))))
 
 (defun japanlaw-open-file (id)
@@ -2562,17 +2564,23 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 	     ;; sub folder
 	     (do ((zs cell (cdr zs)))
 		 ((null zs))
-	       (insert (format "%S\n" `("    -" ,(caar zs) ,(cdar zs)))))
+               (japanlaw-index-insert "    -" (caar zs) (cdar zs)))
 	   ;; folder
 	   (do ((ys cell (cdr ys)))
 	       ((null ys))
 	     (let ((opened (car (cdar ys))))
-	       (insert (format "%S\n" `(,(if opened "  -" "  +") ,(caar ys))))
+               (japanlaw-index-insert (if opened "  -" "  +") (caar ys))
 	       (when opened
 		 (do ((zs (cdr (cdar ys)) (cdr zs)))
 		     ((null zs))
-		   (insert (format "%S\n" `("    -" ,(caar zs) ,(cdar zs)))))))))
+                   (japanlaw-index-insert "    -" (caar zs) (cdar zs)))))))
 	 (japanlaw-index-upper-level))))))
+
+(defun japanlaw-index-insert (flag name &optional id)
+  (let ((sexp `(,flag ,name)))
+    (when id
+      (setq sexp (append sexp (list id))))
+    (insert (format "%S\n" sexp))))
 
 (defun japanlaw-index-abbrev-oc ()
   "`Abbrev'で、フォルダなら開閉し法令なら開く。"
