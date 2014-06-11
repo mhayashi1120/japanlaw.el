@@ -2047,27 +2047,23 @@ LFUNCは、NAMEからなるリストを返す関数。"
           (let ((opened (cadr cell)))
             (japanlaw-index-insert-line (if opened "-" "+") (car cell))
             (when opened
-              (do ((xs (cddr cell) (cdr xs)))
-                  ((null xs))
-                (japanlaw-index-insert-line "  -" (caar xs) (cdar xs))))))))
+              (dolist (x (cddr cell))
+                (japanlaw-index-insert-line "  -" (car x) (cdr x))))))))
       ((Abbrev)
        (japanlaw-with-buffer-read-only
 	;; Test:
 	;; (error Lisp nesting exceeds `max-lisp-eval-depth')
 	;; (japanlaw-index-search-insert-func alist)
-	(do ((xs alist (cdr xs)))
-	    ((null xs))
-	  (let ((opened (car (cdar xs))))
-	    (japanlaw-index-insert-line (if opened "-" "+") (caar xs))
+	(dolist (x alist)
+	  (let ((opened (cadr x)))
+	    (japanlaw-index-insert-line (if opened "-" "+") (car x))
 	    (when opened
-	      (do ((ys (cdr (cdar xs)) (cdr ys)))
-		  ((null ys))
-		(let ((opened (car (cdar ys)))) ;error
-		  (japanlaw-index-insert-line (if opened "  -" "  +") (caar ys))
+	      (dolist (y (cddr x))
+		(let ((opened (cadr y)))
+		  (japanlaw-index-insert-line (if opened "  -" "  +") (car y))
 		  (when opened
-		    (do ((zs (cdr (cdar ys)) (cdr zs)))
-			((null zs))
-		      (japanlaw-index-insert-line "    -" (caar zs) (cdar zs)))))))))))
+		    (dolist (z (cddr y))
+		      (japanlaw-index-insert-line "    -" (car z) (cdr z)))))))))))
       ((Bookmark Opened Recent)
        (japanlaw-with-buffer-read-only
 	(dolist (cell alist)
