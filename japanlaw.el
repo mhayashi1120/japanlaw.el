@@ -889,84 +889,13 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;;TODO とりあえずコメントアウト set-mouse なんとかが何をしているのか。
 (defvar japanlaw-index-font-lock-keywords
-  nil
-  ;; (let ((fcolor (cdr (assq 'foreground-color
-  ;;       		   (frame-parameters (selected-frame))))))
-  ;;   (list `(
-  ;;           ;;
-  ;;           ;; Directory, Index
-  ;;           ;;
-  ;;           ;; folder
-  ;;           "^\\((\"\\)\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)$"
-  ;;           ,(japanlaw-set-face-invisible 1)
-  ;;           (2 japanlaw-index-flag-face t)
-  ;;           ,(japanlaw-set-mouse-face-1 2)
-  ;;           ,(japanlaw-set-face-invisible 3)
-  ;;           ,(japanlaw-set-face-invisible 4)
-  ;;           (5 '(:foreground ,fcolor) t)
-  ;;           ,(japanlaw-set-mouse-face-1 5)
-  ;;           ,(japanlaw-set-face-invisible 6))
-
-  ;;         ;;
-  ;;         ;; Abbrev
-  ;;         ;;
-  ;;         ;; folder
-  ;;         `("^\\((\"\\) \\{2\\}\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
-  ;;           ,(japanlaw-set-face-invisible 1)
-  ;;           (2 japanlaw-index-flag-face t)
-  ;;           ,(japanlaw-set-mouse-face-1 2)
-  ;;           ,(japanlaw-set-face-invisible 3)
-  ;;           ,(japanlaw-set-face-invisible 4)
-  ;;           (5 '(:foreground ,fcolor) t)
-  ;;           ,(japanlaw-set-mouse-face-1 5)
-  ;;           ,(japanlaw-set-face-invisible 6))
-  ;;         ;; sub folder
-  ;;         `("^\\((\"\\) \\{4\\}\\([+-]\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
-  ;;           ,(japanlaw-set-face-invisible 1)
-  ;;           (2 japanlaw-index-flag-face t)
-  ;;           ,(japanlaw-set-mouse-face-1 2)
-  ;;           ,(japanlaw-set-face-invisible 3)
-  ;;           ,(japanlaw-set-face-invisible 4)
-  ;;           (5 '(:foreground ,fcolor) t)
-  ;;           ,(japanlaw-set-mouse-face-1 5)
-  ;;           ,(japanlaw-set-face-invisible 6))
-  ;;         `("^\\((\"\\) \\{6\\}\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\")\\)"
-  ;;           ,(japanlaw-set-face-invisible 1)
-  ;;           (2 japanlaw-index-flag-face t)
-  ;;           ,(japanlaw-set-mouse-face-1 2)
-  ;;           ,(japanlaw-set-face-invisible 3)
-  ;;           ,(japanlaw-set-face-invisible 4)
-  ;;           (5 '(:foreground ,fcolor) t)
-  ;;           ,(japanlaw-set-mouse-face-1 5)
-  ;;           ,(japanlaw-set-face-invisible 6))
-
-  ;;         ;;
-  ;;         ;; Opened, Recent, Bookmark
-  ;;         ;;
-  ;;         `("^\\((\"\\)\\([ D]\\)\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\".+)\\)$"
-  ;;           ,(japanlaw-set-face-invisible 1)
-  ;;           (2 '(:foreground "red") t)
-  ;;           ,(japanlaw-set-mouse-face-1 2)
-  ;;           (3 japanlaw-index-flag-face t)
-  ;;           ,(japanlaw-set-face-invisible 4)
-  ;;           ,(japanlaw-set-face-invisible 5)
-  ;;           (6 '(:foreground ,fcolor) t)
-  ;;           ,(japanlaw-set-mouse-face-1 6)
-  ;;           ,(japanlaw-set-face-invisible 7))
-
-  ;;         ;;
-  ;;         ;; 法令名
-  ;;         ;;
-  ;;         `("^\\((\"\\) \\{2,\\}\\(-\\)\\(\"\\) \\(\"\\)\\([^\"]+\\)\\(\".+)\\)$"
-  ;;           ,(japanlaw-set-face-invisible 1)
-  ;;           (2 japanlaw-index-flag-face t)
-  ;;           ;;,(japanlaw-set-mouse-face-1 2)
-  ;;           ,(japanlaw-set-face-invisible 3)
-  ;;           ,(japanlaw-set-face-invisible 4)
-  ;;           (5 '(:foreground ,fcolor) t)
-  ;;           ,(japanlaw-set-mouse-face-1 5)
-  ;;           ,(japanlaw-set-face-invisible 6))
-  ;;         ))
+  (let ((fcolor (cdr (assq 'foreground-color
+        		   (frame-parameters (selected-frame))))))
+    (list `(
+            ;; folder
+            "^ *\\([+-]\\)"
+            (1 japanlaw-index-flag-face t)
+            )))
   "`japanlaw-index-mode'のための`font-lock-keywords'")
 
 (defvar japanlaw-index-mode-map
@@ -1761,15 +1690,10 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
   "バッファのinvisibleなS式をreadする。"
   (save-excursion
     (forward-line 0)
-    ;;TODO
     (let* ((flag (get-text-property (point) 'japanlaw-item-flag))
            (name (get-text-property (point) 'japanlaw-item-name))
            (id (get-text-property (point) 'japanlaw-item-id))
-           (sexp (read (current-buffer)))
-           (sexp2 (if id (list flag name id) (list flag name))))
-      (unless (equal sexp2 sexp)
-        (message "Assert: Not equal %s but %s" sexp sexp2)
-        (sit-for 1))
+           (sexp (if id (list flag name id) (list flag name))))
       sexp)))
 
 (defsubst japanlaw-get-values (&optional pointer)
@@ -2121,11 +2045,11 @@ LFUNCは、NAMEからなるリストを返す関数。"
         ;; (japanlaw-index-search-insert-func alist)
         (dolist (cell alist)
           (let ((opened (cadr cell)))
-            (japanlaw-index-insert (if opened "-" "+") (car cell))
+            (japanlaw-index-insert-line (if opened "-" "+") (car cell))
             (when opened
               (do ((xs (cddr cell) (cdr xs)))
                   ((null xs))
-                (japanlaw-index-insert "  -" (caar xs) (cdar xs))))))))
+                (japanlaw-index-insert-line "  -" (caar xs) (cdar xs))))))))
       ((Abbrev)
        (japanlaw-with-buffer-read-only
 	;; Test:
@@ -2134,20 +2058,20 @@ LFUNCは、NAMEからなるリストを返す関数。"
 	(do ((xs alist (cdr xs)))
 	    ((null xs))
 	  (let ((opened (car (cdar xs))))
-	    (japanlaw-index-insert (if opened "-" "+") (caar xs))
+	    (japanlaw-index-insert-line (if opened "-" "+") (caar xs))
 	    (when opened
 	      (do ((ys (cdr (cdar xs)) (cdr ys)))
 		  ((null ys))
 		(let ((opened (car (cdar ys)))) ;error
-		  (japanlaw-index-insert (if opened "  -" "  +") (caar ys))
+		  (japanlaw-index-insert-line (if opened "  -" "  +") (caar ys))
 		  (when opened
 		    (do ((zs (cdr (cdar ys)) (cdr zs)))
 			((null zs))
-		      (japanlaw-index-insert "    -" (caar zs) (cdar zs)))))))))))
+		      (japanlaw-index-insert-line "    -" (caar zs) (cdar zs)))))))))))
       ((Bookmark Opened Recent)
        (japanlaw-with-buffer-read-only
 	(dolist (cell alist)
-          (japanlaw-index-insert " -" (car cell) (cdr cell)))))
+          (japanlaw-index-insert-line " -" (car cell) (cdr cell)))))
       ((Search)
        (japanlaw-with-buffer-read-only
 	(japanlaw-index-search-insert-func alist))
@@ -2159,27 +2083,27 @@ LFUNCは、NAMEからなるリストを返す関数。"
     (let* ((cell (car alist))
 	   (opened (cadr cell)))
       ;; 検索式
-      (japanlaw-index-insert (if opened "-" "+") (car cell))
+      (japanlaw-index-insert-line (if opened "-" "+") (car cell))
       ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
       (japanlaw-labels
        ((rec (ls)
              (unless (null ls)
                (let* ((cell (car ls))
                       (opened (cadr cell)))
-                 (japanlaw-index-insert (if opened "  -" "  +") (car cell))
+                 (japanlaw-index-insert-line (if opened "  -" "  +") (car cell))
                  (when opened
                    (let ((cell (cddr cell)))
                      (do ((xs cell (cdr xs)))
                          ((null xs))
                        (if (atom (cdar xs))
-                           (japanlaw-index-insert "    -" (caar xs) (cdar xs))
+                           (japanlaw-index-insert-line "    -" (caar xs) (cdar xs))
                          (let ((opened (car (cdar xs))))
-                           (japanlaw-index-insert (if opened "    -" "    +")
+                           (japanlaw-index-insert-line (if opened "    -" "    +")
                                                   (caar xs))
                            (when opened
                              (do ((ys (cdr (cdar xs)) (cdr ys)))
                                  ((null ys))
-                               (japanlaw-index-insert
+                               (japanlaw-index-insert-line
                                 "      -" (caar ys)
                                 (cdar ys))))))))))
                (rec (cdr ls)))))
@@ -2257,7 +2181,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
   "folderが開いていれば非nilを、閉じていればnilを返す。"
   (save-excursion
     (forward-line 0)
-    (and (re-search-forward "\" *-\"" (line-end-position) t) t)))
+    (and (re-search-forward " *-" (line-end-position) t) t)))
 
 (defun japanlaw-index-open-or-close ()
   "フォルダなら開閉し、法令ならその法令を開くコマンド。"
@@ -2375,9 +2299,13 @@ LFUNCは、NAMEからなるリストを返す関数。"
     (let* ((curr-char (string-to-char (match-string 0)))
            (next-char (if (eq curr-char ?+) ?- ?+))
            (next (char-to-string next-char))
+           (props (text-properties-at (point)))
            (current2 (get-text-property (point) 'japanlaw-item-flag))
            (next2 (subst-char-in-string curr-char next-char current2)))
       (replace-match next)
+      (set-text-properties
+       (line-beginning-position) (line-end-position)
+       props)
       (put-text-property
        (line-beginning-position) (line-end-position)
        'japanlaw-item-flag next2))))
@@ -2419,7 +2347,7 @@ FUNCは連想リストを返す関数。"
        (forward-line 1)
        (do ((xs cell (cdr xs)))
            ((null xs))
-         (japanlaw-index-insert "  -" (caar xs) (cdar xs)))
+         (japanlaw-index-insert-line "  -" (caar xs) (cdar xs)))
        (japanlaw-index-upper-level)))))
 
 (defun japanlaw-open-file (id)
@@ -2578,24 +2506,24 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
            ;; sub folder
            (do ((zs cell (cdr zs)))
                ((null zs))
-             (japanlaw-index-insert "    -" (caar zs) (cdar zs)))
+             (japanlaw-index-insert-line "    -" (caar zs) (cdar zs)))
          ;; folder
          (do ((ys cell (cdr ys)))
              ((null ys))
            (let ((opened (car (cdar ys))))
-             (japanlaw-index-insert (if opened "  -" "  +") (caar ys))
+             (japanlaw-index-insert-line (if opened "  -" "  +") (caar ys))
              (when opened
                (do ((zs (cdr (cdar ys)) (cdr zs)))
                    ((null zs))
-                 (japanlaw-index-insert "    -" (caar zs) (cdar zs)))))))
+                 (japanlaw-index-insert-line "    -" (caar zs) (cdar zs)))))))
        (japanlaw-index-upper-level))))))
 
-(defun japanlaw-index-insert (flag name &optional id)
+(defun japanlaw-index-insert-line (flag name &optional id)
   (let ((sexp `(,flag ,name))
         (start (point)))
     (when id
       (setq sexp (append sexp (list id))))
-    (insert (format "%S\n" sexp))
+    (insert (format "%s %s\n" flag name))
     (put-text-property start (point) 'japanlaw-item-flag flag)
     (put-text-property start (point) 'japanlaw-item-name name)
     (put-text-property start (point) 'japanlaw-item-id id)))
