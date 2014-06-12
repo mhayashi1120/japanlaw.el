@@ -1734,27 +1734,25 @@ FUNCSは引数を取らない関数のリスト。"
 
 ;; Common
 
+(defun japanlaw-read-sexp (file)
+  (and (file-exists-p file)
+       (with-temp-buffer
+         (insert-file-contents file)
+         (read (current-buffer)))))
+
 ;; インデックスファイルの内容を保持するローカル変数。
 (defun japanlaw-alist ()
   "インデックスファイルをロードする関数。"
-  (let ((file (japanlaw-index-file2)))
-    (or japanlaw-alist
-        (and (file-exists-p file)
-             (setq japanlaw-alist
-                   (with-temp-buffer
-                     (insert-file-contents file)
-                     (read (current-buffer))))))))
+  (or japanlaw-alist
+      (setq japanlaw-alist
+            (japanlaw-read-sexp (japanlaw-index-file2)))))
 
 ;; 略称法令名のインデックスファイルの内容を保持するローカル変数。
 (defun japanlaw-abbrev ()
   "略称法令名のインデックスファイルをロードする関数。"
-  (let ((file (japanlaw-abbrev-file2)))
-    (or japanlaw-abbrev
-        (and (file-exists-p file)
-             (setq japanlaw-abbrev
-                   (with-temp-buffer
-                     (insert-file-contents file)
-                     (read (current-buffer))))))))
+  (or japanlaw-abbrev
+      (setq japanlaw-abbrev
+            (japanlaw-read-sexp (japanlaw-abbrev-file2)))))
 
 ;; Search
 (defun japanlaw-names-alist ()
