@@ -1190,53 +1190,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
                              "H_YOMI_GUN=1") "&")
                 cid)))
 
-(defun japanlaw-make-jikoubetsu-index ()
-  (let ((strs nil)
-	(case-fold-search t))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "NAME=\"H_CTG_\\([0-9]+\\)[^>]+>\\(.+?\\)<" nil t)
-	(push (cons
-	       (match-string-no-properties 1)
-	       (replace-regexp-in-string
-		"[ 　]+" "" (match-string-no-properties 2)))
-	      strs)))
-    (sort strs (lambda (x y)
-		 (< (string-to-number (car x)) (string-to-number (car y)))))))
-
-(defun japanlaw-make-stags-alist ()
-  "行頭から前方に検索して、ポイント行内のS式のリストを返す。"
-  (save-excursion
-    (save-match-data
-      (let ((result nil)
-	    (lim (line-end-position)))
-	(forward-line 0)
-	(while (re-search-forward "(:a [^()]+)" lim t)
-	  (push (cons (match-beginning 0) (match-end 0)) result))
-	result))))
-
-(defun japanlaw-in-stag-p (pos)
-  "ポイントPOSがタグの中にあればtを、なければnilを返す。"
-  (let ((ls (japanlaw-make-stags-alist)))
-    (block nil
-      (while ls
-	(let ((points (car ls)))
-	  (if (and (> pos (car points))
-		   (< pos (cdr points)))
-	      (return t)
-	    (pop ls)))))))
-
-(defun japanlaw-duplicate-names (ls)
-  "重複する法令名のリストを返す。"
-  (do ((xs (cdr ls) (cdr xs))
-       (name (caar ls) (caar xs))
-       (result nil))
-      ((null xs) (delete-dups result))
-    (do ((ys xs (cdr ys)))
-	((null ys))
-      (when (string-match name (caar ys))
-	(push name result)))))
-
 (defun japanlaw-replace-table-value (&optional table-pixel)
   "GETしたhtmlのタグを置換する。"
   (let ((case-fold-search t)
@@ -1253,17 +1206,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 		  (format "<TABLE WIDTH=%S BORDER=%S>" pixel 0))
 		 (t ;; 出力される罫線表の幅を指定。
 		  (format "<TABLE WIDTH=%S BORDER>" pixel)))))))))
-
-(defun japanlaw-load-index (index)
-  "インデックスファイルをreadしてリストを返す。"
-  (with-temp-buffer
-    (insert-file-contents index)
-    (do ((xs (read (current-buffer)) (cdr xs))
-	 (acc nil))
-	((null xs) acc)
-      (do ((ys (cdar xs) (cdr ys)))
-	  ((null ys))
-	(push (cons (car (caar ys)) (cdar ys)) acc)))))
 
 (defun japanlaw-extract-name ()
   "html から法令名を取得して、文字列長の小さい順でソートされたリストを返す。"
