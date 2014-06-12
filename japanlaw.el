@@ -6,7 +6,7 @@
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
-;; Version: 0.8.10
+;; Version: 0.8.11
 ;; Keywords: docs help
 ;; Package-Requires: ((revive "20121022.411"))
 
@@ -46,7 +46,7 @@
 ;;; japanlaw-vars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst japanlaw-version "version 0.8.8"
+(defconst japanlaw-version "version 0.8.11"
   "Version of japanlaw.el")
 
 (defconst japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
@@ -1101,10 +1101,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
       (let ((coding (detect-coding-region (point-min) (point-max) t)))
 	(decode-coding-region (point-min) (point-max) coding)
 	(set-buffer-multibyte t)
-        ;;TODO とりあえず。。
-        ;; charset プロパティつきの string を (format "%S" string) しているところが
-        ;; あるので回避。
-        (remove-text-properties (point-min) (point-max) '(charset))
 	(goto-char (point-min))
 	(current-buffer)))))
 
