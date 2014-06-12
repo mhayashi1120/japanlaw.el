@@ -1126,13 +1126,14 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	  (message "Process has completed.")))
       ;; abbrevファイルが存在しない場合
       ;; 再取得して更新された場合
-      (when (or regenerate (not (file-exists-p (japanlaw-abbrev-file2))))
-	(japanlaw-make-directory japanlaw-path)
-	(setq abbrev-updatedp
-	      (make-index
-	       (japanlaw-abbrev-file2) #'japanlaw-make-abbrev-index #'japanlaw-abbrev))
-	(message "Process has completed.")
-	(sit-for 1))
+      (let ((file (japanlaw-abbrev-file2)))
+        (when (or regenerate (not (file-exists-p file)))
+          (japanlaw-make-directory japanlaw-path)
+          (setq abbrev-updatedp
+                ;;TODO make-index?
+                (make-index file #'japanlaw-make-abbrev-index #'japanlaw-abbrev))
+          (message "Process has completed.")
+          (sit-for 1)))
       (cons index-updatedp abbrev-updatedp))))
 
 (defun japanlaw-url-retrieve (url)
@@ -1736,22 +1737,24 @@ FUNCSは引数を取らない関数のリスト。"
 ;; インデックスファイルの内容を保持するローカル変数。
 (defun japanlaw-alist ()
   "インデックスファイルをロードする関数。"
-  (or japanlaw-alist
-      (and (file-exists-p (japanlaw-index-file2))
-	   (setq japanlaw-alist
-		 (with-temp-buffer
-		   (insert-file-contents (japanlaw-index-file2))
-		   (read (current-buffer)))))))
+  (let ((file (japanlaw-index-file2)))
+    (or japanlaw-alist
+        (and (file-exists-p file)
+             (setq japanlaw-alist
+                   (with-temp-buffer
+                     (insert-file-contents file)
+                     (read (current-buffer))))))))
 
 ;; 略称法令名のインデックスファイルの内容を保持するローカル変数。
 (defun japanlaw-abbrev ()
   "略称法令名のインデックスファイルをロードする関数。"
-  (or japanlaw-abbrev
-      (and (file-exists-p (japanlaw-abbrev-file2))
-	   (setq japanlaw-abbrev
-		 (with-temp-buffer
-		   (insert-file-contents (japanlaw-abbrev-file2))
-		   (read (current-buffer)))))))
+  (let ((file (japanlaw-abbrev-file2)))
+    (or japanlaw-abbrev
+        (and (file-exists-p file)
+             (setq japanlaw-abbrev
+                   (with-temp-buffer
+                     (insert-file-contents file)
+                     (read (current-buffer))))))))
 
 ;; Search
 (defun japanlaw-names-alist ()
@@ -1880,57 +1883,61 @@ FUNCSは引数を取らない関数のリスト。"
 ;; Bookmark
 (defun japanlaw-bookmark-alist ()
   "ブックマークの連想リストを返す関数。"
-  (or japanlaw-bookmark-alist
-      (and (file-exists-p (japanlaw-bookmark-file2))
-	   (setq japanlaw-bookmark-alist
-		 (with-temp-buffer
-		   (insert-file-contents (japanlaw-bookmark-file2))
-		   (read (current-buffer)))))))
+  (let ((file (japanlaw-bookmark-file2)))
+    (or japanlaw-bookmark-alist
+        (and (file-exists-p file)
+             (setq japanlaw-bookmark-alist
+                   (with-temp-buffer
+                     (insert-file-contents file)
+                     (read (current-buffer))))))))
 
 (defun japanlaw-bookmark-save ()
   "ブックマークファイル:`japanlaw-bookmark-file2'に
 `japanlaw-bookmark-alist'を出力する。変更がなかった場合は出力しない。"
-  (ignore-errors
-    (when (and (japanlaw-bookmark-file2)
-	       (file-exists-p (file-name-directory (japanlaw-bookmark-file2))))
-      (with-temp-buffer
-	(save-excursion
-	  (if (file-exists-p (japanlaw-bookmark-file2))
-	      (insert-file-contents (japanlaw-bookmark-file2))
-	    (princ nil (current-buffer))))
-	(unless (equal (read (current-buffer)) (japanlaw-bookmark-alist))
-	  (with-temp-file (japanlaw-bookmark-file2)
-	    (insert (format "%S" japanlaw-bookmark-alist))
-	    (message "Wrote %s" (japanlaw-bookmark-file2)))
-	  t)))))
+  (let ((file (japanlaw-bookmark-file2)))
+    (ignore-errors
+      (when (and file
+                 (file-exists-p (file-name-directory file)))
+        (with-temp-buffer
+          (save-excursion
+            (if (file-exists-p file)
+                (insert-file-contents file)
+              (princ nil (current-buffer))))
+          (unless (equal (read (current-buffer)) (japanlaw-bookmark-alist))
+            (with-temp-file file
+              (insert (format "%S" japanlaw-bookmark-alist))
+              (message "Wrote %s" file))
+            t))))))
 
 (defun japanlaw-convert-files ()
   "Bookmark's format change in v0.8.5 from v0.8.4."
   ;; Bookmark
-  (when (and (japanlaw-bookmark-file2)
-	     (file-exists-p (file-name-directory (japanlaw-bookmark-file2)))
-	     (file-exists-p (japanlaw-bookmark-file2)))
-    (with-temp-buffer
-      (save-excursion (insert-file-contents (japanlaw-bookmark-file2)))
-      (let ((alist (read (current-buffer))))
-	(when (consp (car alist))
-	  (with-temp-file (japanlaw-bookmark-file2)
-	    (insert (format "%S" (mapcar (lambda (x) (upcase (cdr x))) alist)))
-	    (message "Wrote %s" (japanlaw-bookmark-file2)))
-	  (setq japanlaw-bookmark-alist nil)
-	  (japanlaw-bookmark-alist)))))
+  (let ((file (japanlaw-bookmark-file2)))
+    (when (and file
+               (file-exists-p (file-name-directory file))
+               (file-exists-p file))
+      (with-temp-buffer
+        (save-excursion (insert-file-contents file))
+        (let ((alist (read (current-buffer))))
+          (when (consp (car alist))
+            (with-temp-file file
+              (insert (format "%S" (mapcar (lambda (x) (upcase (cdr x))) alist)))
+              (message "Wrote %s" file))
+            (setq japanlaw-bookmark-alist nil)
+            (japanlaw-bookmark-alist))))))
   ;; Recent
-  (when (and (japanlaw-recent-file2)
-	     (file-exists-p (file-name-directory (japanlaw-recent-file2)))
-	     (file-exists-p (japanlaw-recent-file2)))
-    (with-temp-buffer
-      (save-excursion (insert-file-contents (japanlaw-recent-file2)))
-      (let ((alist (read (current-buffer))))
-	(with-temp-file (japanlaw-recent-file2)
-	  (insert (format "%S" (mapcar (lambda (x) (upcase x)) alist))))
-	(message "Wrote %s" (japanlaw-recent-file2))
-	(setq japanlaw-recent-alist nil)
-	(japanlaw-recent-alist)))))
+  (let ((file (japanlaw-recent-file2)))
+    (when (and file
+               (file-exists-p (file-name-directory file))
+               (file-exists-p file))
+      (with-temp-buffer
+        (save-excursion (insert-file-contents file))
+        (let ((alist (read (current-buffer))))
+          (with-temp-file file
+            (insert (format "%S" (mapcar (lambda (x) (upcase x)) alist))))
+          (message "Wrote %s" file)
+          (setq japanlaw-recent-alist nil)
+          (japanlaw-recent-alist))))))
 
 ;; Opened
 
