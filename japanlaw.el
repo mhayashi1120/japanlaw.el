@@ -2328,9 +2328,8 @@ FUNCは連想リストを返す関数。"
       (japanlaw-with-buffer-read-only
        (japanlaw-index-folder-toggle-state)
        (forward-line 1)
-       (do ((xs cell (cdr xs)))
-           ((null xs))
-         (japanlaw-index-insert-line "  -" (caar xs) (cdar xs)))
+       (dolist (x cell)
+         (japanlaw-index-insert-line "  -" (car x) (cdr x)))
        (japanlaw-index-upper-level)))))
 
 (defun japanlaw-open-file (id)
