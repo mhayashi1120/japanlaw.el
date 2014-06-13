@@ -217,7 +217,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;;TODO remove 2 suffix
 (defun japanlaw-data-path2 ()
-  (expand-file-name "/data" japanlaw-path))
+  (expand-file-name "data" japanlaw-path))
 
 (defcustom japanlaw-temp-path (concat japanlaw-path "/tmp")
   "w3mでdumpする一時ファイルの保存先ディレクトリのパス名。"
