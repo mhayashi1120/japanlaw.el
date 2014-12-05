@@ -265,8 +265,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (make-obsolete-variable 'japanlaw-bookmark-file nil "0.8.11")
 
-;;TODO remove 2 suffix
-(defun japanlaw-bookmark-file2 ()
+(defun japanlaw-bookmark-file ()
   (expand-file-name ".bookmark" japanlaw-path))
 
 (defcustom japanlaw-recent-file (concat japanlaw-path "/.recent")
@@ -1194,7 +1193,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	   (let ((lim (save-match-data
 			(save-excursion
 			  (or (and (re-search-forward rx-a nil t)
-				   (line-beginning-position))
+				   (point-at-bol))
 			      (point-max))))))
 	     (cons (match-string 1)
 		   (save-match-data
@@ -1203,7 +1202,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 			 (let ((lim (save-match-data
 				      (save-excursion
 					(or (and (re-search-forward rx-b lim t)
-						 (line-beginning-position))
+						 (point-at-bol))
 					    lim)))))
 			   (push
 			    (cons (match-string 1)
@@ -1881,7 +1880,7 @@ FUNCSは引数を取らない関数のリスト。"
 ;; Bookmark
 (defun japanlaw-bookmark-alist ()
   "ブックマークの連想リストを返す関数。"
-  (let ((file (japanlaw-bookmark-file2)))
+  (let ((file (japanlaw-bookmark-file)))
     (or japanlaw-bookmark-alist
         (and (file-exists-p file)
              (setq japanlaw-bookmark-alist
@@ -1890,9 +1889,9 @@ FUNCSは引数を取らない関数のリスト。"
                      (read (current-buffer))))))))
 
 (defun japanlaw-bookmark-save ()
-  "ブックマークファイル:`japanlaw-bookmark-file2'に
+  "ブックマークファイル:`japanlaw-bookmark-file'に
 `japanlaw-bookmark-alist'を出力する。変更がなかった場合は出力しない。"
-  (let ((file (japanlaw-bookmark-file2)))
+  (let ((file (japanlaw-bookmark-file)))
     (ignore-errors
       (when (and file
                  (file-exists-p (file-name-directory file)))
@@ -1910,7 +1909,7 @@ FUNCSは引数を取らない関数のリスト。"
 (defun japanlaw-convert-files ()
   "Bookmark's format change in v0.8.5 from v0.8.4."
   ;; Bookmark
-  (let ((file (japanlaw-bookmark-file2)))
+  (let ((file (japanlaw-bookmark-file)))
     (when (and file
                (file-exists-p (file-name-directory file))
                (file-exists-p file))
@@ -2164,7 +2163,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
   "folderが開いていれば非nilを、閉じていればnilを返す。"
   (save-excursion
     (forward-line 0)
-    (and (re-search-forward " *-" (line-end-position) t) t)))
+    (and (re-search-forward " *-" (point-at-eol) t) t)))
 
 (defun japanlaw-index-open-or-close ()
   "フォルダなら開閉し、法令ならその法令を開くコマンド。"
@@ -2278,7 +2277,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
 (defun japanlaw-index-folder-toggle-state ()
   "フォルダの開閉フラグをトグルする。"
   (forward-line 0)
-  (when (re-search-forward "[+-]" (line-end-position) t)
+  (when (re-search-forward "[+-]" (point-at-eol) t)
     (let* ((curr-char (string-to-char (match-string 0)))
            (next-char (if (eq curr-char ?+) ?- ?+))
            (next (char-to-string next-char))
@@ -2287,10 +2286,10 @@ LFUNCは、NAMEからなるリストを返す関数。"
            (next2 (subst-char-in-string curr-char next-char current2)))
       (replace-match next)
       (set-text-properties
-       (line-beginning-position) (line-end-position)
+       (point-at-bol) (point-at-eol)
        props)
       (put-text-property
-       (line-beginning-position) (line-end-position)
+       (point-at-bol) (point-at-eol)
        'japanlaw-item-flag next2))))
 
 (defun japanlaw-index-upper-level ()
@@ -2616,7 +2615,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
   (japanlaw-labels
       ((put-overlay ()
                     (let ((rx (and (re-search-forward
-                                    "`\\(.+?\\)'" (line-end-position) t)
+                                    "`\\(.+?\\)'" (point-at-eol) t)
                                    (match-string 1))))
                       ;; 検索式
                       (overlay-put
@@ -2632,7 +2631,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
                           (forward-line 1))
                         (when (>= (japanlaw-index-folder-level) 2)
                           (let* ((end (re-search-forward "[-+]\" \"\\(.+?\\)\""
-                                                         (line-end-position) t))
+                                                         (point-at-eol) t))
                                  (beg (and end (match-beginning 1))))
                             (when (and beg
                                        (string-match
@@ -2656,7 +2655,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 ;;
 (defun japanlaw-index-bookmark-add ()
   "ブックマークに法令名を追加するコマンド。
-ファイル:`japanlaw-bookmark-file2'に書き出す。"
+ファイル:`japanlaw-bookmark-file'に書き出す。"
   (interactive)
   (unless (eq japanlaw-index-local-mode 'Bookmark)
     (condition-case err
@@ -2675,7 +2674,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
   (when (member japanlaw-index-local-mode '(Opened Recent Bookmark))
     (japanlaw-with-buffer-read-only
      (forward-line 0)
-     (when (re-search-forward "\\([ D]\\)-" (line-end-position) t)
+     (when (re-search-forward "\\([ D]\\)-" (point-at-eol) t)
        (replace-match
 	(string (+ (- ?D (string-to-char (match-string 1))) ?\ ))
 	nil nil nil 1)))
@@ -2696,7 +2695,7 @@ MARKSが非nilなら削除マークが付いた項目のみ。"
 
 (defun japanlaw-index-do-delete-marks ()
   "Bookmark,Opened,Recentで、削除マーク`D'が付いた項目を削除する。
-Bookmarkの場合、ファイル:`japanlaw-bookmark-file2'に書き出す。
+Bookmarkの場合、ファイル:`japanlaw-bookmark-file'に書き出す。
 Openedの場合、ファイルを閉じる。"
   (interactive)
   (japanlaw-labels
@@ -3037,12 +3036,12 @@ Openedの場合、ファイルを閉じる。"
 	    (lines (count-lines start end))
 	    (move-to
 	     (save-excursion
-	       (search-forward "│" (line-end-position) t)
+	       (search-forward "│" (point-at-eol) t)
 	       (1- (current-column))))
 	    back-to)
 	(while (/= (preceding-char) ?│)
 	  (backward-char)
-	  (when (= (point) (line-beginning-position))
+	  (when (= (point) (point-at-bol))
 	    (error "Not a chart."))
 	  (incf count-back))
 	(setq back-to (current-column))
