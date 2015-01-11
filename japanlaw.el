@@ -45,7 +45,7 @@
 ;;; japanlaw-vars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst japanlaw-version "version 0.8.11"
+(defconst japanlaw-version "version 0.8.12"
   "Version of japanlaw.el")
 
 (defconst japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
