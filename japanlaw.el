@@ -6,9 +6,9 @@
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
-;; Version: 0.8.11
+;; Version: 0.8.12
 ;; Keywords: docs help
-;; Package-Requires: ((revive "20121022.411"))
+;; Package-Requires: ()
 
 ;; This file is not part of GNU Emacs.
 
@@ -32,7 +32,6 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
-(require 'revive)
 (require 'easymenu)
 (require 'outline)
 (require 'iswitchb)
@@ -931,7 +930,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 		'local-map 'japanlaw-mode-map))
 	      nil)))
 
-;;TODO とりあえずコメントアウト set-mouse なんとかが何をしているのか。
 (defvar japanlaw-index-font-lock-keywords
   (let ((fcolor (cdr (assq 'foreground-color
         		   (frame-parameters (selected-frame))))))
@@ -1357,7 +1355,8 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	  ;; (save-excursion (replace-string "\r" ""))    ;Emacs23?
 	  (when (search-forward "404 Not Found" nil t)
 	    (re-search-forward "^$" nil t)
-	    (error (concat url
+	    (error "%s"
+                   (concat url
 			   (replace-regexp-in-string
 			    "<.+?>\\|\r\n" ""
 			    (buffer-substring (point) (point-max))))))
@@ -3715,11 +3714,8 @@ FULL が非-nilなら path/file を返す。"
 ;;
 ;; window configuration
 ;;
-(defalias 'japanlaw-current-winconf 'current-window-configuration-printable)
-(defalias 'japanlaw-restore-winconf 'restore-window-configuration)
-
-;; (defalias 'japanlaw-current-winconf 'current-window-configuration)
-;; (defalias 'japanlaw-restore-winconf 'set-window-configuration)
+(defalias 'japanlaw-current-winconf 'current-window-configuration)
+(defalias 'japanlaw-restore-winconf 'set-window-configuration)
 
 (defun japanlaw-winconf-override ()
   (interactive)
@@ -3847,13 +3843,6 @@ FULL が非-nilなら path/file を返す。"
 	     (japanlaw-winconf-message))
     (japanlaw-winconf-message)))
 
-(defun japanlaw-restore-nth-winconf (n)
-  (when (and japanlaw-winconf-list
-	     (<= 0 n) (< n (length japanlaw-winconf-list)))
-    (japanlaw-restore-winconf (nth n japanlaw-winconf-list))
-    (setq japanlaw-winconf-index n)
-    (japanlaw-winconf-message)))
-
 (defun japanlaw-winconf-equalp ()
   (when (equal
 	 (nth japanlaw-winconf-index japanlaw-winconf-list)
@@ -3898,9 +3887,8 @@ FULL が非-nilなら path/file を返す。"
       ((and (equal (nth japanlaw-winconf-index japanlaw-winconf-list)
 		   (japanlaw-current-winconf))
 	    'identical))
-      ((and (/= (length (nth 3 stored))
-		(length (nth 3 current)))
-	    'different))
+      ((null stored)
+       'different)
       (t
        (let ((diffs (japanlaw-winconf-diffs stored current)))
 	 (or (and (> (length diffs) 1)
@@ -3926,27 +3914,32 @@ FULL が非-nilなら path/file を返す。"
                            'different)))))))))))
 
 (defun japanlaw-winconf-diffs (stored current)
-  (let ((sbuflst (nth 3 stored))
-	(cbuflst (nth 3 current))
-	sbuf cbuf sbuffer cbuffer swinst cwinst spos cpos diffs)
+  (let ((sbuf&wins (save-window-excursion
+                     (set-window-configuration stored)
+                     (mapcar (lambda (w)
+                               (list w (window-buffer w) (window-start w)))
+                             (window-list))))
+	(cbuf&wins (mapcar (lambda (w)
+                             (list w (window-buffer w)))  (window-list)))
+	sbuffer cbuffer swinst cwinst spos cpos diffs)
     (catch 'compare
-      (while sbuflst
-	(setq sbuf    (car sbuflst)
-	      cbuf    (car cbuflst)
-	      sbuffer (revive:get-buffer sbuf)
-	      cbuffer (revive:get-buffer cbuf))
+      (while sbuf&wins
+	(setq sbuffer (car sbuf&wins)
+	      cbuffer (car cbuf&wins))
 	(and (not (equal sbuffer cbuffer))
 	     (throw 'compare 'different))
-	(setq swinst (revive:get-window-start sbuf)
-	      cwinst (revive:get-window-start cbuf)
-	      spos   (revive:get-point sbuf)
-	      cpos   (revive:get-point cbuf))
+	(setq swinst (nth 2 sbuffer)
+	      cwinst (window-start (nth 0 cbuffer))
+	      spos   (with-current-buffer (nth 1 sbuffer)
+                       (point))
+	      cpos   (with-current-buffer (nth 1 cbuffer)
+                       (point)))
 	(and (/= swinst cwinst)
 	     (throw 'compare 'different))
 	(and (/= spos cpos)
 	     (push (list cbuffer cpos sbuffer spos) diffs))
-	(setq sbuflst (cdr sbuflst)
-	      cbuflst (cdr cbuflst))))
+	(setq sbuf&wins (cdr sbuf&wins)
+	      cbuf&wins (cdr cbuf&wins))))
     diffs))
 
 (defun japanlaw-winconf-message (&optional arg)
