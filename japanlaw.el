@@ -1,12 +1,12 @@
 ;;; japanlaw.el --- Japan law from law.e-gov.go.jp -*- Coding: utf-8 -*-
 
 ;; Copyright (C) 2007, 2008  Kazushi NODA
-;;               2012-2013 Masahiro Hayashi <mhayashi1120@gmail.com>
+;;               2012-2015 Masahiro Hayashi <mhayashi1120@gmail.com>
 
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
-;; Version: 0.8.12
+;; Version: 0.9.0
 ;; Keywords: docs help
 ;; Package-Requires: ()
 
@@ -45,7 +45,7 @@
 ;;; japanlaw-vars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst japanlaw-version "version 0.8.12"
+(defconst japanlaw-version "version 0.9.0"
   "Version of japanlaw.el")
 
 (defconst japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
@@ -310,6 +310,29 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "`compose-region'で括弧を不可視にする場合、代替の1文字。
 ここで指定する文字が対応括弧の代わりる表示される。"
   :type 'string
+  :group 'japanlaw)
+
+(defcustom japanlaw-url-wget-program "wget"
+  "Path or name of wget program."
+  :type 'file
+  :group 'japanlaw)
+
+(defcustom japanlaw-url-curl-program "curl"
+  "Path or name of curl program."
+  :type 'file
+  :group 'japanlaw)
+
+(defcustom japanlaw-url-retrieve-function
+  (cond
+   ((executable-find japanlaw-url-curl-program)
+    'japanlaw-url-retrieve-curl)
+   ((executable-find japanlaw-url-wget-program)
+    'japanlaw-url-retrieve-wget)
+   (t
+    ;; url.el has the lowest priority
+    'url-retrieve-synchronously))
+  "Function accept one arg as URL."
+  :type 'function
   :group 'japanlaw)
 
 ;;
@@ -1133,12 +1156,37 @@ Opened Recent Search Bookmark Index Directory Abbrev"
           (sit-for 1)))
       (cons index-updatedp abbrev-updatedp))))
 
+(defun japanlaw-url-retrieve-wget (url)
+  (let ((buf (generate-new-buffer " *Japanlaw wget* ")))
+    (with-current-buffer buf
+      (set-buffer-multibyte nil)
+      (call-process japanlaw-url-wget-program
+                    nil t nil
+                    "--quiet"
+                    "--output-document" "-"
+                    "--save-headers"
+                    url))
+    buf))
+
+(defun japanlaw-url-retrieve-curl (url)
+  (let ((buf (generate-new-buffer " *Japanlaw curl* ")))
+    (with-current-buffer buf
+      (set-buffer-multibyte nil)
+      (call-process japanlaw-url-curl-program
+                    nil t nil
+                    "--silent"
+                    "--dump-header" "-"
+                    ;; seems curl is rejected by law.e-gov.go.jp
+                    "--user-agent" ""
+                    url))
+    buf))
+
 (defun japanlaw-url-retrieve (url)
   "URLをGETする。"
   (save-current-buffer
     (with-current-buffer
 	(condition-case err
-	    (url-retrieve-synchronously url)
+	    (funcall japanlaw-url-retrieve-function url)
 	  (error
 	   (error "Cannot retrieve URL: %s" url)))
       (let ((coding (detect-coding-region (point-min) (point-max) t)))
@@ -1348,8 +1396,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     (unless url
       (setq url (japanlaw-expand-htmldata-url id)))
     (when (or force (not (file-exists-p html-path)))
-      (let ((buffer
-	     (set-buffer (japanlaw-url-retrieve url))))
+      (let ((buffer (japanlaw-url-retrieve url)))
 	(with-current-buffer buffer
 	  (goto-char (point-min))
 	  ;; (save-excursion (replace-string "\r" ""))    ;Emacs23?
