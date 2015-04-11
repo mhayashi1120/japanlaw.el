@@ -313,12 +313,12 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :group 'japanlaw)
 
 (defcustom japanlaw-url-wget-program "wget"
-  "Path or name of wget program."
+  "wget プログラムへの path."
   :type 'file
   :group 'japanlaw)
 
 (defcustom japanlaw-url-curl-program "curl"
-  "Path or name of curl program."
+  "curl プログラムへの path."
   :type 'file
   :group 'japanlaw)
 
@@ -331,7 +331,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
    (t
     ;; url.el has the lowest priority
     'url-retrieve-synchronously))
-  "Function accept one arg as URL."
+  "URL 引数をひとつ受け付け、HTTP Response の Header と Body を保持するバッファ
+を返す関数。返されたバッファは parse された後で削除される。"
   :type 'function
   :group 'japanlaw)
 
@@ -1182,7 +1183,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     buf))
 
 (defun japanlaw-url-retrieve (url)
-  "URLをGETする。"
+  "HTTP URL を GET する。"
   (save-current-buffer
     (with-current-buffer
 	(condition-case err
