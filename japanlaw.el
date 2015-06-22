@@ -6,7 +6,7 @@
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
-;; Version: 0.9.0
+;; Version: 0.9.1
 ;; Keywords: docs help
 ;; Package-Requires: ()
 
@@ -45,7 +45,7 @@
 ;;; japanlaw-vars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst japanlaw-version "version 0.9.0"
+(defconst japanlaw-version "version 0.9.1"
   "Version of japanlaw.el")
 
 (defconst japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
@@ -1746,7 +1746,7 @@ FUNCSは引数を取らない関数のリスト。"
 
 (defun japanlaw-goto-line (line)
   (goto-char (point-min))
-  (forward-line line))
+  (forward-line (1- line)))
 
 (defun japanlaw:filter (pred ls)
   "PREDを適用した結果tを返した要素を集める。"
