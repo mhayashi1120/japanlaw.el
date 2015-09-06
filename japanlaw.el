@@ -200,6 +200,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;;TODO remove 2 suffix
 (defun japanlaw-htmldata-path2 ()
+  "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
+の親ディレクトリのパス名。"
   (expand-file-name "htmldata" japanlaw-path))
 
 (defcustom japanlaw-egov-url "http://law.e-gov.go.jp/"
@@ -216,6 +218,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;;TODO remove 2 suffix
 (defun japanlaw-data-path2 ()
+  "w3mでdumpした法令ファイルの保存先ディレクトリの親ディレクトリのパス名。"
   (expand-file-name "data" japanlaw-path))
 
 (defcustom japanlaw-temp-path (concat japanlaw-path "/tmp")
@@ -227,8 +230,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;;TODO remove 2 suffix
 (defun japanlaw-temp-path2 ()
+  "w3mでdumpする一時ファイルの保存先ディレクトリのパス名。"
   (expand-file-name "tmp" japanlaw-path))
-
 
 (defcustom japanlaw-extention ".law"
   "法令データファイルの拡張子。`auto-mode-alist'に追加される。"
@@ -244,6 +247,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;;TODO remove 2 suffix
 (defun japanlaw-index-file2 ()
+  "事項別インデックスファイル名。"
   (expand-file-name ".index" japanlaw-path))
 
 (defcustom japanlaw-abbrev-file (concat japanlaw-path "/.abbrev")
@@ -255,7 +259,16 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;;TODO remove 2 suffix
 (defun japanlaw-abbrev-file2 ()
+  "略称法令名のインデックスファイル名。"
   (expand-file-name ".abbrev" japanlaw-path))
+
+(defun japanlaw-mishikou-list-file ()
+  "未施行法令のインデックスファイル名"
+  (expand-file-name ".mishikou" japanlaw-path))
+
+(defun japanlaw-shinki-list-file ()
+  "新規法令のインデックスファイル名"
+  (expand-file-name ".shinki" japanlaw-path))
 
 (defcustom japanlaw-bookmark-file (concat japanlaw-path "/.bookmark")
   "ブックマークの保存先ファイル名。"
@@ -1137,14 +1150,16 @@ Opened Recent Search Bookmark Index Directory Abbrev"
       ;; indexファイルが存在しない場合
       ;; 再取得して更新された場合
       (when (or regenerate (not (file-exists-p (japanlaw-index-file2))))
-	(if (not (y-or-n-p "Make index files? "))
-	    (if regenerate
-		(error "Cancel.")
-	      (error "First of all, you should make the index file."))
-	  (japanlaw-make-directory japanlaw-path)
-	  (setq index-updatedp
-		(make-index (japanlaw-index-file2) #'japanlaw-get-index #'japanlaw-alist))
-	  (message "Process has completed.")))
+	(cond
+         ((y-or-n-p "Make index files? "))
+         (regenerate
+          (error "Cancel."))
+         (t
+          (error "First of all, you should make the index file.")))
+        (japanlaw-make-directory japanlaw-path)
+        (setq index-updatedp
+              (make-index (japanlaw-index-file2) #'japanlaw-get-index #'japanlaw-alist))
+        (message "Process has completed."))
       ;; abbrevファイルが存在しない場合
       ;; 再取得して更新された場合
       (let ((file (japanlaw-abbrev-file2)))
@@ -3151,6 +3166,7 @@ Openedの場合、ファイルを閉じる。"
          ;; 未施行法令への anchor (取得 URL が異なる)
          ;; FIXME:
          ;; 未施行法令を htmldata にファイルを保存するのはあんまりよくないけど。。
+         ;; 後からゴミになる。
          (let ((mishikou (assoc name japanlaw-mishikou-list)))
            (setq id (concat (japanlaw-file-sans-name (cdr mishikou)) "-mishikou"))
            (setq file (japanlaw-expand-data-file id))
@@ -3418,14 +3434,15 @@ Openedの場合、ファイルを閉じる。"
 	(item      (nth 2  args)))
     (goto-char (point-min))
     (when article
-      (if (re-search-forward article nil t)
-	  (when (or paragraph item)
-	    (let ((limit (cdr (japanlaw-current-article))))
-	      (mapc (lambda (rx)
-		      (and rx (or (re-search-forward rx limit t)
-				  (error "Not found."))))
-		    `(,paragraph ,item))))
-	(error "Not found.")))
+      (cond
+       ((not (re-search-forward article nil t))
+        (error "Not found."))
+       ((or paragraph item)
+        (let ((limit (cdr (japanlaw-current-article))))
+          (mapc (lambda (rx)
+                  (and rx (or (re-search-forward rx limit t)
+                              (error "Not found."))))
+                `(,paragraph ,item))))))
     ;; found
     (forward-line 0)
     (japanlaw-recenter (or recenter t))
