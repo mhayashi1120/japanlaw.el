@@ -1569,7 +1569,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (let ((coding-system-for-read 'raw-text)
             format-alist)
         (insert-file-contents html))
-      (message (concat (current-message) " done."))
+      (message "%s done." (current-message))
       ;; イメージデータの取得。
       (setq images (japanlaw-make-images-list))
       (when (and force images)
@@ -1586,22 +1586,22 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       ;; イメージを置換する。
       (when images (japanlaw-replace-image-tags images))
       )
-    (message (concat (current-message) " done."))
+    (message "%s done." (current-message))
     ;; テンポラリファイルを対象にw3mでダンプする。
     (with-temp-file file
       (japanlaw-make-directory (file-name-directory file))
       (message "Extracting data from htmldata...")
       (japanlaw-w3m-dump temp)
-      (message (concat (current-message) " done."))
+      (message "%s done." (current-message))
       ;; 半角空白2個を全角空白に置換する。
       (message "Replacing spaces...")
       (save-excursion (japanlaw-replace-zspc))
-      (message (concat (current-message) " done."))
+      (message "%s done." (current-message))
       ;; バッファ内の法令名を取得し、正規表現を生成する。
       (message "Scanning law names...")
       ;; 情報を書き込む。
       (japanlaw-write-init-file regfile h-path (if images t nil) force)
-      (message (concat (current-message) " done."))
+      (message "%s done." (current-message))
       (message "Scanning law names...done")
       (message "Getting file and converting...done")
       ;; 生成されたファイルの名前を返す。
@@ -2640,7 +2640,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
        complete
        ;; 以前の検索結果の初期化。
        noclear)
-      (message (concat (current-message) "done")))))
+      (message "%sdone" (current-message)))))
 
 (defun japanlaw-index-search-interactive ()
   (unless (file-exists-p (japanlaw-index-file2))
