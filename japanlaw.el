@@ -190,11 +190,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (make-obsolete-variable 'japanlaw-htmldata-directory nil "0.8.11")
 
-(defcustom japanlaw-htmldata-path (concat japanlaw-path "/" japanlaw-htmldata-directory)
-  "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
-の親ディレクトリのパス名。"
-  :type 'directory
-  :group 'japanlaw)
+(defvar japanlaw-htmldata-path nil)
 
 (make-obsolete-variable 'japanlaw-htmldata-path nil "0.8.11")
 
@@ -873,6 +869,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-index-buffer "*JapanLaw*"
   "`japanlaw-index-mode'のバッファ名。")
 
+;; NOTE: 頭文字を Key に割り当てているので、
+;;  他の単語と頭文字も重複しないようにすること。
 (defvar japanlaw-index-header-items
   '("Opened"
     "Recent"
@@ -1539,7 +1537,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(with-temp-buffer
 	  (insert-file-contents file)
 	  (read (current-buffer)))
-      (message "Not exists japanlaw-font-lock-keywords-2 file `%s'" file)
+      (message "Not exists japanlaw-read-init-file file `%s'" file)
       nil)))
 
 (defun japanlaw-make-data (id &optional force url)
