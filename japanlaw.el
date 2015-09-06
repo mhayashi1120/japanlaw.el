@@ -198,8 +198,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (make-obsolete-variable 'japanlaw-htmldata-path nil "0.8.11")
 
-;;TODO remove 2 suffix
-(defun japanlaw-htmldata-path2 ()
+(defun japanlaw-htmldata-path ()
   "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
 の親ディレクトリのパス名。"
   (expand-file-name "htmldata" japanlaw-path))
@@ -209,27 +208,17 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'directory
   :group 'japanlaw)
 
-(defcustom japanlaw-data-path (concat japanlaw-path "/data")
-  "w3mでdumpした法令ファイルの保存先ディレクトリの親ディレクトリのパス名。"
-  :type 'directory
-  :group 'japanlaw)
-
+(defvar japanlaw-data-path nil)
 (make-obsolete-variable 'japanlaw-data-path nil "0.8.11")
 
-;;TODO remove 2 suffix
-(defun japanlaw-data-path2 ()
+(defun japanlaw-data-path ()
   "w3mでdumpした法令ファイルの保存先ディレクトリの親ディレクトリのパス名。"
   (expand-file-name "data" japanlaw-path))
 
-(defcustom japanlaw-temp-path (concat japanlaw-path "/tmp")
-  "w3mでdumpする一時ファイルの保存先ディレクトリのパス名。"
-  :type 'directory
-  :group 'japanlaw)
-
+(defvar japanlaw-temp-path nil)
 (make-obsolete-variable 'japanlaw-temp-path nil "0.8.11")
 
-;;TODO remove 2 suffix
-(defun japanlaw-temp-path2 ()
+(defun japanlaw-temp-path ()
   "w3mでdumpする一時ファイルの保存先ディレクトリのパス名。"
   (expand-file-name "tmp" japanlaw-path))
 
@@ -238,27 +227,17 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'string
   :group 'japanlaw)
 
-(defcustom japanlaw-index-file (concat japanlaw-path "/.index")
-  "事項別インデックスファイルのファイル名。"
-  :type 'file
-  :group 'japanlaw)
-
+(defvar japanlaw-index-file nil)
 (make-obsolete-variable 'japanlaw-index-file nil "0.8.11")
 
-;;TODO remove 2 suffix
-(defun japanlaw-index-file2 ()
+(defun japanlaw-index-file ()
   "事項別インデックスファイル名。"
   (expand-file-name ".index" japanlaw-path))
 
-(defcustom japanlaw-abbrev-file (concat japanlaw-path "/.abbrev")
-  "略称法令名のインデックスファイルのファイル名。"
-  :type 'file
-  :group 'japanlaw)
-
+(defvar japanlaw-abbrev-file nil)
 (make-obsolete-variable 'japanlaw-abbrev-file nil "0.8.11")
 
-;;TODO remove 2 suffix
-(defun japanlaw-abbrev-file2 ()
+(defun japanlaw-abbrev-file ()
   "略称法令名のインデックスファイル名。"
   (expand-file-name ".abbrev" japanlaw-path))
 
@@ -270,25 +249,17 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "新規法令のインデックスファイル名"
   (expand-file-name ".shinki" japanlaw-path))
 
-(defcustom japanlaw-bookmark-file (concat japanlaw-path "/.bookmark")
-  "ブックマークの保存先ファイル名。"
-  :type 'file
-  :group 'japanlaw)
-
+(defvar japanlaw-bookmark-file nil)
 (make-obsolete-variable 'japanlaw-bookmark-file nil "0.8.11")
 
 (defun japanlaw-bookmark-file ()
   (expand-file-name ".bookmark" japanlaw-path))
 
-(defcustom japanlaw-recent-file (concat japanlaw-path "/.recent")
-  "最近開いたファイルのリストの保存先ファイル名"
-  :type 'file
-  :group 'japanlaw)
-
+(defvar japanlaw-recent-file nil)
 (make-obsolete-variable 'japanlaw-recent-file nil "0.8.11")
 
-;;TODO remove 2 suffix
-(defun japanlaw-recent-file2 ()
+(defun japanlaw-recent-file ()
+  "最近開いたファイルのリストの保存先ファイル名"
   (expand-file-name ".recent" japanlaw-path))
 
 ;; Buffer name
@@ -1147,9 +1118,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
       ;; れば再利用する
       (japanlaw-solve-backward-compatibility)
 
+      ;; 再取得で更新する場合
       ;; indexファイルが存在しない場合
-      ;; 再取得して更新された場合
-      (when (or regenerate (not (file-exists-p (japanlaw-index-file2))))
+      (when (or regenerate (not (file-exists-p (japanlaw-index-file))))
 	(cond
          ((y-or-n-p "Make index files? "))
          (regenerate
@@ -1158,11 +1129,11 @@ Opened Recent Search Bookmark Index Directory Abbrev"
           (error "First of all, you should make the index file.")))
         (japanlaw-make-directory japanlaw-path)
         (setq index-updatedp
-              (make-index (japanlaw-index-file2) #'japanlaw-get-index #'japanlaw-alist))
+              (make-index (japanlaw-index-file) #'japanlaw-get-index #'japanlaw-alist))
         (message "Process has completed."))
       ;; abbrevファイルが存在しない場合
-      ;; 再取得して更新された場合
-      (let ((file (japanlaw-abbrev-file2)))
+      ;; 再取得で更新する場合
+      (let ((file (japanlaw-abbrev-file)))
         (when (or regenerate (not (file-exists-p file)))
           (japanlaw-make-directory japanlaw-path)
           (setq abbrev-updatedp
@@ -1170,6 +1141,15 @@ Opened Recent Search Bookmark Index Directory Abbrev"
                 (make-index file #'japanlaw-make-abbrev-index #'japanlaw-abbrev))
           (message "Process has completed.")
           (sit-for 1)))
+      ;;TODO reconsider when create this index file
+      ;; (let ((file (japanlaw-mishikou-list-file)))
+      ;;   (when (or regenerate (not (file-exists-p file)))
+      ;;     (japanlaw-make-directory japanlaw-path)
+      ;;     (setq abbrev-updatedp
+      ;;           ;;TODO make-index?
+      ;;           (make-index file #'japanlaw-make-abbrev-index #'japanlaw-abbrev))
+      ;;     (message "Process has completed.")
+      ;;     (sit-for 1)))
       (cons index-updatedp abbrev-updatedp))))
 
 (defun japanlaw-url-retrieve-wget (url)
@@ -1213,7 +1193,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defun japanlaw-get-dirname (id)
   "GETしたIDの保存先ディレクトリを返す。"
-  (concat (japanlaw-htmldata-path2) "/" (upcase (substring id 0 3))))
+  (concat (japanlaw-htmldata-path) "/" (upcase (substring id 0 3))))
 
 (defun japanlaw-get-index ()
   "事項別分類索引をGETして、法令名とIDのalistのリストを生成して返す。"
@@ -1379,21 +1359,21 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   "ID(のファイル名部分)から、GETしたHTMLの保存先パスファイルを返す。"
   (if (> 3 (length id))
       ""
-    (concat (japanlaw-htmldata-path2) "/"
+    (concat (japanlaw-htmldata-path) "/"
 	    (upcase (substring id 0 3)) "/" (upcase id) ".html")))
 
 (defun japanlaw-expand-data-file (id)
   "ID(のファイル名部分)から、ダンプしたデータの保存先パスファイル名を返す。"
   (if (> 3 (length id))
       ""
-    (concat (japanlaw-data-path2) "/"
+    (concat (japanlaw-data-path) "/"
 	    (downcase (substring id 0 3)) "/" (downcase id) japanlaw-extention)))
 
 (defun japanlaw-expand-init-file (id)
   ;; ID は "h01ho042.law" のような文字列
   (if (> 3 (length id))
       ""
-    (concat (japanlaw-data-path2) "/"
+    (concat (japanlaw-data-path) "/"
 	    (downcase (substring id 0 3)) "/." (downcase id))))
 
 (defun japanlaw-make-directory (dir)
@@ -1570,7 +1550,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   (unless japanlaw-online-mode
     (japanlaw-online-mode-message #'error))
   (message "Getting file and converting...")
-  (let ((temp (concat (japanlaw-temp-path2) "/temp.html"))
+  (let ((temp (concat (japanlaw-temp-path) "/temp.html"))
 	;; htmldata を取得。
 	(html (japanlaw-htmldata-retrieve id nil url))
 	(file (japanlaw-expand-data-file id))
@@ -1806,14 +1786,14 @@ FUNCSは引数を取らない関数のリスト。"
   "インデックスファイルをロードする関数。"
   (or japanlaw-alist
       (setq japanlaw-alist
-            (japanlaw-read-sexp (japanlaw-index-file2)))))
+            (japanlaw-read-sexp (japanlaw-index-file)))))
 
 ;; 略称法令名のインデックスファイルの内容を保持するローカル変数。
 (defun japanlaw-abbrev ()
   "略称法令名のインデックスファイルをロードする関数。"
   (or japanlaw-abbrev
       (setq japanlaw-abbrev
-            (japanlaw-read-sexp (japanlaw-abbrev-file2)))))
+            (japanlaw-read-sexp (japanlaw-abbrev-file)))))
 
 ;; Search
 (defun japanlaw-names-alist ()
@@ -1985,7 +1965,7 @@ FUNCSは引数を取らない関数のリスト。"
             (setq japanlaw-bookmark-alist nil)
             (japanlaw-bookmark-alist))))))
   ;; Recent
-  (let ((file (japanlaw-recent-file2)))
+  (let ((file (japanlaw-recent-file)))
     (when (and file
                (file-exists-p (file-name-directory file))
                (file-exists-p file))
@@ -2018,10 +1998,10 @@ FUNCSは引数を取らない関数のリスト。"
 (defun japanlaw-recent-alist ()
   "最近開いたファイルの連想リストを返す。"
   (or japanlaw-recent-alist
-      (and (file-exists-p (japanlaw-recent-file2))
+      (and (file-exists-p (japanlaw-recent-file))
 	   (setq japanlaw-recent-alist
 		 (with-temp-buffer
-		   (insert-file-contents (japanlaw-recent-file2))
+		   (insert-file-contents (japanlaw-recent-file))
 		   (read (current-buffer)))))))
 
 (defun japanlaw-recent-add ()
@@ -2036,20 +2016,20 @@ FUNCSは引数を取らない関数のリスト。"
 			 (- (length japanlaw-recent-alist) japanlaw-recent-max))))))))
 
 (defun japanlaw-recent-save ()
-  "最近開いた法令ファイル: `japanlaw-recent-file2'に
+  "最近開いた法令ファイル: `japanlaw-recent-file'に
 `japanlaw-recent-alist'を出力する。変更がなかった場合は出力しない。"
   (ignore-errors
-    (when (and (japanlaw-recent-file2)
-	       (file-exists-p (file-name-directory (japanlaw-recent-file2))))
+    (when (and (japanlaw-recent-file)
+	       (file-exists-p (file-name-directory (japanlaw-recent-file))))
       (with-temp-buffer
 	(save-excursion
-	  (if (file-exists-p (japanlaw-recent-file2))
-	      (insert-file-contents (japanlaw-recent-file2))
+	  (if (file-exists-p (japanlaw-recent-file))
+	      (insert-file-contents (japanlaw-recent-file))
 	    (princ nil (current-buffer))))
 	(unless (equal (read (current-buffer)) (japanlaw-recent-alist))
-	  (with-temp-file (japanlaw-recent-file2)
+	  (with-temp-file (japanlaw-recent-file)
 	    (insert (format "%S" japanlaw-recent-alist))
-	    (message "Wrote %s" (japanlaw-recent-file2)))
+	    (message "Wrote %s" (japanlaw-recent-file)))
 	  t)))))
 
 ;;
@@ -2281,7 +2261,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
 	       (get-buffer japanlaw-index-buffer))
       (kill-buffer japanlaw-index-buffer)
       (japanlaw-index))
-    (message (mapconcat 'identity msg "  "))))
+    (message "%s" (mapconcat 'identity msg "  "))))
 
 (defun japanlaw-retrieve-html ()
   "ポイント位置のHTMLデータを再取得。最後に取得してから更新があっ
@@ -2658,7 +2638,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
       (message "%sdone" (current-message)))))
 
 (defun japanlaw-index-search-interactive ()
-  (unless (file-exists-p (japanlaw-index-file2))
+  (unless (file-exists-p (japanlaw-index-file))
     (error "Try `M-x japanlaw'"))
   (when japanlaw-setup-p (japanlaw-setup))
   (let ((rx (read-string "Search: " nil 'japanlaw-search-history)))
@@ -2977,7 +2957,7 @@ Openedの場合、ファイルを閉じる。"
 (defun japanlaw-index ()
   "法令データにアクセスするためのインターフェイス。"
   (interactive)
-  (unless (file-exists-p (japanlaw-index-file2))
+  (unless (file-exists-p (japanlaw-index-file))
     (unless japanlaw-online-mode
       (error "Try `M-x japanlaw-online-or-offline', and turn to online mode."))
     (japanlaw-make-index-files))
@@ -4518,7 +4498,7 @@ migemoとiswitchbの設定が必要。"
     (japanlaw-open-file (or (japanlaw-get-id name) (error "No match.")))))
 
 (defun japanlaw-iswitchb-interactive ()
-  (unless (file-exists-p (japanlaw-index-file2))
+  (unless (file-exists-p (japanlaw-index-file))
     (error "Try `M-x japanlaw'"))
   (when japanlaw-setup-p (japanlaw-setup))
   (list (if current-prefix-arg
@@ -4558,7 +4538,7 @@ migemoとiswitchbの設定が必要。"
 		  (push (substring (caar ys) 1 -1) result)))))))
 
 (defun japanlaw-download-list (type)
-  (when (file-exists-p (japanlaw-htmldata-path2))
+  (when (file-exists-p (japanlaw-htmldata-path))
     (let ((func
 	   (case type
 	     (id (lambda (f)
@@ -4567,7 +4547,7 @@ migemoとiswitchbの設定が必要。"
 		     (japanlaw-get-name (upcase (file-name-sans-extension f))))))))
       (mapcar func
 	      (japanlaw-directory-files-recursive
-	       (japanlaw-htmldata-path2) "\\`[MTSH][0-9]+\\'"
+	       (japanlaw-htmldata-path) "\\`[MTSH][0-9]+\\'"
 	       (concat "\\.html\\'"))))))
 
 (defun japanlaw-iswitchb-download-list () (japanlaw-download-list 'name))
