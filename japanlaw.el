@@ -929,6 +929,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-index--main-data nil)
 (defvar japanlaw-index--abbrev-data nil)
 (defvar japanlaw-index--mishikou-data nil)
+;; TODO hack
+(defvar japanlaw-index--mishikou-url-alist nil)
 
 ;; 個別のモードの状態を保存するローカル変数。
 (defvar japanlaw-menuview--current-item nil)
@@ -1896,7 +1898,13 @@ FUNCSは引数を取らない関数のリスト。"
 (defun japanlaw-load--mishikou-data ()
   (or japanlaw-index--mishikou-data
       (setq japanlaw-index--mishikou-data
-            (japanlaw--read-sexp (japanlaw-mishikou-file)))))
+            (let ((data (japanlaw--read-sexp (japanlaw-mishikou-file))))
+              (setq japanlaw-index--mishikou-url-alist nil)
+              (loop for (id _name1 _name2 url) in data
+                    do (setq japanlaw-index--mishikou-url-alist
+                             (cons (cons id url)
+                                   japanlaw-index--mishikou-url-alist)))
+              data))))
 
 (defun japanlaw-load--all-names ()
   "登録法令名と略称法令名のリストを返す。"
@@ -1912,8 +1920,8 @@ FUNCSは引数を取らない関数のリスト。"
                       ;; e.g. "「あっせん利得処罰法」"
                       collect (substring abbrev 1 -1)))
    ;; 未施行法令
-   (loop for (name url id) in (japanlaw-load--mishikou-data)
-         collect name)))
+   (loop for (id name1 name2 url) in (japanlaw-load--mishikou-data)
+         collect (concat name1 name2))))
 
 (defun japanlaw-download-list (type)
   (when (file-exists-p (japanlaw-htmldata-path))
@@ -2218,7 +2226,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
 
 ;; recursion
 (defun japanlaw-index-search-insert-func (alist)
-  (unless (null alist)
+  (when alist
     (let* ((cell (car alist))
 	   (opened (cadr cell)))
       ;; 検索式
@@ -2226,11 +2234,10 @@ LFUNCは、NAMEからなるリストを返す関数。"
       ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
       (japanlaw-labels
        ((rec (ls)
-             (unless (null ls)
+             (when ls
                (let* ((cell (car ls))
                       (opened (cadr cell)))
-                 (japanlaw-index-insert-line
-                  2 (not opened) (car cell))
+                 (japanlaw-index-insert-line 2 (not opened) (car cell))
                  (when opened
                    (let ((cell (cddr cell)))
                      (dolist (x cell)
@@ -2243,7 +2250,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
                            (when opened
                              (dolist (y (cddr x))
                                (japanlaw-index-insert-line 6 nil (car y)
-                                (cdr y))))))))))
+                                                           (cdr y))))))))))
                (rec (cdr ls)))))
        (when opened (rec (cddr cell)))))
     (japanlaw-index-search-insert-func (cdr alist))))
@@ -2505,7 +2512,14 @@ FUNCは連想リストを返す関数。"
   (let* ((file (japanlaw-expand-data-file id))
 	 (buffer (get-file-buffer file)))
     (unless (file-exists-p file)
-      (japanlaw-make-data id 'force))
+      ;;TODO hack
+      (cond
+       ((string-match "-mishikou\\'" id)
+        (let* ((pair (assoc id japanlaw-index--mishikou-url-alist))
+               (url (cdr pair)))
+          (japanlaw-make-data id 'force url)))
+       (t
+        (japanlaw-make-data id 'force))))
     (unless buffer
       (setq buffer (find-file-noselect file))
       (set-buffer buffer)
@@ -2515,9 +2529,9 @@ FUNCは連想リストを返す関数。"
 
 (defun japanlaw-index-index-oc-function (func)
   "`Index',`Directory'で、フォルダなら開閉をし法令名なら開く。"
-  (let* ((values (japanlaw-get-values))
-	 (name (cadr values))
-	 (id (car (nth 2 values))))
+  (let* ((plist (japanlaw--get-plist))
+	 (name (plist-get plist :name))
+	 (id (plist-get plist :id)))
     (if (japanlaw-index-folder-level-0)
 	;; folder open or close
 	(japanlaw-index-folder name (japanlaw-index-folder-open-p) func)
@@ -2544,16 +2558,17 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 (defun japanlaw-index-search-oc ()
   "`Search'で、フォルダなら開閉をし、法令名なら開く。"
   (let* ((plist (japanlaw--get-plist))
+         (id (plist-get plist :id))
          (name (plist-get plist :name))
          (keys nil))
     (unless name (error "Not a law data."))
-    (if (plist-get plist :id)
-	(japanlaw-open-file (plist-get plist :id))
+    (if id
+	(japanlaw-open-file id)
       (let ((cell (save-excursion
 		    (dotimes (x (japanlaw-index-folder-level))
 		      (japanlaw-index-upper-level)
-		      (push (plist-get plist :name) keys))
-		    (assoc (plist-get plist :name) (japanlaw-search-alist)))))
+		      (push name keys))
+		    (assoc name (japanlaw-search-alist)))))
 	(japanlaw-index-set-search-alist
 	 cell keys name (japanlaw-index-folder-open-p))))))
 
@@ -2735,9 +2750,9 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
           do (loop for (abbrev . entities) in contents
                    when (string-match rx abbrev)
                    do (push (append (list abbrev nil) entities) abbrevs)))
-    (loop for (name url id) in (japanlaw-load--mishikou-data)
-          when (string-match rx name)
-          do (push (cons name id) mishikou))
+    (loop for (id name1 name2 url) in (japanlaw-load--mishikou-data)
+          when (string-match rx name1)
+          do (push (cons (concat name1 name2) id) mishikou))
     ;; 以前の検索結果の初期化。
     (unless noclear (setq japanlaw-menuview--search-data nil))
     ;; t: opened flag
