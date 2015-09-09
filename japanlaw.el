@@ -1986,23 +1986,16 @@ FUNCSは引数を取らない関数のリスト。"
   "`japanlaw-abbrev-alist'を生成する関数。"
   (or japanlaw-abbrev-alist
       (setq japanlaw-abbrev-alist
-            (do ((xs (japanlaw-abbrev) (cdr xs))
-                 (result nil))
-                ((null xs) (nreverse result))
-              (push (cons (caar xs)
-                          (cons nil     ; closed flag
-                                (do ((ys (cdar xs) (cdr ys))
-                                     (acc nil))
-                                    ((null ys) (nreverse acc))
-                                  (push (cons (caar ys)
-                                              (cons nil ; closed flag
-                                                    (do ((zs (cdar ys) (cdr zs))
-                                                         (acc nil))
-                                                        ((null zs) (nreverse acc))
-                                                      (push (cons (caar zs)(cdar zs))
-                                                            acc))))
-                                        acc))))
-                    result)))))
+            (loop for (initial . contents) in (japanlaw-abbrev)
+                  collect
+                  (append
+                   (list initial nil)
+                   (loop for (abbrev . entities) in contents
+                         collect
+                         (append
+                          (list abbrev nil)
+                          (loop for (fullname . id) in entities
+                                collect (cons fullname id)))))))))
 
 ;; Bookmark
 (defun japanlaw-bookmark-alist ()
@@ -2698,10 +2691,10 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
                      (unless (or (member match fuzzy)
                                  (member match complete))
                        (push match fuzzy)))))
-    (loop for (initial _ . contents) in (japanlaw-abbrev-alist)
-          do (loop for (abbrev todo (fullname . id)) in contents
-          when (string-match rx abbrev) do (push (cons
-          abbrev (list todo (cons fullname id))) abbrevs)))
+    (loop for (initial flag . contents) in (japanlaw-abbrev-alist)
+          do (loop for (abbrev flag2 . entities) in contents
+                   when (string-match rx abbrev)
+                   do (push (append (list abbrev nil) entities) abbrevs)))
     ;; 以前の検索結果の初期化。
     (unless noclear (setq japanlaw-search-alist nil))
     ;; t: opened flag
