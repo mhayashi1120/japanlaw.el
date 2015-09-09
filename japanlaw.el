@@ -113,7 +113,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	  (symbol :tag "Abbrev" :value Abbrev)))
 
 (defcustom japanlaw-recent-max 100
-  "最近開いたファイルの履歴のリスト`japanlaw-recent-alist'の最大数。"
+  "最近開いたファイルの履歴のリスト`japanlaw-menuview--recent-data'の最大数。"
   :type 'integer
   :group 'japanlaw)
 
@@ -210,15 +210,20 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defconst japanlaw-htmldata-directory "htmldata")
 
-(defun japanlaw-htmldata-path ()
-  "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
-の親ディレクトリのパス名。"
-  (expand-file-name "htmldata" japanlaw-path))
-
 (defcustom japanlaw-egov-url "http://law.e-gov.go.jp/"
   "法令データ提供システムのURL。"
   :type 'directory
   :group 'japanlaw)
+
+(defcustom japanlaw-extention ".law"
+  "法令データファイルの拡張子。`auto-mode-alist'に追加される。"
+  :type 'string
+  :group 'japanlaw)
+
+(defun japanlaw-htmldata-path ()
+  "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
+の親ディレクトリのパス名。"
+  (expand-file-name "htmldata" japanlaw-path))
 
 (defun japanlaw-data-path ()
   "w3mでdumpした法令ファイルの保存先ディレクトリの親ディレクトリのパス名。"
@@ -227,11 +232,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defun japanlaw-temp-path ()
   "w3mでdumpする一時ファイルの保存先ディレクトリのパス名。"
   (expand-file-name "tmp" japanlaw-path))
-
-(defcustom japanlaw-extention ".law"
-  "法令データファイルの拡張子。`auto-mode-alist'に追加される。"
-  :type 'string
-  :group 'japanlaw)
 
 (defun japanlaw-index-file ()
   "事項別インデックスファイル名。"
@@ -884,15 +884,15 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     map))
 
 ;; japanlaw-index-mode
-(defvar japanlaw-index-mode-name "JapanLaw"
+(defvar japanlaw-menuview--mode-name "JapanLaw"
   "`japanlaw-index-mode'のモード名。")
 
-(defvar japanlaw-index-buffer "*JapanLaw*"
+(defvar japanlaw-menuview--buffer-name "*JapanLaw*"
   "`japanlaw-index-mode'のバッファ名。")
 
 ;; NOTE: 頭文字を Key に割り当てているので、
 ;;  他の単語と頭文字も重複しないようにすること。
-(defvar japanlaw-index-header-items
+(defconst japanlaw-menuview--header-items
   '("Opened"
     "Recent"
     "Search"
@@ -902,23 +902,26 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     "Abbrev")
   "`japanlaw-index-mode'のヘッダラインのモードを表わす項目。")
 
-;; 個別のモードの状態を保存するグローバル変数。
-(defvar japanlaw-recent-alist nil)
-(defvar japanlaw-bookmark-alist nil)
-(defvar japanlaw-opened-alist nil)
+;; menu item のそれぞれの表示状態を退避保存する変数
+(defvar japanlaw-menuview--opened-data nil) ;;TODO not used?
+(defvar japanlaw-menuview--recent-data nil)
+(defvar japanlaw-menuview--search-data nil)
+(defvar japanlaw-menuview--bookmark-data nil)
+(defvar japanlaw-menuview--index-data nil)
+(defvar japanlaw-menuview--directory-data nil)
+(defvar japanlaw-menuview--abbrev-data nil)
+
+;; TODO
 (defvar japanlaw-search-history nil)
 
+;; 内部データ
 (defvar japanlaw-alist nil)
 (defvar japanlaw-abbrev nil)
 (defvar japanlaw-mishikou nil)
-(defvar japanlaw-abbrev-alist nil)
 
-;; menu item のそれぞれの状態を保存するローカル変数。
+;; 個別のモードの状態を保存するローカル変数。
 (defvar japanlaw-index-local-mode nil)
 (defvar japanlaw-index-conf nil)
-(defvar japanlaw-search-alist nil)
-(defvar japanlaw-index-alist nil)
-(defvar japanlaw-directory-alist nil)
 
 ;; japanlaw-mode
 (defvar japanlaw-mishikou-list)		;ローカル変数
@@ -973,7 +976,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (mapc (lambda (mode)
 	    (define-key map (vector (downcase (aref mode 0)))
 	      `(lambda () (interactive) (japanlaw-index-goto-mode (intern ,mode)))))
-	  japanlaw-index-header-items)
+	  japanlaw-menuview--header-items)
     (define-key map [mouse-2] 'japanlaw-index-mouse-open-or-close)
     (define-key map [follow-link] 'mouse-face)
     (define-key map " " 'japanlaw-index-open-or-close)
@@ -1703,7 +1706,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 		   'help-echo (format "mouse-1: Goto `%s' mode" s)
 		   'local-map (japanlaw-index-mode-header-line-keymap s))
 		  (spc 1))))
-	     japanlaw-index-header-items ""))))
+	     japanlaw-menuview--header-items ""))))
 
 (defun japanlaw-index-update ()
   "現在のモードの表示を更新する。
@@ -1718,7 +1721,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')。"
   (japanlaw-index-set-mode-conf)
   (let ((name (lambda (mode)
-		(format "%s:%s" japanlaw-index-mode-name mode))))
+		(format "%s:%s" japanlaw-menuview--mode-name mode))))
     (unless (and (not update) (string= mode-name (funcall name mode)))
       (setq header-line-format
 	    (if japanlaw-use-index-header-line
@@ -1892,14 +1895,14 @@ FUNCSは引数を取らない関数のリスト。"
   (mapcar (lambda (x) (japanlaw-get-name x)) (japanlaw-bookmark-alist)))
 
 (defun japanlaw-search-alist ()
-  japanlaw-search-alist)
+  japanlaw-menuview--search-data)
 
 ;; Index
 ;; `japanlaw-alist'から生成した、`japanlaw-index'のIndexモードで利用する連想リスト。
 (defun japanlaw-index-alist ()
-  "`japanlaw-index-alist'を生成する関数。"
-  (or japanlaw-index-alist
-      (setq japanlaw-index-alist
+  "`japanlaw-menuview--index-data'を生成する関数。"
+  (or japanlaw-menuview--index-data
+      (setq japanlaw-menuview--index-data
 	    (do ((xs (japanlaw-alist) (cdr xs))
 		 (result nil))
 		((null xs) (nreverse result))
@@ -1916,9 +1919,9 @@ FUNCSは引数を取らない関数のリスト。"
 ;; Directory
 ;; `japanlaw-alist'から生成した、`japanlaw-index'のDirectoryモードで利用する連想リスト。
 (defun japanlaw-directory-alist ()
-  "`japanlaw-directory-alist'を生成する関数。"
-  (or japanlaw-directory-alist
-      (setq japanlaw-directory-alist
+  "`japanlaw-menuview--directory-data'を生成する関数。"
+  (or japanlaw-menuview--directory-data
+      (setq japanlaw-menuview--directory-data
 	    (let ((dirs (do ((xs (japanlaw-alist) (cdr xs))
 			     (result nil))
 			    ((null xs)
@@ -1976,9 +1979,9 @@ FUNCSは引数を取らない関数のリスト。"
 ;; Abbrev
 ;; `japanlaw-abbrev'から生成した、`japanlaw-index'のAbbrevモードで利用する連想リスト。
 (defun japanlaw-abbrev-alist ()
-  "`japanlaw-abbrev-alist'を生成する関数。"
-  (or japanlaw-abbrev-alist
-      (setq japanlaw-abbrev-alist
+  "`japanlaw-menuview--abbrev-data'を生成する関数。"
+  (or japanlaw-menuview--abbrev-data
+      (setq japanlaw-menuview--abbrev-data
             (loop for (initial . contents) in (japanlaw-abbrev)
                   collect
                   (append
@@ -1994,9 +1997,9 @@ FUNCSは引数を取らない関数のリスト。"
 (defun japanlaw-bookmark-alist ()
   "ブックマークの連想リストを返す関数。"
   (let ((file (japanlaw-bookmark-file)))
-    (or japanlaw-bookmark-alist
+    (or japanlaw-menuview--bookmark-data
         (and (file-exists-p file)
-             (setq japanlaw-bookmark-alist
+             (setq japanlaw-menuview--bookmark-data
                    (with-temp-buffer
                      (insert-file-contents file)
                      (read (current-buffer))))))))
@@ -2015,7 +2018,7 @@ FUNCSは引数を取らない関数のリスト。"
               (princ nil (current-buffer))))
           (unless (equal (read (current-buffer)) (japanlaw-bookmark-alist))
             (with-temp-file file
-              (insert (format "%S" japanlaw-bookmark-alist))
+              (insert (format "%S" japanlaw-menuview--bookmark-data))
               (message "Wrote %s" file))
             t))))))
 
@@ -2033,7 +2036,7 @@ FUNCSは引数を取らない関数のリスト。"
             (with-temp-file file
               (insert (format "%S" (mapcar (lambda (x) (upcase (cdr x))) alist)))
               (message "Wrote %s" file))
-            (setq japanlaw-bookmark-alist nil)
+            (setq japanlaw-menuview--bookmark-data nil)
             (japanlaw-bookmark-alist))))))
   ;; Recent
   (let ((file (japanlaw-recent-file)))
@@ -2046,7 +2049,7 @@ FUNCSは引数を取らない関数のリスト。"
           (with-temp-file file
             (insert (format "%S" (mapcar (lambda (x) (upcase x)) alist))))
           (message "Wrote %s" file)
-          (setq japanlaw-recent-alist nil)
+          (setq japanlaw-menuview--recent-data nil)
           (japanlaw-recent-alist))))))
 
 ;; Opened
@@ -2068,9 +2071,9 @@ FUNCSは引数を取らない関数のリスト。"
 ;; Recent
 (defun japanlaw-recent-alist ()
   "最近開いたファイルの連想リストを返す。"
-  (or japanlaw-recent-alist
+  (or japanlaw-menuview--recent-data
       (and (file-exists-p (japanlaw-recent-file))
-	   (setq japanlaw-recent-alist
+	   (setq japanlaw-menuview--recent-data
 		 (with-temp-buffer
 		   (insert-file-contents (japanlaw-recent-file))
 		   (read (current-buffer)))))))
@@ -2080,11 +2083,11 @@ FUNCSは引数を取らない関数のリスト。"
     (let ((name (upcase (japanlaw-file-sans-name (buffer-file-name)))))
       (when (string= (buffer-file-name)
 		     (japanlaw-expand-data-file name))
-	(setq japanlaw-recent-alist (cons name (delete name (japanlaw-recent-alist))))
-	(when (> (length japanlaw-recent-alist) japanlaw-recent-max)
-	  (setq japanlaw-recent-alist
-		(butlast japanlaw-recent-alist
-			 (- (length japanlaw-recent-alist) japanlaw-recent-max))))))))
+	(setq japanlaw-menuview--recent-data (cons name (delete name (japanlaw-recent-alist))))
+	(when (> (length japanlaw-menuview--recent-data) japanlaw-recent-max)
+	  (setq japanlaw-menuview--recent-data
+		(butlast japanlaw-menuview--recent-data
+			 (- (length japanlaw-menuview--recent-data) japanlaw-recent-max))))))))
 
 (defun japanlaw-recent-save ()
   "最近開いた法令ファイル: `japanlaw-recent-file'に
@@ -2099,7 +2102,7 @@ FUNCSは引数を取らない関数のリスト。"
 	    (princ nil (current-buffer))))
 	(unless (equal (read (current-buffer)) (japanlaw-recent-alist))
 	  (with-temp-file (japanlaw-recent-file)
-	    (insert (format "%S" japanlaw-recent-alist))
+	    (insert (format "%S" japanlaw-menuview--recent-data))
 	    (message "Wrote %s" (japanlaw-recent-file)))
 	  t)))))
 
@@ -2327,7 +2330,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
     ;; Abbreves
     (cond
      ((nth 1 updated)
-      (setq japanlaw-abbrev-alist nil)
+      (setq japanlaw-menuview--abbrev-data nil)
       (push "Abbrevs was updated." msg))
      (t
       (push "Abbrevs was not updated." msg)))
@@ -2339,8 +2342,8 @@ LFUNCは、NAMEからなるリストを返す関数。"
      (t
       (push "Index was not updated." msg)))
     (when (and (japanlaw:filter 'identity updated)
-	       (get-buffer japanlaw-index-buffer))
-      (kill-buffer japanlaw-index-buffer)
+	       (get-buffer japanlaw-menuview--buffer-name))
+      (kill-buffer japanlaw-menuview--buffer-name)
       (japanlaw-index))
     (message "%s" (mapconcat 'identity msg "  "))))
 
@@ -2689,14 +2692,14 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
                    when (string-match rx abbrev)
                    do (push (append (list abbrev nil) entities) abbrevs)))
     ;; 以前の検索結果の初期化。
-    (unless noclear (setq japanlaw-search-alist nil))
+    (unless noclear (setq japanlaw-menuview--search-data nil))
     ;; t: opened flag
     (push
      (list (format "検索式 `%s'" rx) t
            `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
            `(,(format "略称法令名検索 該当件数 %d" (length abbrevs)) t ,@abbrevs)
            `(,(format "法令名検索 該当件数 %d" (length fuzzy)) t ,@fuzzy))
-     japanlaw-search-alist)
+     japanlaw-menuview--search-data)
     ;; バッファ更新
     ;; japanlaw-index-goto-mode: Return nil if same local-mode.
     (unless (japanlaw-index-goto-mode 'Search)
@@ -2712,10 +2715,10 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
     (when (equal rx "")
       (error ""))
     (unless (eq major-mode 'japanlaw-index-mode)
-      (if (get-buffer japanlaw-index-buffer)
-	  (switch-to-buffer japanlaw-index-buffer)
+      (if (get-buffer japanlaw-menuview--buffer-name)
+	  (switch-to-buffer japanlaw-menuview--buffer-name)
 	(japanlaw-index)))
-    (when (assoc (format "検索式 `%s'" rx) japanlaw-search-alist)
+    (when (assoc (format "検索式 `%s'" rx) japanlaw-menuview--search-data)
       (error "`%s' is retrieved." rx))
     (list rx current-prefix-arg)))
 
@@ -2773,7 +2776,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 	  (let ((id (car id)))
 	    (if (member id (japanlaw-bookmark-alist))
 		(message "Already exists in Bookmark.")
-	      (push id japanlaw-bookmark-alist)
+	      (push id japanlaw-menuview--bookmark-data)
 	      (message "Add to Bookmark `%s'" name))))
       (error nil))))
 
@@ -2817,7 +2820,7 @@ Openedの場合、ファイルを閉じる。"
     (case japanlaw-index-local-mode
       (Bookmark
        (funcall
-	(delalist 'japanlaw-bookmark-alist
+	(delalist 'japanlaw-menuview--bookmark-data
 		  '(mapcar (lambda (x) (upcase x))
                            (japanlaw-index-get-cells 'marks))))
        (japanlaw-with-buffer-read-only (erase-buffer))
@@ -2827,12 +2830,12 @@ Openedの場合、ファイルを閉じる。"
 	       (kill-buffer
 		(get-file-buffer (japanlaw-expand-data-file cel))))
 	     ;; mapc(delalist) returns it's arg identical.
-	     (funcall (delalist 'japanlaw-opened-alist)))
+	     (funcall (delalist 'japanlaw-menuview--opened-data)))
        (japanlaw-with-buffer-read-only (erase-buffer))
        (japanlaw-index-insert-opened))
       (Recent
        (funcall
-	(delalist 'japanlaw-recent-alist
+	(delalist 'japanlaw-menuview--recent-data
 		  '(mapcar (lambda (x) (upcase x))
                            (japanlaw-index-get-cells 'marks))))
        (japanlaw-with-buffer-read-only (erase-buffer))
@@ -2857,7 +2860,7 @@ Openedの場合、ファイルを閉じる。"
     (forward-line (if up -2 1))
     (when (eobp) (forward-line -1))
     (japanlaw-index-move-to-column)
-    (setq japanlaw-bookmark-alist (japanlaw-index-get-cells))))
+    (setq japanlaw-menuview--bookmark-data (japanlaw-index-get-cells))))
 
 ;;
 ;; Scroll commands
@@ -3029,23 +3032,20 @@ Openedの場合、ファイルを閉じる。"
       (error "Try `M-x japanlaw-online-or-offline', and turn to online mode."))
     (japanlaw-make-index-files))
   (switch-to-buffer
-   (or (get-buffer japanlaw-index-buffer)
+   (or (get-buffer japanlaw-menuview--buffer-name)
        (prog1
-	   (set-buffer (get-buffer-create japanlaw-index-buffer))
+	   (set-buffer (get-buffer-create japanlaw-menuview--buffer-name))
 	 (japanlaw-index-mode)))))
 
 (defun japanlaw-index-mode ()
   "`japanlaw-index'のためのメジャーモード。"
   (kill-all-local-variables)
   (use-local-map japanlaw-index-mode-map)
-  (setq mode-name japanlaw-index-mode-name)
+  (setq mode-name japanlaw-menuview--mode-name)
   (setq major-mode 'japanlaw-index-mode)
   (set (make-local-variable 'japanlaw-index-local-mode)
        japanlaw-index-initial-mode)
   (set (make-local-variable 'japanlaw-index-conf) nil)
-  (set (make-local-variable 'japanlaw-search-alist) nil)
-  (set (make-local-variable 'japanlaw-index-alist) nil)
-  (set (make-local-variable 'japanlaw-directory-alist) nil)
   (set (make-local-variable 'japanlaw-index-search-overlaies) nil)
   (japanlaw-index-goto-mode japanlaw-index-initial-mode)
   (setq buffer-read-only t)
@@ -3208,7 +3208,7 @@ Openedの場合、ファイルを閉じる。"
          ;; 未施行法令への anchor (取得 URL が異なる)
          ;; FIXME:
          ;; 未施行法令を htmldata にファイルを保存するのはあんまりよくないけど。。
-         ;; 後からゴミになる。
+         ;; 後からゴミになる。何かのタイミングで削除するか、あるいは気にしないか。
          (let ((mishikou (assoc name japanlaw-mishikou-list)))
            (setq id (concat (japanlaw-file-sans-name (cdr mishikou)) "-mishikou"))
            (setq file (japanlaw-expand-data-file id))
@@ -4526,7 +4526,7 @@ FULL が非-nilなら path/file を返す。"
   (let ((id (japanlaw-get-id (japanlaw-current-buffer-law-name))))
     (if (member id (japanlaw-bookmark-alist))
 	(message "Already exists in Bookmark.")
-      (push id japanlaw-bookmark-alist)
+      (push id japanlaw-menuview--bookmark-data)
       (message "Add to Bookmark `%s'" (japanlaw-current-buffer-law-name)))))
 
 ;;
@@ -4719,20 +4719,23 @@ migemoとiswitchbの設定が必要。"
   (mapc (lambda (cel)
 	  (kill-buffer (get-file-buffer (japanlaw-expand-data-file (cdr cel)))))
 	(japanlaw-opened-alist))
+  (setq japanlaw-menuview--opened-data nil
+        japanlaw-menuview--recent-data nil
+        japanlaw-menuview--search-data nil
+        japanlaw-menuview--bookmark-data nil
+        japanlaw-menuview--index-data nil
+        japanlaw-menuview--directory-data nil
+        japanlaw-menuview--abbrev-data nil)
   (setq japanlaw-alist nil
 	japanlaw-abbrev nil
-	japanlaw-abbrev-alist nil
-	japanlaw-bookmark-alist nil
-	japanlaw-recent-alist nil
-	japanlaw-opened-alist nil
 	japanlaw-winconf-list nil
 	japanlaw-winconf-index 0
 	japanlaw-display-toggle-winconf nil
 	japanlaw-iswitchb-present-list nil)
   (setq japanlaw-setup-p t)
   (message "Initialize japanlaw variables...done")
-  (when (get-buffer japanlaw-index-buffer)
-    (kill-buffer japanlaw-index-buffer))
+  (when (get-buffer japanlaw-menuview--buffer-name)
+    (kill-buffer japanlaw-menuview--buffer-name))
   (message "Kill all japanlaw buffers...done"))
 
 (add-hook 'japanlaw-index-mode-hook 'japanlaw-setup)
