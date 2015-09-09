@@ -738,9 +738,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;; BookMark
 
-;; Search
-(defvar japanlaw-search-history nil)
-
 ;; Winconf
 (defvar japanlaw-winconf-list '())
 
@@ -923,14 +920,15 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-mishikou nil)
 (defvar japanlaw-abbrev-alist nil)
 
-;; 個別のモードの状態を保存するローカル変数。
+;; menu item のそれぞれの状態を保存するローカル変数。
 (defvar japanlaw-index-local-mode nil)
 (defvar japanlaw-index-conf nil)
 (defvar japanlaw-search-alist nil)
 (defvar japanlaw-index-alist nil)
 (defvar japanlaw-directory-alist nil)
+
 ;; Searchモードでハイライトのためのoverlayを保持するローカル変数。
-(defvar japanlaw-index-search-overlaies)
+(defvar japanlaw-index-search-overlaies nil)
 
 (defvar japanlaw-iswitchb-present-list nil
   "`japanlaw-iswitchb'の現在の検索対象の法令リスト。")
@@ -1861,7 +1859,6 @@ FUNCSは引数を取らない関数のリスト。"
   (or japanlaw-mishikou
       (setq japanlaw-mishikou
             (japanlaw-read-sexp (japanlaw-mishikou-file)))))
-
 
 (defun japanlaw-names-list ()
   "登録法令名と略称法令名のリストを返す。"
@@ -3051,10 +3048,6 @@ Openedの場合、ファイルを閉じる。"
        japanlaw-index-initial-mode)
   (set (make-local-variable 'japanlaw-index-conf) nil)
   (set (make-local-variable 'japanlaw-search-alist) nil)
-  ;;(set (make-local-variable 'japanlaw-search-history) nil)
-  ;;(set (make-local-variable 'japanlaw-alist) nil)
-  ;;(set (make-local-variable 'japanlaw-abbrev) nil)
-  ;;(set (make-local-variable 'japanlaw-abbrev-alist) nil)
   (set (make-local-variable 'japanlaw-index-alist) nil)
   (set (make-local-variable 'japanlaw-directory-alist) nil)
   (set (make-local-variable 'japanlaw-index-search-overlaies) nil)
