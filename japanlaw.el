@@ -181,7 +181,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defcustom japanlaw-unentry-names
   '(("憲法" . "日本国憲法"))
   "法の文言の中で使われるが、略称法令名にも登録法令名にも含まれな
-い法令名のアリスト。"
+い法令名を alist 。"
   :type 'alist
   :group 'japanlaw)
 
@@ -208,6 +208,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'directory
   :group 'japanlaw)
 
+;;TODO obsolete
 (defconst japanlaw-htmldata-directory "htmldata")
 
 (defcustom japanlaw-egov-url "http://law.e-gov.go.jp/"
@@ -929,7 +930,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-menuview--current-config nil)
 
 ;; japanlaw-mode
-(defvar japanlaw-mishikou-list)		;ローカル変数
+(defvar japanlaw-mishikou-list nil)		;ローカル変数
 
 ;; Searchモードでハイライトのためのoverlayを保持するローカル変数。
 (defvar japanlaw-index-search-overlaies nil)
@@ -1774,9 +1775,10 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
   "バッファのinvisibleなS式をreadする。"
   (save-excursion
     (forward-line 0)
-    (let* ((flag (get-text-property (point) 'japanlaw-item-flag))
-           (name (get-text-property (point) 'japanlaw-item-name))
-           (id (get-text-property (point) 'japanlaw-item-id))
+    (let* ((plist (get-text-property (point) 'japanlaw-item-plist))
+           (flag (plist-get plist :open-flag))
+           (name (plist-get plist :name))
+           (id (plist-get plist :id))
            (sexp (if id (list flag name id) (list flag name))))
       sexp)))
 
@@ -2409,15 +2411,14 @@ LFUNCは、NAMEからなるリストを返す関数。"
            (next-char (if (eq curr-char ?+) ?- ?+))
            (next (char-to-string next-char))
            (props (text-properties-at (point)))
-           (current2 (get-text-property (point) 'japanlaw-item-flag))
+           (plist (get-text-property (point) 'japanlaw-item-plist))
+           (current2 (plist-get plist :open-flag))
            (next2 (subst-char-in-string curr-char next-char current2)))
       (replace-match next)
       (set-text-properties
        (point-at-bol) (point-at-eol)
        props)
-      (put-text-property
-       (point-at-bol) (point-at-eol)
-       'japanlaw-item-flag next2))))
+      (plist-put plist :open-flag next2))))
 
 (defun japanlaw-index-upper-level ()
   "ひとつ上の階層に移動するコマンド。"
@@ -2627,14 +2628,11 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
        (japanlaw-index-upper-level))))))
 
 (defun japanlaw-index-insert-line (flag name &optional id)
-  (let ((sexp `(,flag ,name))
+  (let ((plist (list :open-flag flag :name name :id id))
         (start (point)))
-    (when id
-      (setq sexp (append sexp (list id))))
     (insert (format "%s %s\n" flag name))
-    (put-text-property start (point) 'japanlaw-item-flag flag)
-    (put-text-property start (point) 'japanlaw-item-name name)
-    (put-text-property start (point) 'japanlaw-item-id id)))
+    (put-text-property (point-at-bol 0) (point-at-eol 0)
+                       'japanlaw-item-plist plist)))
 
 (defun japanlaw-index-abbrev-oc ()
   "`Abbrev'で、フォルダなら開閉し法令なら開く。"
@@ -2664,7 +2662,8 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
   (interactive (japanlaw-index-search-interactive))
   (let ((complete '())
         (fuzzy '())
-        (abbrevs '()))
+        (abbrevs '())
+        (mishikou '()))
     (message "Searching...")
     (loop for (category . contents) in (japanlaw-load--main-data)
           do
@@ -2688,10 +2687,13 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
                      (unless (or (member match fuzzy)
                                  (member match complete))
                        (push match fuzzy)))))
-    (loop for (initial flag . contents) in (japanlaw-load--abbrev-view)
-          do (loop for (abbrev flag2 . entities) in contents
+    (loop for (initial . contents) in (japanlaw-load--abbrev-data)
+          do (loop for (abbrev . entities) in contents
                    when (string-match rx abbrev)
                    do (push (append (list abbrev nil) entities) abbrevs)))
+    (loop for (name url id) in (japanlaw-load--mishikou-data)
+          when (string-match rx name)
+          do (push (cons name id) mishikou))
     ;; 以前の検索結果の初期化。
     (unless noclear (setq japanlaw-menuview--search-data nil))
     ;; t: opened flag
@@ -2699,7 +2701,8 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
      (list (format "検索式 `%s'" rx) t
            `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
            `(,(format "略称法令名検索 該当件数 %d" (length abbrevs)) t ,@abbrevs)
-           `(,(format "法令名検索 該当件数 %d" (length fuzzy)) t ,@fuzzy))
+           `(,(format "法令名検索 該当件数 %d" (length fuzzy)) t ,@fuzzy)
+           `(,(format "未施行法令名検索 該当件数 %d" (length mishikou)) t ,@mishikou))
      japanlaw-menuview--search-data)
     ;; バッファ更新
     ;; japanlaw-index-goto-mode: Return nil if same local-mode.
