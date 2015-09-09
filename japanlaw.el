@@ -924,17 +924,13 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-abbrev-alist nil)
 
 ;; 個別のモードの状態を保存するローカル変数。
-(defvar japanlaw-index-local-mode)
-(defvar japanlaw-index-conf)
-(defvar japanlaw-names-alist)
-(defvar japanlaw-search-alist)
-(defvar japanlaw-index-alist)
-(defvar japanlaw-directory-alist)
+(defvar japanlaw-index-local-mode nil)
+(defvar japanlaw-index-conf nil)
+(defvar japanlaw-search-alist nil)
+(defvar japanlaw-index-alist nil)
+(defvar japanlaw-directory-alist nil)
 ;; Searchモードでハイライトのためのoverlayを保持するローカル変数。
 (defvar japanlaw-index-search-overlaies)
-
-;; iswitchb
-(defvar japanlaw-names-list nil "iswitchbのための補完リスト")
 
 (defvar japanlaw-iswitchb-present-list nil
   "`japanlaw-iswitchb'の現在の検索対象の法令リスト。")
@@ -1869,22 +1865,20 @@ FUNCSは引数を取らない関数のリスト。"
 
 (defun japanlaw-names-list ()
   "登録法令名と略称法令名のリストを返す。"
-  (or japanlaw-names-list
-      (setq japanlaw-names-list
-	    (let ((result nil))
-	      ;; 登録法令名
-	      (loop for (category . contents) in (japanlaw-alist)
-                    do (loop for ((name . todo) . id) in contents
-                             do (push name result)))
-	      ;; 略称法令名
-              (loop for (initial . contents) in (japanlaw-abbrev)
-                    do (loop for (abbrev (name . id)) in contents
-                             ;; abbrev には "「あっせん利得処罰法」"
-                             ;; 鉤括弧がついているため substring
-                             do (push (substring abbrev 1 -1) result)))
-              (loop for (name url id) in (japanlaw-mishikou)
-                    do (push name result))
-              result))))
+  (let ((result nil))
+    ;; 登録法令名
+    (loop for (category . contents) in (japanlaw-alist)
+          do (loop for ((name . _) . id) in contents
+                   do (push name result)))
+    ;; 略称法令名
+    (loop for (initial . contents) in (japanlaw-abbrev)
+          do (loop for (abbrev (name . id)) in contents
+                   ;; abbrev には 鉤括弧がついているため substring
+                   ;; e.g. "「あっせん利得処罰法」"
+                   do (push (substring abbrev 1 -1) result)))
+    (loop for (name url id) in (japanlaw-mishikou)
+          do (push name result))
+    result))
 
 (defun japanlaw-download-list (type)
   (when (file-exists-p (japanlaw-htmldata-path))
@@ -1903,23 +1897,6 @@ FUNCSは引数を取らない関数のリスト。"
 
 (defun japanlaw-iswitchb-bookmark-list ()
   (mapcar (lambda (x) (japanlaw-get-name x)) (japanlaw-bookmark-alist)))
-
-;; Search
-(defun japanlaw-names-alist ()
-  (or japanlaw-names-alist
-      (setq japanlaw-names-alist
-	    (cons (do ((xs (japanlaw-alist) (cdr xs))
-		       (result nil))
-		      ((null xs) result)
-		    (do ((ys (cdar xs) (cdr ys)))
-			((null ys))
-		      (push (car ys) result)))
-		  (do ((xs (japanlaw-abbrev-alist) (cdr xs))
-		       (result nil))
-		      ((null xs) result)
-		    (do ((ys (cdr (cdar xs)) (cdr ys)))
-			((null ys))
-		      (push (cons (caar ys) (cdr (cdar ys))) result)))))))
 
 (defun japanlaw-search-alist ()
   japanlaw-search-alist)
@@ -2008,25 +1985,24 @@ FUNCSは引数を取らない関数のリスト。"
 (defun japanlaw-abbrev-alist ()
   "`japanlaw-abbrev-alist'を生成する関数。"
   (or japanlaw-abbrev-alist
-      (setq
-       japanlaw-abbrev-alist
-       (do ((xs (japanlaw-abbrev) (cdr xs))
-	    (result nil))
-	   ((null xs) (nreverse result))
-	 (push (cons (caar xs)
-		     (cons nil		; closed flag
-			   (do ((ys (cdar xs) (cdr ys))
-				(acc nil))
-			       ((null ys) (nreverse acc))
-			     (push (cons (caar ys)
-					 (cons nil ; closed flag
-					       (do ((zs (cdar ys) (cdr zs))
-						    (acc nil))
-						   ((null zs) (nreverse acc))
-						 (push (cons (caar zs)(cdar zs))
-						       acc))))
-				   acc))))
-	       result)))))
+      (setq japanlaw-abbrev-alist
+            (do ((xs (japanlaw-abbrev) (cdr xs))
+                 (result nil))
+                ((null xs) (nreverse result))
+              (push (cons (caar xs)
+                          (cons nil     ; closed flag
+                                (do ((ys (cdar xs) (cdr ys))
+                                     (acc nil))
+                                    ((null ys) (nreverse acc))
+                                  (push (cons (caar ys)
+                                              (cons nil ; closed flag
+                                                    (do ((zs (cdar ys) (cdr zs))
+                                                         (acc nil))
+                                                        ((null zs) (nreverse acc))
+                                                      (push (cons (caar zs)(cdar zs))
+                                                            acc))))
+                                        acc))))
+                    result)))))
 
 ;; Bookmark
 (defun japanlaw-bookmark-alist ()
@@ -2690,71 +2666,57 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 ;;
 ;; Search
 ;;
-(defalias 'japanlaw-search 'japanlaw-index-search
-  "法令名(略称法令名を含む)を検索するコマンド。引数付きで実行した
-場合は、以前の検索結果を初期化しない。")
+(defalias 'japanlaw-search 'japanlaw-index-search)
 
 (defun japanlaw-index-search (rx &optional noclear)
   "法令名(略称法令名を含む)を検索するコマンド。引数付きで実行した
 場合は、以前の検索結果を初期化しない。"
   (interactive (japanlaw-index-search-interactive))
-  (japanlaw-labels
-   ((display-result (rx names abbreves complete noclear)
-                    (unless noclear (setq japanlaw-search-alist nil))
-                    ;; t: opened flag
-                    (push
-                     (list (format "検索式 `%s'" rx) t
-                           `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
-                           `(,(format "略称法令名検索 該当件数 %d" (length abbreves)) t ,@abbreves)
-                           `(,(format "法令名検索 該当件数 %d" (length names)) t ,@names))
-                     japanlaw-search-alist)
-                    ;; バッファ更新
-                    ;; japanlaw-index-goto-mode: Return nil if same local-mode.
-                    (unless (japanlaw-index-goto-mode 'Search)
-                      (japanlaw-with-buffer-read-only (erase-buffer))
-                      (japanlaw-index-insert-alist-function #'japanlaw-search-alist))))
-   (let ((complete nil))
-     (message "Searching...")
-     (display-result
-      ;; 検索式
-      rx
-      ;; 法令名検索
-      (do ((xs (car (japanlaw-names-alist)) (cdr xs))
-           (names-search nil))
-          ((null xs) names-search)
-        (let ((name (car (caar xs)))
-              (name2 (cdr (caar xs))))
-          ;; 民法（民法第一編第二編第三編）（明治二十九年四月二十七日法律第八十九号）
-          ;; のうち、括弧を除いた部分の検索。
-          (when (string-match rx name)
-            (let ((match (cons (concat name (cdr (caar xs))) (cdar xs))))
-              (if (string= name rx)
-                  ;; 完全一致(民法など複数マッチする場合がある)
-                  (push match complete)
-                ;; 一部一致
+  (let ((complete '())
+        (fuzzy '())
+        (abbrevs '()))
+    (message "Searching...")
+    (loop for (category . contents) in (japanlaw-alist)
+          do
+          (loop for ((name . name2) . id) in contents
+                ;; 民法（民法第一編第二編第三編）（明治二十九年四月二十七日法律第八十九号）
+                ;; のうち、括弧を除いた部分の検索。
+                when (string-match rx name)
+                do (let ((match (cons (concat name name2) id)))
+                     (if (string= name rx)
+                         ;; 完全一致(民法など複数マッチする場合がある)
+                         (push match complete)
+                       ;; 一部一致
+                       ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
+                       (unless (or (member match fuzzy)
+                                   (member match complete))
+                         (push match fuzzy))))
+                ;; 後半の括弧部分の検索(括弧内も検索対象に入れる)。
                 ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
-                (unless (or (member match names-search)
-                            (member match complete))
-                  (push match names-search)))))
-          ;; 後半の括弧部分の検索(括弧内も検索対象に入れる)。
-          ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
-          (when (string-match rx name2)
-            (let ((match (cons (concat name (cdr (caar xs))) (cdar xs))))
-              (unless (or (member match names-search)
-                          (member match complete))
-                (push match names-search))))))
-      ;; 略称法令名検索
-      (do ((xs (cdr (japanlaw-names-alist)) (cdr xs))
-           (abbrev-search nil))
-          ((null xs) abbrev-search)
-        (when (string-match rx (caar xs))
-          ;; nil: closed flag
-          (push (cons (caar xs) (cons nil (cdar xs))) abbrev-search)))
-      ;; 完全一致
-      complete
-      ;; 以前の検索結果の初期化。
-      noclear)
-     (message "%sdone" (current-message)))))
+                when (string-match rx name2)
+                do (let ((match (cons (concat name name2) id)))
+                     (unless (or (member match fuzzy)
+                                 (member match complete))
+                       (push match fuzzy)))))
+    (loop for (initial _ . contents) in (japanlaw-abbrev-alist)
+          do (loop for (abbrev todo (fullname . id)) in contents
+          when (string-match rx abbrev) do (push (cons
+          abbrev (list todo (cons fullname id))) abbrevs)))
+    ;; 以前の検索結果の初期化。
+    (unless noclear (setq japanlaw-search-alist nil))
+    ;; t: opened flag
+    (push
+     (list (format "検索式 `%s'" rx) t
+           `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
+           `(,(format "略称法令名検索 該当件数 %d" (length abbrevs)) t ,@abbrevs)
+           `(,(format "法令名検索 該当件数 %d" (length fuzzy)) t ,@fuzzy))
+     japanlaw-search-alist)
+    ;; バッファ更新
+    ;; japanlaw-index-goto-mode: Return nil if same local-mode.
+    (unless (japanlaw-index-goto-mode 'Search)
+      (japanlaw-with-buffer-read-only (erase-buffer))
+      (japanlaw-index-insert-alist-function #'japanlaw-search-alist))
+    (message "%sdone" (current-message))))
 
 (defun japanlaw-index-search-interactive ()
   (unless (file-exists-p (japanlaw-index-file))
@@ -3096,7 +3058,6 @@ Openedの場合、ファイルを閉じる。"
        japanlaw-index-initial-mode)
   (set (make-local-variable 'japanlaw-index-conf) nil)
   (set (make-local-variable 'japanlaw-search-alist) nil)
-  (set (make-local-variable 'japanlaw-names-alist) nil)
   ;;(set (make-local-variable 'japanlaw-search-history) nil)
   ;;(set (make-local-variable 'japanlaw-alist) nil)
   ;;(set (make-local-variable 'japanlaw-abbrev) nil)
@@ -4785,7 +4746,6 @@ migemoとiswitchbの設定が必要。"
 	japanlaw-winconf-list nil
 	japanlaw-winconf-index 0
 	japanlaw-display-toggle-winconf nil
-	japanlaw-names-list nil
 	japanlaw-iswitchb-present-list nil)
   (setq japanlaw-setup-p t)
   (message "Initialize japanlaw variables...done")
