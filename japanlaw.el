@@ -2175,7 +2175,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
 		    (let ((cell (rassoc (upcase name) (cdar xs))))
 		      (when cell
 			(cl-return (cons (concat (caar cell) (cdar cell))
-				      (cdr cell)))))))
+                                         (cdr cell)))))))
 		(cons "未登録法令" name)))
 	  (funcall lfunc)))
 
@@ -2227,26 +2227,26 @@ LFUNCは、NAMEからなるリストを返す関数。"
       (japanlaw-index-insert-line 0 (not opened) (car cell))
       ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
       (cl-labels
-       ((rec (ls)
-             (when ls
-               (let* ((cell (car ls))
-                      (opened (cadr cell)))
-                 (japanlaw-index-insert-line 2 (not opened) (car cell))
-                 (when opened
-                   (let ((cell (cddr cell)))
-                     (dolist (x cell)
-                       (if (atom (cdr x))
-                           (japanlaw-index-insert-line 4 nil (car x) (cdr x))
-                         (let ((opened (cadr x)))
-                           (japanlaw-index-insert-line
-                            4 (not opened)
-                            (car x))
-                           (when opened
-                             (dolist (y (cddr x))
-                               (japanlaw-index-insert-line 6 nil (car y)
-                                                           (cdr y))))))))))
-               (rec (cdr ls)))))
-       (when opened (rec (cddr cell)))))
+          ((rec (ls)
+                (when ls
+                  (let* ((cell (car ls))
+                         (opened (cadr cell)))
+                    (japanlaw-index-insert-line 2 (not opened) (car cell))
+                    (when opened
+                      (let ((cell (cddr cell)))
+                        (dolist (x cell)
+                          (if (atom (cdr x))
+                              (japanlaw-index-insert-line 4 nil (car x) (cdr x))
+                            (let ((opened (cadr x)))
+                              (japanlaw-index-insert-line
+                               4 (not opened)
+                               (car x))
+                              (when opened
+                                (dolist (y (cddr x))
+                                  (japanlaw-index-insert-line 6 nil (car y)
+                                                              (cdr y))))))))))
+                  (rec (cdr ls)))))
+        (when opened (rec (cddr cell)))))
     (japanlaw-index-search-insert-func (cdr alist))))
 
 ;; Opened
