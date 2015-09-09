@@ -8,7 +8,7 @@
 ;; Created: 2007-10-31
 ;; Version: 0.9.2
 ;; Keywords: docs help
-;; Package-Requires: ()
+;; Package-Requires: ((cl-lib "0.3"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -47,6 +47,7 @@
 
 ;;; Code:
 
+;;TODO cl-lib
 (eval-when-compile (require 'cl))
 (require 'easymenu)
 (require 'outline)
@@ -66,15 +67,14 @@
   "Version of japanlaw.el")
 
 (defconst japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
-  "法令データ提供システムのURL")
+  "法令データ提供システムの URL")
 
 (defconst japanlaw-ryaku-url
-  "法令略名を取得できるURL"
+  "法令略名を取得できる URL"
   "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON")
 
-(defconst japanlaw-mishikou-index-url
-  "未施行法令を取得できるURL"
-  "http://law.e-gov.go.jp/announce.html")
+(defconst japanlaw-mishikou-index-url "http://law.e-gov.go.jp/announce.html"
+  "未施行法令一覧を取得できるURL")
 
 ;;;
 ;;; Customize group
@@ -213,6 +213,11 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defcustom japanlaw-egov-url "http://law.e-gov.go.jp/"
   "法令データ提供システムのURL。"
+  :type 'directory
+  :group 'japanlaw)
+
+(defcustom japanlaw-egov-htmldata-url "http://law.e-gov.go.jp/htmldata/"
+  "法令データ提供システムから html を取得する基本となる URL。"
   :type 'directory
   :group 'japanlaw)
 
@@ -1136,14 +1141,16 @@ Opened Recent Search Bookmark Index Directory Abbrev"
         (t
          (japanlaw-make-backup-file file)
          (with-temp-file file
-           (insert (format "%S" new))
-           (message "Wrote %s" file))
+           (insert (format "%S" new)))
+         (message "Wrote %s" file)
          t)))))
    (let (index-updatedp abbrev-updatedp
                         mishikou-updatedp)
 
      ;; 過去のバージョンで作られたインデックスがあれば再利用する
      (japanlaw-solve-backward-compatibility)
+
+     (japanlaw-make-directory japanlaw-path)
 
      ;; 再取得で更新する場合
      ;; indexファイルが存在しない場合
@@ -1154,7 +1161,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
          (error "Cancel."))
         (t
          (error "First of all, you have to make the index file.")))
-       (japanlaw-make-directory japanlaw-path)
        (setq index-updatedp
              (make-index (japanlaw-index-file) #'japanlaw-get-index #'japanlaw-load--main-data))
        (message "Process has completed."))
@@ -1162,7 +1168,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
      ;; abbrevファイルが存在しない場合
      (let ((file (japanlaw-abbrev-file)))
        (when (or regenerate (not (file-exists-p file)))
-         (japanlaw-make-directory japanlaw-path)
          (setq abbrev-updatedp
                (make-index file #'japanlaw-make-abbrev-index #'japanlaw-load--abbrev-data))
          (message "Process has completed.")
@@ -1171,7 +1176,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
      ;; mishikouファイルが存在しない場合
      (let ((file (japanlaw-mishikou-file)))
        (when (or regenerate (not (file-exists-p file)))
-         (japanlaw-make-directory japanlaw-path)
          (setq mishikou-updatedp
                (make-index file #'japanlaw-make-mishikou-index #'japanlaw-load--mishikou-data))
          (message "Process has completed.")
@@ -1310,15 +1314,28 @@ Opened Recent Search Bookmark Index Directory Abbrev"
           (while (re-search-forward "<li>.*?<a.*href=\"\\([^\"]+\\)\"[^>]*>\\([^<]+\\)"
                                     nil t)
             (let* ((href (match-string 1))
-                   (name (match-string 2))
+                   (fullname (match-string 2))
                    (url (url-expand-file-name href base-urldir)))
-              (unless (string-match "\\([^/]+\\)\\.html?\\'" url)
-                (error "Unable parse url"))
-              (let* ((baseid (match-string 1 url))
-                     (id (concat baseid "-mishikou")))
-                (push (list name url id) res)))))))
+              (destructuring-bind (name1 name2)
+                  (japanlaw--split-fullname fullname)
+                (unless (string-match "\\([^/]+\\)\\.html?\\'" url)
+                  (error "Unable parse url"))
+                (let* ((baseid (match-string 1 url))
+                       (id (concat baseid "-mishikou"))
+                       (obj (list id name1 name2 url)))
+                  (push obj res))))))))
     (kill-buffer buffer)
     (nreverse res)))
+
+(defun japanlaw--split-fullname (fullname)
+  (cond
+   ((string-match "\\(?:(\\([^)]+\\))\\|（\\([^）]+\\)）\\)\\'" fullname)
+    (let ((name1 (substring fullname 0 (match-beginning 0)))
+          (name2 (or (match-string 1 fullname)
+                     (match-string 2 fullname))))
+      (list name1 name2)))
+   (t
+    (list fullname ""))))
 
 (defun japanlaw-request-uri-list ()
   "URLリスト"
@@ -1410,31 +1427,46 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 
 (defun japanlaw-expand-htmldata-url (id)
   "ID(のファイル名部分`M29HO089'などの形式)から、法令名のURLを返す。"
-  (if (> 3 (length id))
-      ""
-    (concat japanlaw-egov-url japanlaw-htmldata-directory "/"
-	    (upcase (substring id 0 3)) "/" (upcase id) ".html")))
+  (cond
+   ((> 3 (length id))
+    "")
+   (t
+    (let ((filename (concat (upcase id) ".html"))
+          (yeardir (upcase (substring id 0 3))))
+      (concat japanlaw-egov-htmldata-url yeardir "/" filename)))))
 
 (defun japanlaw-expand-htmldata-file (id)
   "ID(のファイル名部分)から、GETしたHTMLの保存先パスファイルを返す。"
-  (if (> 3 (length id))
-      ""
-    (concat (japanlaw-htmldata-path) "/"
-	    (upcase (substring id 0 3)) "/" (upcase id) ".html")))
+  (cond
+   ((> 3 (length id))
+    "")
+   (t
+    (let* ((filename (concat (upcase id) ".html"))
+           (yeardir (upcase (substring id 0 3)))
+           (relpath (concat yeardir "/" filename)))
+      (expand-file-name relpath (japanlaw-htmldata-path))))))
 
 (defun japanlaw-expand-data-file (id)
   "ID(のファイル名部分)から、ダンプしたデータの保存先パスファイル名を返す。"
-  (if (> 3 (length id))
-      ""
-    (concat (japanlaw-data-path) "/"
-	    (downcase (substring id 0 3)) "/" (downcase id) japanlaw-extention)))
+  (cond
+   ((> 3 (length id))
+    "")
+   (t
+    (let* ((filename (concat (downcase id) japanlaw-extention))
+           (yeardir (downcase (substring id 0 3)))
+           (relpath (concat yeardir "/" filename)))
+      (expand-file-name relpath (japanlaw-data-path))))))
 
 (defun japanlaw-expand-init-file (id)
   ;; ID は "h01ho042.law" のような文字列
-  (if (> 3 (length id))
-      ""
-    (concat (japanlaw-data-path) "/"
-	    (downcase (substring id 0 3)) "/." (downcase id))))
+  (cond
+   ((> 3 (length id))
+      "")
+   (t
+    (let* ((filename (concat "." (downcase id)))
+           (yeardir (downcase (substring id 0 3)))
+           (relpath (concat yeardir "/" filename)))
+      (expand-file-name relpath (japanlaw-data-path))))))
 
 (defun japanlaw-make-directory (dir)
   (unless (and (file-exists-p dir)
@@ -1771,17 +1803,22 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
 	 (setq buffer-read-only t)
 	 (set-buffer-modified-p nil)))))
 
-(defsubst japanlaw-read ()
-  "バッファのinvisibleなS式をreadする。"
+(defun japanlaw--get-plist ()
   (save-excursion
     (forward-line 0)
-    (let* ((plist (get-text-property (point) 'japanlaw-item-plist))
-           (flag (plist-get plist :open-flag))
-           (name (plist-get plist :name))
-           (id (plist-get plist :id))
-           (sexp (if id (list flag name id) (list flag name))))
-      sexp)))
+    (let ((plist (get-text-property (point) 'japanlaw-item-plist)))
+      plist)))
 
+(defsubst japanlaw-read ()
+  "バッファのinvisibleなS式をreadする。"
+  (let* ((plist (japanlaw--get-plist))
+         (flag (plist-get plist :open-flag))
+         (name (plist-get plist :name))
+         (id (plist-get plist :id))
+         (sexp (if id (list flag name id) (list flag name))))
+    sexp))
+
+;;TODO make obsolete
 (defsubst japanlaw-get-values (&optional pointer)
   "バッファのinvisibleなS式のデータをリストで返す。
 関数POINTERが与えられれば、POINTERが指す値を返す。
@@ -2151,10 +2188,10 @@ LFUNCは、NAMEからなるリストを返す関数。"
         ;; (japanlaw-index-search-insert-func alist)
         (dolist (cell alist)
           (let ((opened (cadr cell)))
-            (japanlaw-index-insert-line (if opened "-" "+") (car cell))
+            (japanlaw-index-insert-line 0 (not opened) (car cell))
             (when opened
               (dolist (x (cddr cell))
-                (japanlaw-index-insert-line "  -" (car x) (cdr x))))))))
+                (japanlaw-index-insert-line 2 nil (car x) (cdr x))))))))
       ((Abbrev)
        (japanlaw-with-buffer-read-only
 	;; Test:
@@ -2162,18 +2199,18 @@ LFUNCは、NAMEからなるリストを返す関数。"
 	;; (japanlaw-index-search-insert-func alist)
 	(dolist (x alist)
 	  (let ((opened (cadr x)))
-	    (japanlaw-index-insert-line (if opened "-" "+") (car x))
+	    (japanlaw-index-insert-line 0 (not opened) (car x))
 	    (when opened
 	      (dolist (y (cddr x))
 		(let ((opened (cadr y)))
-		  (japanlaw-index-insert-line (if opened "  -" "  +") (car y))
+		  (japanlaw-index-insert-line 2 (not opened) (car y))
 		  (when opened
 		    (dolist (z (cddr y))
-		      (japanlaw-index-insert-line "    -" (car z) (cdr z)))))))))))
+		      (japanlaw-index-insert-line 4 nil (car z) (cdr z)))))))))))
       ((Bookmark Opened Recent)
        (japanlaw-with-buffer-read-only
 	(dolist (cell alist)
-          (japanlaw-index-insert-line " -" (car cell) (cdr cell)))))
+          (japanlaw-index-insert-line 1 nil (car cell) (cdr cell)))))
       ((Search)
        (japanlaw-with-buffer-read-only
 	(japanlaw-index-search-insert-func alist))
@@ -2185,7 +2222,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
     (let* ((cell (car alist))
 	   (opened (cadr cell)))
       ;; 検索式
-      (japanlaw-index-insert-line (if opened "-" "+") (car cell))
+      (japanlaw-index-insert-line 0 (not opened) (car cell))
       ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
       (japanlaw-labels
        ((rec (ls)
@@ -2193,19 +2230,19 @@ LFUNCは、NAMEからなるリストを返す関数。"
                (let* ((cell (car ls))
                       (opened (cadr cell)))
                  (japanlaw-index-insert-line
-                  (if opened "  -" "  +") (car cell))
+                  2 (not opened) (car cell))
                  (when opened
                    (let ((cell (cddr cell)))
                      (dolist (x cell)
                        (if (atom (cdr x))
-                           (japanlaw-index-insert-line "    -" (car x) (cdr x))
+                           (japanlaw-index-insert-line 4 nil (car x) (cdr x))
                          (let ((opened (cadr x)))
                            (japanlaw-index-insert-line
-                            (if opened "    -" "    +")
+                            4 (not opened)
                             (car x))
                            (when opened
                              (dolist (y (cddr x))
-                               (japanlaw-index-insert-line "      -" (car y)
+                               (japanlaw-index-insert-line 6 nil (car y)
                                 (cdr y))))))))))
                (rec (cdr ls)))))
        (when opened (rec (cddr cell)))))
@@ -2250,8 +2287,13 @@ LFUNCは、NAMEからなるリストを返す関数。"
 
 ;; Common
 (defsubst japanlaw-index-folder-level ()
-  (let ((level (member (japanlaw-get-values #'car)
-		       '("+" "-" "  +" "  -" "    +" "    -" "      -"))))
+  (let* ((plist (japanlaw--get-plist))
+         (flag (plist-get plist :open-flag))
+         (level (member
+                 flag
+                 '("+" "-"
+                   "  +" "  -"
+                   "    +" "    -" "      -"))))
     (if level
 	(/ (1- (length (car level))) 2)
       -1)))
@@ -2456,20 +2498,19 @@ FUNCは連想リストを返す関数。"
        (japanlaw-index-folder-toggle-state)
        (forward-line 1)
        (dolist (x cell)
-         (japanlaw-index-insert-line "  -" (car x) (cdr x)))
+         (japanlaw-index-insert-line 2 nil (car x) (cdr x)))
        (japanlaw-index-upper-level)))))
 
 (defun japanlaw-open-file (id)
   (let* ((file (japanlaw-expand-data-file id))
 	 (buffer (get-file-buffer file)))
-    (switch-to-buffer
-     (or buffer
-	 (prog1 (set-buffer
-		 (find-file-noselect
-		  (if (file-exists-p file)
-		      file
-		    (japanlaw-make-data id 'force))))
-	   (japanlaw-mode))))
+    (unless (file-exists-p file)
+      (japanlaw-make-data id 'force))
+    (unless buffer
+      (setq buffer (find-file-noselect file))
+      (set-buffer buffer)
+      (japanlaw-mode))
+    (switch-to-buffer buffer)
     (japanlaw-recent-add)))
 
 (defun japanlaw-index-index-oc-function (func)
@@ -2502,16 +2543,17 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 
 (defun japanlaw-index-search-oc ()
   "`Search'で、フォルダなら開閉をし、法令名なら開く。"
-  (let ((name (japanlaw-get-values #'cadr))
-	(keys nil))
+  (let* ((plist (japanlaw--get-plist))
+         (name (plist-get plist :name))
+         (keys nil))
     (unless name (error "Not a law data."))
-    (if (japanlaw-get-values (lambda (x) (nth 2 x)))
-	(japanlaw-open-file (car (japanlaw-get-values (lambda (x) (nth 2 x)))))
+    (if (plist-get plist :id)
+	(japanlaw-open-file (plist-get plist :id))
       (let ((cell (save-excursion
 		    (dotimes (x (japanlaw-index-folder-level))
 		      (japanlaw-index-upper-level)
-		      (push (japanlaw-get-values #'cadr) keys))
-		    (assoc (japanlaw-get-values #'cadr) (japanlaw-search-alist)))))
+		      (push (plist-get plist :name) keys))
+		    (assoc (plist-get plist :name) (japanlaw-search-alist)))))
 	(japanlaw-index-set-search-alist
 	 cell keys name (japanlaw-index-folder-open-p))))))
 
@@ -2615,36 +2657,38 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
            ;; sub folder
            (do ((zs cell (cdr zs)))
                ((null zs))
-             (japanlaw-index-insert-line "    -" (caar zs) (cdar zs)))
+             (japanlaw-index-insert-line 4 nil (caar zs) (cdar zs)))
          ;; folder
          (do ((ys cell (cdr ys)))
              ((null ys))
            (let ((opened (car (cdar ys))))
-             (japanlaw-index-insert-line (if opened "  -" "  +") (caar ys))
+             (japanlaw-index-insert-line 2 (not opened) (caar ys))
              (when opened
                (do ((zs (cdr (cdar ys)) (cdr zs)))
                    ((null zs))
-                 (japanlaw-index-insert-line "    -" (caar zs) (cdar zs)))))))
+                 (japanlaw-index-insert-line 4 nil (caar zs) (cdar zs)))))))
        (japanlaw-index-upper-level))))))
 
-(defun japanlaw-index-insert-line (flag name &optional id)
-  (let ((plist (list :open-flag flag :name name :id id))
-        (start (point)))
-    (insert (format "%s %s\n" flag name))
+(defun japanlaw-index-insert-line (level flag name &optional id)
+  (let* ((old-flag (concat (make-string level ?\s) (if flag "+" "-")))
+         (plist (list :open-flag old-flag :name name :id id))
+         (start (point)))
+    (insert (format "%s %s\n" old-flag name))
     (put-text-property (point-at-bol 0) (point-at-eol 0)
                        'japanlaw-item-plist plist)))
 
+;;TODO not test
 (defun japanlaw-index-abbrev-oc ()
   "`Abbrev'で、フォルダなら開閉し法令なら開く。"
-  (let* ((values (japanlaw-get-values))
-	 (name (nth 1 values))
-	 (id (nth 2 values)))
+  (let* ((plist (japanlaw--get-plist))
+	 (name (plist-get plist :name))
+	 (id (plist-get plist :id)))
     (if (< (japanlaw-index-folder-level) 2)
 	;; menu open or close
 	(japanlaw-index-abbrev-folder
 	 name (japanlaw-index-folder-open-p) (japanlaw-index-folder-level-1))
       ;; file open
-      (japanlaw-open-file (car id)))))
+      (japanlaw-open-file id))))
 
 (defun japanlaw-index-abbrev-oc-all (open)
   "`Abbrev'で、すべてのフォルダの開閉をする。"
@@ -3219,8 +3263,7 @@ Openedの場合、ファイルを閉じる。"
            (setq file (japanlaw-expand-data-file id))
            (japanlaw-make-data id nil
                                (concat
-                                japanlaw-egov-url
-                                japanlaw-htmldata-directory
+                                japanlaw-egov-htmldata-url
                                 (cdr mishikou)))))
         ((and name (eq id nil))
          (error "Parse error: %S" (list name id)))
