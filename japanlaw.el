@@ -4607,17 +4607,18 @@ migemoとiswitchbの設定が必要。"
       (setq japanlaw-names-list
 	    (let ((result nil))
 	      ;; 登録法令名
-	      (do ((xs (japanlaw-alist) (cdr xs)))
-		  ((null xs))
-		(do ((ys (cdar xs) (cdr ys)))
-		    ((null ys))
-		  (push (car (caar ys)) result)))
+	      (loop for (category . contents) in (japanlaw-alist)
+                    do (loop for ((name . todo) . id) in contents
+                             do (push name result)))
 	      ;; 略称法令名
-	      (do ((xs (japanlaw-abbrev) (cdr xs)))
-		  ((null xs) (delete-dups (nreverse result)))
-		(do ((ys (cdar xs) (cdr ys)))
-		    ((null ys) result)
-		  (push (substring (caar ys) 1 -1) result)))))))
+              (loop for (initial . contents) in (japanlaw-abbrev)
+                    do (loop for (abbrev (name . id)) in contents
+                             ;; abbrev には "「あっせん利得処罰法」"
+                             ;; 鉤括弧がついているため substring 
+                             do (push (substring abbrev 1 -1) result)))
+              (loop for (name url id) in (japanlaw-mishikou)
+                    do (push name result))
+              result))))
 
 (defun japanlaw-download-list (type)
   (when (file-exists-p (japanlaw-htmldata-path))
@@ -4721,6 +4722,7 @@ migemoとiswitchbの設定が必要。"
     (when (nth 2 init)
       (iimage-mode 1))
     ;; 未施行法令のリンク先設定
+    ;;TODO why doesn't get `init' var?
     (set (make-local-variable 'japanlaw-mishikou-list)
 	 (cadr (japanlaw-read-init-file))))
   (turn-on-font-lock)
