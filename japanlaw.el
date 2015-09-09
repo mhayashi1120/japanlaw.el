@@ -1155,7 +1155,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
          (error "First of all, you have to make the index file.")))
        (japanlaw-make-directory japanlaw-path)
        (setq index-updatedp
-             (make-index (japanlaw-index-file) #'japanlaw-get-index #'japanlaw-alist))
+             (make-index (japanlaw-index-file) #'japanlaw-get-index #'japanlaw-load--main-data))
        (message "Process has completed."))
      ;; 再取得で更新する場合
      ;; abbrevファイルが存在しない場合
@@ -1163,7 +1163,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
        (when (or regenerate (not (file-exists-p file)))
          (japanlaw-make-directory japanlaw-path)
          (setq abbrev-updatedp
-               (make-index file #'japanlaw-make-abbrev-index #'japanlaw-abbrev))
+               (make-index file #'japanlaw-make-abbrev-index #'japanlaw-load--abbrev-data))
          (message "Process has completed.")
          (sit-for 1)))
      ;; 再取得で更新する場合
@@ -1172,7 +1172,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
        (when (or regenerate (not (file-exists-p file)))
          (japanlaw-make-directory japanlaw-path)
          (setq mishikou-updatedp
-               (make-index file #'japanlaw-make-mishikou-index #'japanlaw-mishikou))
+               (make-index file #'japanlaw-make-mishikou-index #'japanlaw-load--mishikou-data))
          (message "Process has completed.")
          (sit-for 1)))
      (list index-updatedp abbrev-updatedp mishikou-updatedp))))
@@ -1562,7 +1562,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 
 (defun japanlaw-make-font-lock-regexp-in-buffer (h-path)
   ;; japanlaw-name-search-in-buffer
-  (let ((xs (japanlaw-names-list))
+  (let ((xs (japanlaw-load--all-names))
 	(result nil))
     (save-excursion
       (dolist (x xs)
@@ -1834,45 +1834,47 @@ FUNCSは引数を取らない関数のリスト。"
 
 ;; Common
 
-(defun japanlaw-read-sexp (file)
+(defun japanlaw--read-sexp (file)
   (and (file-exists-p file)
        (with-temp-buffer
          (insert-file-contents file)
          (read (current-buffer)))))
 
 ;; インデックスファイルの内容を保持するローカル変数。
-(defun japanlaw-alist ()
+(defun japanlaw-load--main-data ()
   "インデックスファイルをロードする関数。"
   (or japanlaw-index--main-data
       (setq japanlaw-index--main-data
-            (japanlaw-read-sexp (japanlaw-index-file)))))
+            (japanlaw--read-sexp (japanlaw-index-file)))))
 
 ;; 略称法令名のインデックスファイルの内容を保持するローカル変数。
-(defun japanlaw-abbrev ()
+(defun japanlaw-load--abbrev-data ()
   "略称法令名のインデックスファイルをロードする関数。"
   (or japanlaw-index--abbrev-data
       (setq japanlaw-index--abbrev-data
-            (japanlaw-read-sexp (japanlaw-abbrev-file)))))
+            (japanlaw--read-sexp (japanlaw-abbrev-file)))))
 
-(defun japanlaw-mishikou ()
+(defun japanlaw-load--mishikou-data ()
   (or japanlaw-index--mishikou-data
       (setq japanlaw-index--mishikou-data
-            (japanlaw-read-sexp (japanlaw-mishikou-file)))))
+            (japanlaw--read-sexp (japanlaw-mishikou-file)))))
 
-(defun japanlaw-names-list ()
+;;TODO append not result
+(defun japanlaw-load--all-names ()
   "登録法令名と略称法令名のリストを返す。"
   (let ((result nil))
     ;; 登録法令名
-    (loop for (category . contents) in (japanlaw-alist)
+    (loop for (category . contents) in (japanlaw-load--main-data)
           do (loop for ((name . _) . id) in contents
                    do (push name result)))
     ;; 略称法令名
-    (loop for (initial . contents) in (japanlaw-abbrev)
+    (loop for (initial . contents) in (japanlaw-load--abbrev-data)
           do (loop for (abbrev (name . id)) in contents
                    ;; abbrev には 鉤括弧がついているため substring
                    ;; e.g. "「あっせん利得処罰法」"
                    do (push (substring abbrev 1 -1) result)))
-    (loop for (name url id) in (japanlaw-mishikou)
+    ;; 未施行法令
+    (loop for (name url id) in (japanlaw-load--mishikou-data)
           do (push name result))
     result))
 
@@ -1898,12 +1900,12 @@ FUNCSは引数を取らない関数のリスト。"
   japanlaw-menuview--search-data)
 
 ;; Index
-;; `japanlaw-alist'から生成した、`japanlaw-index'のIndexモードで利用する連想リスト。
+;; `japanlaw-load--main-data'から生成した、`japanlaw-index'のIndexモードで利用する連想リスト。
 (defun japanlaw-index-alist ()
   "`japanlaw-menuview--index-data'を生成する関数。"
   (or japanlaw-menuview--index-data
       (setq japanlaw-menuview--index-data
-	    (do ((xs (japanlaw-alist) (cdr xs))
+	    (do ((xs (japanlaw-load--main-data) (cdr xs))
 		 (result nil))
 		((null xs) (nreverse result))
 	      (push (cons (caar xs)
@@ -1917,12 +1919,12 @@ FUNCSは引数を取らない関数のリスト。"
 		    result)))))
 
 ;; Directory
-;; `japanlaw-alist'から生成した、`japanlaw-index'のDirectoryモードで利用する連想リスト。
+;; `japanlaw-load--main-data'から生成した、`japanlaw-index'のDirectoryモードで利用する連想リスト。
 (defun japanlaw-directory-alist ()
   "`japanlaw-menuview--directory-data'を生成する関数。"
   (or japanlaw-menuview--directory-data
       (setq japanlaw-menuview--directory-data
-	    (let ((dirs (do ((xs (japanlaw-alist) (cdr xs))
+	    (let ((dirs (do ((xs (japanlaw-load--main-data) (cdr xs))
 			     (result nil))
 			    ((null xs)
 			     (sort result
@@ -1977,12 +1979,12 @@ FUNCSは引数を取らない関数のリスト。"
 		  (nreverse result)))))))
 
 ;; Abbrev
-;; `japanlaw-abbrev'から生成した、`japanlaw-index'のAbbrevモードで利用する連想リスト。
+;; `japanlaw-load--abbrev-data'から生成した、`japanlaw-index'のAbbrevモードで利用する連想リスト。
 (defun japanlaw-abbrev-alist ()
   "`japanlaw-menuview--abbrev-data'を生成する関数。"
   (or japanlaw-menuview--abbrev-data
       (setq japanlaw-menuview--abbrev-data
-            (loop for (initial . contents) in (japanlaw-abbrev)
+            (loop for (initial . contents) in (japanlaw-load--abbrev-data)
                   collect
                   (append
                    (list initial nil)
@@ -2128,7 +2130,7 @@ FUNCSは引数を取らない関数のリスト。"
 LFUNCは、NAMEからなるリストを返す関数。"
   (mapcar (lambda (name)
 	    (or (block nil
-		  (do ((xs (japanlaw-alist) (cdr xs)))
+		  (do ((xs (japanlaw-load--main-data) (cdr xs)))
 		      ((null xs))
 		    (let ((cell (rassoc (upcase name) (cdar xs))))
 		      (when cell
@@ -2665,7 +2667,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
         (fuzzy '())
         (abbrevs '()))
     (message "Searching...")
-    (loop for (category . contents) in (japanlaw-alist)
+    (loop for (category . contents) in (japanlaw-load--main-data)
           do
           (loop for ((name . name2) . id) in contents
                 ;; 民法（民法第一編第二編第三編）（明治二十九年四月二十七日法律第八十九号）
@@ -3619,7 +3621,7 @@ Openedの場合、ファイルを閉じる。"
 (defun japanlaw-get-name (id)
   "ID(\"m29ho089\"のような形式)から法令名を取得して返す。"
   (block nil
-    (let ((xs (japanlaw-alist)))
+    (let ((xs (japanlaw-load--main-data)))
       (while xs
 	(let ((cell (rassoc id (cdar xs))))
 	  (when cell
@@ -3647,7 +3649,7 @@ Openedの場合、ファイルを閉じる。"
   "法令名NAMEから参照先を返す。"
   (block nil
     ;; 登録法令名
-    (let ((xs (japanlaw-alist)))
+    (let ((xs (japanlaw-load--main-data)))
       (while xs
 	(let ((ys (cdar xs)))
 	  (while ys
@@ -3657,7 +3659,7 @@ Openedの場合、ファイルを閉じる。"
 	    (pop ys)))
 	(pop xs)))
     ;; 略称法令名
-    (let ((xs (japanlaw-abbrev)))
+    (let ((xs (japanlaw-load--abbrev-data)))
       (while xs
 	(let ((ys (cdar xs)))
 	  (while ys
@@ -4554,7 +4556,7 @@ migemoとiswitchbの設定が必要。"
 		 #'completing-read)
 	       (format "[%S] Switch to: " subject)
 	       (case subject
-		 (all		(japanlaw-names-list))
+		 (all		(japanlaw-load--all-names))
 		 (bookmark	(japanlaw-iswitchb-bookmark-list))
 		 (download	(japanlaw-iswitchb-download-list))
 		 (t		(error "error: %S" subject))))))
