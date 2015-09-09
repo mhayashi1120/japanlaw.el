@@ -29,6 +29,10 @@
 
 ;;; Commentary:
 
+;; ## Install:
+
+;;  w3m: http://w3m.sourceforge.net/index.ja.html
+
 ;;; Code:
 
 (eval-when-compile (require 'cl))
@@ -50,12 +54,14 @@
   "Version of japanlaw.el")
 
 (defconst japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
-  "法令データ提供システムのcgiのURL。")
+  "法令データ提供システムのURL")
 
 (defconst japanlaw-ryaku-url
+  "法令略名を取得できるURL"
   "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON")
 
 (defconst japanlaw-mishikou-index-url
+  "未施行法令を取得できるURL"
   "http://law.e-gov.go.jp/announce.html")
 
 ;;
@@ -741,7 +747,11 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;; 法、令、規則、新法、旧法等への対応
 (defvar japanlaw-local-name-list
-  '("法" "新法" "旧法" "規則" "新規則" "旧規則" "令" "新令" "旧令" "新細則" "旧細則" "附則" "法附則" "規則附則")
+  '("法" "新法" "旧法"
+    "規則" "新規則" "旧規則"
+    "令" "新令" "旧令"
+    "新細則" "旧細則"
+    "附則" "法附則" "規則附則")
   "")
 
 ;; outline
@@ -1126,8 +1136,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
    (let (index-updatedp abbrev-updatedp
                         mishikou-updatedp)
 
-     ;; 互換性を維持するため過去のバージョンで作られたインデックスがあ
-     ;; れば再利用する
+     ;; 過去のバージョンで作られたインデックスがあれば再利用する
      (japanlaw-solve-backward-compatibility)
 
      ;; 再取得で更新する場合
@@ -2301,8 +2310,6 @@ LFUNCは、NAMEからなるリストを返す関数。"
     ;; Mishikou
     (cond
      ((nth 2 updated)
-      ;;TODO
-      ;; (setq japanlaw-mishikou-alist nil)
       (push "Mishikou was updated." msg))
      (t
       (push "Mishikou was not updated." msg)))
