@@ -237,6 +237,10 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "略称法令名のインデックスファイル名。"
   (expand-file-name ".abbrev" japanlaw-path))
 
+;; 蘊蓄: 施行の発音 (Shikou or Sekou)
+;; NHK 建築、土木 -> Sekou
+;; NHK 法律  -> Shikou
+;; 法曹関係者 -> Sekou (執行と聞き間違えるから?)
 (defun japanlaw-mishikou-list-file ()
   "未施行法令のインデックスファイル名"
   (expand-file-name ".mishikou" japanlaw-path))
@@ -1124,13 +1128,13 @@ Opened Recent Search Bookmark Index Directory Abbrev"
          (regenerate
           (error "Cancel."))
          (t
-          (error "First of all, you should make the index file.")))
+          (error "First of all, you have to make the index file.")))
         (japanlaw-make-directory japanlaw-path)
         (setq index-updatedp
               (make-index (japanlaw-index-file) #'japanlaw-get-index #'japanlaw-alist))
         (message "Process has completed."))
-      ;; abbrevファイルが存在しない場合
       ;; 再取得で更新する場合
+      ;; abbrevファイルが存在しない場合
       (let ((file (japanlaw-abbrev-file)))
         (when (or regenerate (not (file-exists-p file)))
           (japanlaw-make-directory japanlaw-path)
@@ -1145,10 +1149,10 @@ Opened Recent Search Bookmark Index Directory Abbrev"
       ;;     (japanlaw-make-directory japanlaw-path)
       ;;     (setq abbrev-updatedp
       ;;           ;;TODO make-index?
-      ;;           (make-index file #'japanlaw-make-abbrev-index #'japanlaw-abbrev))
+      ;;           (make-index file #'japanlaw-make-mishikou-index #'japanlaw-abbrev))
       ;;     (message "Process has completed.")
       ;;     (sit-for 1)))
-      (cons index-updatedp abbrev-updatedp))))
+      (list index-updatedp abbrev-updatedp))))
 
 (defun japanlaw-url-retrieve-wget (url)
   (let ((buf (generate-new-buffer " *Japanlaw wget* ")))
@@ -1219,7 +1223,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 				result))
 			(kill-buffer (current-buffer))
 			(cons (cdr index) (nreverse result)))))
-		(japanlaw-request-uri-list) japanlaw-jikoubetsu-index-alist))))
+                    (japanlaw-request-uri-list) japanlaw-jikoubetsu-index-alist))))
 
 (defun japanlaw-make-abbrev-index ()
   "略称法令名をGETして、連想リストを返す。"
@@ -1257,6 +1261,40 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 		       (nreverse result-b)))))
 	   result-a))
 	(nreverse result-a)))))
+
+(defun japanlaw-make-mishikou-index ()
+  (let* ((res '())
+         (url "http://law.e-gov.go.jp/announce.html")
+         (buffer (japanlaw-url-retrieve url))
+         (base-urldir (and (string-match "\\`\\(.+/\\)[^/]+\\'" url)
+                           (match-string 1 url))))
+    (with-current-buffer buffer
+      (goto-char (point-min))
+      (re-search-forward "^<li><p><a name=\"miseko\"" nil t)
+      (forward-line 1)
+      (unless (looking-at "^<ol>")
+        (error "Can't find start tag"))
+      (let (start end)
+        (forward-line 1)
+        (setq start (point))
+        (unless (re-search-forward "</ol>" nil t)
+          (error "Cant find end tag"))
+        (setq end (point))
+        (save-restriction
+          (narrow-to-region start end)
+          (goto-char (point-min))
+          (while (re-search-forward "<li>.*?<a.*href=\"\\([^\"]+\\)\"[^>]*>\\([^<]+\\)"
+                                    nil t)
+            (let* ((href (match-string 1))
+                   (name (match-string 2))
+                   (url (url-expand-file-name href base-urldir)))
+              (unless (string-match "\\([^/]+\\)\\.html?\\'" url)
+                (error "Unable parse url"))
+              (let* ((baseid (match-string 1 url))
+                     (id (concat baseid "-mishikou")))
+                (push (list name url id) res)))))))
+    (kill-buffer buffer)
+    (nreverse res)))
 
 (defun japanlaw-request-uri-list ()
   "URLリスト"
@@ -2246,16 +2284,20 @@ LFUNCは、NAMEからなるリストを返す関数。"
   (let ((updated (japanlaw-make-index-files 'regenerate))
 	msg)
     ;; Abbreves
-    (cond ((cdr updated)
-	   (setq japanlaw-abbrev-alist nil)
-	   (push "Abbrevs was updated." msg))
-	  (t (push "Abbrevs was not updated." msg)))
+    (cond
+     ((nth 1 updated)
+      (setq japanlaw-abbrev-alist nil)
+      (push "Abbrevs was updated." msg))
+     (t
+      (push "Abbrevs was not updated." msg)))
     ;; Index
-    (cond ((car updated)
-	   (setq japanlaw-alist nil)
-	   (push "Index was updated." msg))
-	  (t (push "Index was not updated." msg)))
-    (when (and (or (car updated) (cdr updated))
+    (cond
+     ((nth 0 updated)
+      (setq japanlaw-alist nil)
+      (push "Index was updated." msg))
+     (t
+      (push "Index was not updated." msg)))
+    (when (and (japanlaw:filter 'identity updated)
 	       (get-buffer japanlaw-index-buffer))
       (kill-buffer japanlaw-index-buffer)
       (japanlaw-index))
