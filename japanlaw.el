@@ -1867,6 +1867,43 @@ FUNCSは引数を取らない関数のリスト。"
             (japanlaw-read-sexp (japanlaw-mishikou-file)))))
 
 
+(defun japanlaw-names-list ()
+  "登録法令名と略称法令名のリストを返す。"
+  (or japanlaw-names-list
+      (setq japanlaw-names-list
+	    (let ((result nil))
+	      ;; 登録法令名
+	      (loop for (category . contents) in (japanlaw-alist)
+                    do (loop for ((name . todo) . id) in contents
+                             do (push name result)))
+	      ;; 略称法令名
+              (loop for (initial . contents) in (japanlaw-abbrev)
+                    do (loop for (abbrev (name . id)) in contents
+                             ;; abbrev には "「あっせん利得処罰法」"
+                             ;; 鉤括弧がついているため substring
+                             do (push (substring abbrev 1 -1) result)))
+              (loop for (name url id) in (japanlaw-mishikou)
+                    do (push name result))
+              result))))
+
+(defun japanlaw-download-list (type)
+  (when (file-exists-p (japanlaw-htmldata-path))
+    (let ((func
+	   (case type
+	     (id (lambda (f)
+		   (upcase (file-name-sans-extension f))))
+	     (name (lambda (f)
+		     (japanlaw-get-name (upcase (file-name-sans-extension f))))))))
+      (mapcar func
+	      (japanlaw-directory-files-recursive
+	       (japanlaw-htmldata-path) "\\`[MTSH][0-9]+\\'"
+	       (concat "\\.html\\'"))))))
+
+(defun japanlaw-iswitchb-download-list () (japanlaw-download-list 'name))
+
+(defun japanlaw-iswitchb-bookmark-list ()
+  (mapcar (lambda (x) (japanlaw-get-name x)) (japanlaw-bookmark-alist)))
+
 ;; Search
 (defun japanlaw-names-alist ()
   (or japanlaw-names-alist
@@ -4600,44 +4637,6 @@ migemoとiswitchbの設定が必要。"
    (mapcar (lambda (dir)
 	     (directory-files dir nil ext))
 	   (japanlaw:filter 'file-directory-p (directory-files parent t match)))))
-
-(defun japanlaw-names-list ()
-  "登録法令名と略称法令名のリストを返す。"
-  (or japanlaw-names-list
-      (setq japanlaw-names-list
-	    (let ((result nil))
-	      ;; 登録法令名
-	      (loop for (category . contents) in (japanlaw-alist)
-                    do (loop for ((name . todo) . id) in contents
-                             do (push name result)))
-	      ;; 略称法令名
-              (loop for (initial . contents) in (japanlaw-abbrev)
-                    do (loop for (abbrev (name . id)) in contents
-                             ;; abbrev には "「あっせん利得処罰法」"
-                             ;; 鉤括弧がついているため substring 
-                             do (push (substring abbrev 1 -1) result)))
-              (loop for (name url id) in (japanlaw-mishikou)
-                    do (push name result))
-              result))))
-
-(defun japanlaw-download-list (type)
-  (when (file-exists-p (japanlaw-htmldata-path))
-    (let ((func
-	   (case type
-	     (id (lambda (f)
-		   (upcase (file-name-sans-extension f))))
-	     (name (lambda (f)
-		     (japanlaw-get-name (upcase (file-name-sans-extension f))))))))
-      (mapcar func
-	      (japanlaw-directory-files-recursive
-	       (japanlaw-htmldata-path) "\\`[MTSH][0-9]+\\'"
-	       (concat "\\.html\\'"))))))
-
-(defun japanlaw-iswitchb-download-list () (japanlaw-download-list 'name))
-
-(defun japanlaw-iswitchb-bookmark-list ()
-  (mapcar (lambda (x) (japanlaw-get-name x)) (japanlaw-bookmark-alist)))
-
 
 ;;
 ;; japanlaw-mode
