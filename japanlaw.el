@@ -76,9 +76,9 @@
   "未施行法令を取得できるURL"
   "http://law.e-gov.go.jp/announce.html")
 
-;;
-;; Customize group
-;;
+;;;
+;;; Customize group
+;;;
 (defgroup japanlaw nil
   "japanlaw mode."
   :prefix "japanlaw-"
@@ -89,9 +89,10 @@
   :prefix "japanlaw-"
   :group 'faces)
 
-;;
-;; User variables
-;;
+;;;
+;;; User customize variables
+;;;
+
 (defcustom japanlaw-line-space nil
   "*法令ファイルの行間。"
   :type 'integer
@@ -196,7 +197,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :group 'japanlaw)
 
 ;;
-;; Path names
+;; Path/File/Directory names
 ;;
 
 (defcustom japanlaw-path
@@ -209,8 +210,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defconst japanlaw-htmldata-directory "htmldata")
 
-(make-obsolete-variable 'japanlaw-htmldata-path nil "0.8.11")
-
 (defun japanlaw-htmldata-path ()
   "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
 の親ディレクトリのパス名。"
@@ -221,13 +220,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'directory
   :group 'japanlaw)
 
-(make-obsolete-variable 'japanlaw-data-path nil "0.8.11")
-
 (defun japanlaw-data-path ()
   "w3mでdumpした法令ファイルの保存先ディレクトリの親ディレクトリのパス名。"
   (expand-file-name "data" japanlaw-path))
-
-(make-obsolete-variable 'japanlaw-temp-path nil "0.8.11")
 
 (defun japanlaw-temp-path ()
   "w3mでdumpする一時ファイルの保存先ディレクトリのパス名。"
@@ -238,13 +233,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'string
   :group 'japanlaw)
 
-(make-obsolete-variable 'japanlaw-index-file nil "0.8.11")
-
 (defun japanlaw-index-file ()
   "事項別インデックスファイル名。"
   (expand-file-name ".index" japanlaw-path))
-
-(make-obsolete-variable 'japanlaw-abbrev-file nil "0.8.11")
 
 (defun japanlaw-abbrev-file ()
   "略称法令名のインデックスファイル名。"
@@ -263,16 +254,20 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "新規法令のインデックスファイル名"
   (expand-file-name ".shinki" japanlaw-path))
 
-(make-obsolete-variable 'japanlaw-bookmark-file nil "0.8.11")
-
 (defun japanlaw-bookmark-file ()
   (expand-file-name ".bookmark" japanlaw-path))
-
-(make-obsolete-variable 'japanlaw-recent-file nil "0.8.11")
 
 (defun japanlaw-recent-file ()
   "最近開いたファイルのリストの保存先ファイル名"
   (expand-file-name ".recent" japanlaw-path))
+
+(make-obsolete-variable 'japanlaw-recent-file nil "0.8.11")
+(make-obsolete-variable 'japanlaw-data-path nil "0.8.11")
+(make-obsolete-variable 'japanlaw-temp-path nil "0.8.11")
+(make-obsolete-variable 'japanlaw-bookmark-file nil "0.8.11")
+(make-obsolete-variable 'japanlaw-abbrev-file nil "0.8.11")
+(make-obsolete-variable 'japanlaw-index-file nil "0.8.11")
+(make-obsolete-variable 'japanlaw-htmldata-path nil "0.8.11")
 
 ;;
 ;; Control buffer name
@@ -437,6 +432,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 ;;
 ;; faces
 ;;
+
 (defface japanlaw-index-flag-face
     '((((class color) (background light))
        (:foreground "CadetBlue"))
@@ -691,9 +687,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "Font Lock mode face used to highlight article sub item-4."
   :group 'japanlaw-faces)
 
-;;
-;; Internal variables
-;;
+;;;
+;;; Internal variables
+;;;
 
 ;; Mode line image
 (defvar japanlaw-online-icon
@@ -814,9 +810,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-setup-p t
   "Non-nil means do setup, else not setup.")
 
-;; japanlaw-mode
-(defvar japanlaw-mishikou-list)		;ローカル変数
-
 (defvar japanlaw-mode-name "JapanLaw")
 
 (defvar japanlaw-mode-map
@@ -926,6 +919,9 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-search-alist nil)
 (defvar japanlaw-index-alist nil)
 (defvar japanlaw-directory-alist nil)
+
+;; japanlaw-mode
+(defvar japanlaw-mishikou-list)		;ローカル変数
 
 ;; Searchモードでハイライトのためのoverlayを保持するローカル変数。
 (defvar japanlaw-index-search-overlaies nil)
