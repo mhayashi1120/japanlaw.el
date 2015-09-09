@@ -6,7 +6,7 @@
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
-;; Version: 0.9.1
+;; Version: 0.9.2
 ;; Keywords: docs help
 ;; Package-Requires: ()
 
@@ -35,6 +35,7 @@
 (require 'easymenu)
 (require 'outline)
 (require 'iswitchb)
+(require 'url-expand)
 
 (defmacro japanlaw-labels (bindings &rest body)
   (if (fboundp 'cl-labels)
@@ -45,7 +46,7 @@
 ;;; japanlaw-vars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst japanlaw-version "version 0.9.1"
+(defconst japanlaw-version "version 0.9.2"
   "Version of japanlaw.el")
 
 (defconst japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
@@ -53,6 +54,9 @@
 
 (defconst japanlaw-ryaku-url
   "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON")
+
+(defconst japanlaw-mishikou-index-url
+  "http://law.e-gov.go.jp/announce.html")
 
 ;;
 ;; Customize group
@@ -241,7 +245,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 ;; NHK 建築、土木 -> Sekou
 ;; NHK 法律  -> Shikou
 ;; 法曹関係者 -> Sekou (執行と聞き間違えるから?)
-(defun japanlaw-mishikou-list-file ()
+;; 当ソースコードでは Shikou 発音で統一する
+(defun japanlaw-mishikou-file ()
   "未施行法令のインデックスファイル名"
   (expand-file-name ".mishikou" japanlaw-path))
 
@@ -893,6 +898,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defvar japanlaw-alist nil)
 (defvar japanlaw-abbrev nil)
+(defvar japanlaw-mishikou nil)
 (defvar japanlaw-abbrev-alist nil)
 
 ;; 個別のモードの状態を保存するローカル変数。
@@ -1100,59 +1106,62 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   (unless japanlaw-online-mode
     (japanlaw-online-mode-message #'error))
   (japanlaw-labels
-      ((make-index
-        (file new-alist-func old-alist-func)
-        ;; インデックスファイルを生成する関数。FILEに、NEW-ALIST-FUNCの
-        ;; 返すALISTを出力する。ALISTがOLD-ALIST-FUNCの返す値と同じなら
-        ;; 出力しない。出力する場合、番号付きバックアップファイルを生成
-        ;; する。戻り値は出力した場合はTを返し、出力しなければNILを返す。
-        (let ((alist (funcall new-alist-func)))
-          (if (equal alist (funcall old-alist-func))
-              nil
-            (japanlaw-make-backup-file file)
-            (with-temp-file file
-              (insert (format "%S" alist))
-              (message "Wrote %s" file))
-            t))))
-    (let (index-updatedp abbrev-updatedp)
+   ((make-index
+     (file new-alist-func old-alist-func)
+     ;; インデックスファイルを生成する関数。FILEに、NEW-ALIST-FUNCの
+     ;; 返すALISTを出力する。ALISTがOLD-ALIST-FUNCの返す値と同じなら
+     ;; 出力しない。出力する場合、番号付きバックアップファイルを生成
+     ;; する。戻り値は出力した場合はTを返し、出力しなければNILを返す。
+     (let ((new (funcall new-alist-func))
+           (old (funcall old-alist-func)))
+       (cond
+        ((equal new old)
+         nil)
+        (t
+         (japanlaw-make-backup-file file)
+         (with-temp-file file
+           (insert (format "%S" new))
+           (message "Wrote %s" file))
+         t)))))
+   (let (index-updatedp abbrev-updatedp
+                        mishikou-updatedp)
 
-      ;; 互換性を維持するため過去のバージョンで作られたインデックスがあ
-      ;; れば再利用する
-      (japanlaw-solve-backward-compatibility)
+     ;; 互換性を維持するため過去のバージョンで作られたインデックスがあ
+     ;; れば再利用する
+     (japanlaw-solve-backward-compatibility)
 
-      ;; 再取得で更新する場合
-      ;; indexファイルが存在しない場合
-      (when (or regenerate (not (file-exists-p (japanlaw-index-file))))
-	(cond
-         ((y-or-n-p "Make index files? "))
-         (regenerate
-          (error "Cancel."))
-         (t
-          (error "First of all, you have to make the index file.")))
-        (japanlaw-make-directory japanlaw-path)
-        (setq index-updatedp
-              (make-index (japanlaw-index-file) #'japanlaw-get-index #'japanlaw-alist))
-        (message "Process has completed."))
-      ;; 再取得で更新する場合
-      ;; abbrevファイルが存在しない場合
-      (let ((file (japanlaw-abbrev-file)))
-        (when (or regenerate (not (file-exists-p file)))
-          (japanlaw-make-directory japanlaw-path)
-          (setq abbrev-updatedp
-                ;;TODO make-index?
-                (make-index file #'japanlaw-make-abbrev-index #'japanlaw-abbrev))
-          (message "Process has completed.")
-          (sit-for 1)))
-      ;;TODO reconsider when create this index file
-      ;; (let ((file (japanlaw-mishikou-list-file)))
-      ;;   (when (or regenerate (not (file-exists-p file)))
-      ;;     (japanlaw-make-directory japanlaw-path)
-      ;;     (setq abbrev-updatedp
-      ;;           ;;TODO make-index?
-      ;;           (make-index file #'japanlaw-make-mishikou-index #'japanlaw-abbrev))
-      ;;     (message "Process has completed.")
-      ;;     (sit-for 1)))
-      (list index-updatedp abbrev-updatedp))))
+     ;; 再取得で更新する場合
+     ;; indexファイルが存在しない場合
+     (when (or regenerate (not (file-exists-p (japanlaw-index-file))))
+       (cond
+        ((y-or-n-p "Make index files? "))
+        (regenerate
+         (error "Cancel."))
+        (t
+         (error "First of all, you have to make the index file.")))
+       (japanlaw-make-directory japanlaw-path)
+       (setq index-updatedp
+             (make-index (japanlaw-index-file) #'japanlaw-get-index #'japanlaw-alist))
+       (message "Process has completed."))
+     ;; 再取得で更新する場合
+     ;; abbrevファイルが存在しない場合
+     (let ((file (japanlaw-abbrev-file)))
+       (when (or regenerate (not (file-exists-p file)))
+         (japanlaw-make-directory japanlaw-path)
+         (setq abbrev-updatedp
+               (make-index file #'japanlaw-make-abbrev-index #'japanlaw-abbrev))
+         (message "Process has completed.")
+         (sit-for 1)))
+     ;; 再取得で更新する場合
+     ;; mishikouファイルが存在しない場合
+     (let ((file (japanlaw-mishikou-file)))
+       (when (or regenerate (not (file-exists-p file)))
+         (japanlaw-make-directory japanlaw-path)
+         (setq mishikou-updatedp
+               (make-index file #'japanlaw-make-mishikou-index #'japanlaw-mishikou))
+         (message "Process has completed.")
+         (sit-for 1)))
+     (list index-updatedp abbrev-updatedp mishikou-updatedp))))
 
 (defun japanlaw-url-retrieve-wget (url)
   (let ((buf (generate-new-buffer " *Japanlaw wget* ")))
@@ -1264,7 +1273,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defun japanlaw-make-mishikou-index ()
   (let* ((res '())
-         (url "http://law.e-gov.go.jp/announce.html")
+         (url japanlaw-mishikou-index-url)
          (buffer (japanlaw-url-retrieve url))
          (base-urldir (and (string-match "\\`\\(.+/\\)[^/]+\\'" url)
                            (match-string 1 url))))
@@ -1831,6 +1840,12 @@ FUNCSは引数を取らない関数のリスト。"
       (setq japanlaw-abbrev
             (japanlaw-read-sexp (japanlaw-abbrev-file)))))
 
+(defun japanlaw-mishikou ()
+  (or japanlaw-mishikou
+      (setq japanlaw-mishikou
+            (japanlaw-read-sexp (japanlaw-mishikou-file)))))
+
+
 ;; Search
 (defun japanlaw-names-alist ()
   (or japanlaw-names-alist
@@ -2283,6 +2298,14 @@ LFUNCは、NAMEからなるリストを返す関数。"
     (error "Try in japanlaw-index-mode."))
   (let ((updated (japanlaw-make-index-files 'regenerate))
 	msg)
+    ;; Mishikou
+    (cond
+     ((nth 2 updated)
+      ;;TODO
+      ;; (setq japanlaw-mishikou-alist nil)
+      (push "Mishikou was updated." msg))
+     (t
+      (push "Mishikou was not updated." msg)))
     ;; Abbreves
     (cond
      ((nth 1 updated)
@@ -2620,62 +2643,62 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 場合は、以前の検索結果を初期化しない。"
   (interactive (japanlaw-index-search-interactive))
   (japanlaw-labels
-      ((display-result (rx names abbreves complete noclear)
-                       (unless noclear (setq japanlaw-search-alist nil))
-                       ;; t: opened flag
-                       (push
-                        (list (format "検索式 `%s'" rx) t
-                              `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
-                              `(,(format "略称法令名検索 該当件数 %d" (length abbreves)) t ,@abbreves)
-                              `(,(format "法令名検索 該当件数 %d" (length names)) t ,@names))
-                        japanlaw-search-alist)
-                       ;; バッファ更新
-                       ;; japanlaw-index-goto-mode: Return nil if same local-mode.
-                       (unless (japanlaw-index-goto-mode 'Search)
-                         (japanlaw-with-buffer-read-only (erase-buffer))
-                         (japanlaw-index-insert-alist-function #'japanlaw-search-alist))))
-    (let ((complete nil))
-      (message "Searching...")
-      (display-result
-       ;; 検索式
-       rx
-       ;; 法令名検索
-       (do ((xs (car (japanlaw-names-alist)) (cdr xs))
-	    (names-search nil))
-	   ((null xs) names-search)
-	 (let ((name (car (caar xs)))
-	       (name2 (cdr (caar xs))))
-	   ;; 民法（民法第一編第二編第三編）（明治二十九年四月二十七日法律第八十九号）
-	   ;; のうち、括弧を除いた部分の検索。
-	   (when (string-match rx name)
-	     (let ((match (cons (concat name (cdr (caar xs))) (cdar xs))))
-	       (if (string= name rx)
-		   ;; 完全一致(民法など複数マッチする場合がある)
-		   (push match complete)
-		 ;; 一部一致
-		 ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
-		 (unless (or (member match names-search)
-			     (member match complete))
-		   (push match names-search)))))
-	   ;; 後半の括弧部分の検索(括弧内も検索対象に入れる)。
-	   ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
-	   (when (string-match rx name2)
-	     (let ((match (cons (concat name (cdr (caar xs))) (cdar xs))))
-	       (unless (or (member match names-search)
-			   (member match complete))
-		 (push match names-search))))))
-       ;; 略称法令名検索
-       (do ((xs (cdr (japanlaw-names-alist)) (cdr xs))
-	    (abbrev-search nil))
-	   ((null xs) abbrev-search)
-	 (when (string-match rx (caar xs))
-	   ;; nil: closed flag
-	   (push (cons (caar xs) (cons nil (cdar xs))) abbrev-search)))
-       ;; 完全一致
-       complete
-       ;; 以前の検索結果の初期化。
-       noclear)
-      (message "%sdone" (current-message)))))
+   ((display-result (rx names abbreves complete noclear)
+                    (unless noclear (setq japanlaw-search-alist nil))
+                    ;; t: opened flag
+                    (push
+                     (list (format "検索式 `%s'" rx) t
+                           `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
+                           `(,(format "略称法令名検索 該当件数 %d" (length abbreves)) t ,@abbreves)
+                           `(,(format "法令名検索 該当件数 %d" (length names)) t ,@names))
+                     japanlaw-search-alist)
+                    ;; バッファ更新
+                    ;; japanlaw-index-goto-mode: Return nil if same local-mode.
+                    (unless (japanlaw-index-goto-mode 'Search)
+                      (japanlaw-with-buffer-read-only (erase-buffer))
+                      (japanlaw-index-insert-alist-function #'japanlaw-search-alist))))
+   (let ((complete nil))
+     (message "Searching...")
+     (display-result
+      ;; 検索式
+      rx
+      ;; 法令名検索
+      (do ((xs (car (japanlaw-names-alist)) (cdr xs))
+           (names-search nil))
+          ((null xs) names-search)
+        (let ((name (car (caar xs)))
+              (name2 (cdr (caar xs))))
+          ;; 民法（民法第一編第二編第三編）（明治二十九年四月二十七日法律第八十九号）
+          ;; のうち、括弧を除いた部分の検索。
+          (when (string-match rx name)
+            (let ((match (cons (concat name (cdr (caar xs))) (cdar xs))))
+              (if (string= name rx)
+                  ;; 完全一致(民法など複数マッチする場合がある)
+                  (push match complete)
+                ;; 一部一致
+                ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
+                (unless (or (member match names-search)
+                            (member match complete))
+                  (push match names-search)))))
+          ;; 後半の括弧部分の検索(括弧内も検索対象に入れる)。
+          ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
+          (when (string-match rx name2)
+            (let ((match (cons (concat name (cdr (caar xs))) (cdar xs))))
+              (unless (or (member match names-search)
+                          (member match complete))
+                (push match names-search))))))
+      ;; 略称法令名検索
+      (do ((xs (cdr (japanlaw-names-alist)) (cdr xs))
+           (abbrev-search nil))
+          ((null xs) abbrev-search)
+        (when (string-match rx (caar xs))
+          ;; nil: closed flag
+          (push (cons (caar xs) (cons nil (cdar xs))) abbrev-search)))
+      ;; 完全一致
+      complete
+      ;; 以前の検索結果の初期化。
+      noclear)
+     (message "%sdone" (current-message)))))
 
 (defun japanlaw-index-search-interactive ()
   (unless (file-exists-p (japanlaw-index-file))
