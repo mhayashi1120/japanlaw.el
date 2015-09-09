@@ -202,9 +202,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'directory
   :group 'japanlaw)
 
-;;TODO obsolete
-(defconst japanlaw-htmldata-directory "htmldata")
-
 (defcustom japanlaw-egov-url "http://law.e-gov.go.jp/"
   "法令データ提供システムのURL。"
   :type 'directory
