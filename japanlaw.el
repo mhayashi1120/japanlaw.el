@@ -411,56 +411,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     ;; デフォルト値で作成されている場合
     (rename-file "~/.laws.d" japanlaw-path))))
 
-(defun japanlaw-replace-table-value (&optional table-pixel)
-  "GETしたhtmlのタグを置換する。"
-  (let ((case-fold-search t)
-	(pixel (or table-pixel japanlaw-table-pixel)))
-    (cl-labels ((match (rx s) (save-match-data (string-match rx s))))
-      (while (re-search-forward "<TABLE [^>]+>\\|<DIV ALIGN=\"right\">" nil t)
-        (replace-match
-         (let ((s (match-string 0)))
-           (cond ((match "<DIV ALIGN=\"right\">" s)
-                  ;; 冒頭の右寄せのテーブルを左寄せに。
-                  "<DIV ALIGN=\"left\">")
-                 ((match "TABLE WIDTH" s)
-                  ;; 冒頭のテーブルの幅を指定。
-                  (format "<TABLE WIDTH=%S BORDER=%S>" pixel 0))
-                 (t ;; 出力される罫線表の幅を指定。
-                  (format "<TABLE WIDTH=%S BORDER>" pixel)))))))))
-
-(defun japanlaw-extract-name ()
-  "html から法令名を取得して、文字列長の小さい順でソートされたリストを返す。"
-  (let ((result nil)
-	(case-fold-search t)
-	(rx "<A HREF=.+?REF_NAME=\\([^&]+\\)&ANCHOR_F=&ANCHOR_T="))
-    (while (re-search-forward rx nil t) (push (match-string 1) result))
-    (sort (delete-dups result) (lambda (x y) (< (length x) (length y))))))
-
-(defun japanlaw-make-substitution-alist (ls index)
-  "置換用のalist \(\(\"法令名\" . \"path\"\) ...\) を返す。"
-  (cl-do ((ls ls (cdr ls))
-          (acc nil (cl-acons (car ls) (cdr (assoc (car ls) index)) acc)))
-      ((null ls) acc)))
-
-(defun japanlaw-make-font-lock-regexp-in-buffer (h-path)
-  ;; japanlaw-name-search-in-buffer
-  (let ((xs (japanlaw-load--all-names))
-	(result nil))
-    (save-excursion
-      (dolist (x xs)
-	(goto-char (point-min))
-	(when (search-forward x nil t)
-	  (push (match-string 0) result))))
-    (mapc (lambda (name)
-	    (setq result (delete name result)))
-	  japanlaw-excluded-law-names)
-    (when h-path
-      (mapc (lambda (cell) (push (car cell) result))
-	    h-path))
-    (if (null result)
-	nil
-      (regexp-opt result))))
-
 ;;
 ;; Common
 ;;
@@ -2340,6 +2290,25 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;; Law File
 ;;
 
+(defun japanlaw-make-font-lock-regexp-in-buffer (h-path)
+  ;; japanlaw-name-search-in-buffer
+  (let ((xs (japanlaw-load--all-names))
+	(result nil))
+    (save-excursion
+      (dolist (x xs)
+	(goto-char (point-min))
+	(when (search-forward x nil t)
+	  (push (match-string 0) result))))
+    (mapc (lambda (name)
+	    (setq result (delete name result)))
+	  japanlaw-excluded-law-names)
+    (when h-path
+      (mapc (lambda (cell) (push (car cell) result))
+	    h-path))
+    (if (null result)
+	nil
+      (regexp-opt result))))
+
 (defun japanlaw-write-init-file (out h-path iimagep force)
   (if (or force (not (file-exists-p out)))
       (let ((regexps (japanlaw-make-font-lock-regexp-in-buffer h-path)))
@@ -2410,6 +2379,37 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
                  (point) (point-max) html-path))))
 	  (kill-buffer buffer))))
     html-path))
+
+(defun japanlaw-replace-table-value (&optional table-pixel)
+  "GETしたhtmlのタグを置換する。"
+  (let ((case-fold-search t)
+	(pixel (or table-pixel japanlaw-table-pixel)))
+    (cl-labels ((match (rx s) (save-match-data (string-match rx s))))
+      (while (re-search-forward "<TABLE [^>]+>\\|<DIV ALIGN=\"right\">" nil t)
+        (replace-match
+         (let ((s (match-string 0)))
+           (cond ((match "<DIV ALIGN=\"right\">" s)
+                  ;; 冒頭の右寄せのテーブルを左寄せに。
+                  "<DIV ALIGN=\"left\">")
+                 ((match "TABLE WIDTH" s)
+                  ;; 冒頭のテーブルの幅を指定。
+                  (format "<TABLE WIDTH=%S BORDER=%S>" pixel 0))
+                 (t ;; 出力される罫線表の幅を指定。
+                  (format "<TABLE WIDTH=%S BORDER>" pixel)))))))))
+
+(defun japanlaw-extract-name ()
+  "html から法令名を取得して、文字列長の小さい順でソートされたリストを返す。"
+  (let ((result nil)
+	(case-fold-search t)
+	(rx "<A HREF=.+?REF_NAME=\\([^&]+\\)&ANCHOR_F=&ANCHOR_T="))
+    (while (re-search-forward rx nil t) (push (match-string 1) result))
+    (sort (delete-dups result) (lambda (x y) (< (length x) (length y))))))
+
+(defun japanlaw-make-substitution-alist (ls index)
+  "置換用のalist \(\(\"法令名\" . \"path\"\) ...\) を返す。"
+  (cl-do ((ls ls (cdr ls))
+          (acc nil (cl-acons (car ls) (cdr (assoc (car ls) index)) acc)))
+      ((null ls) acc)))
 
 (defun japanlaw-make-data (id &optional force url)
   "htmlデータをw3mでダンプする。FORCEが非nilならIDをGET、nilなら既
