@@ -747,15 +747,15 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "For japanlaw-display-toggle.")
 
 ;; Parentheses
-(defvar japanlaw-parens "（.+）")
+(defconst japanlaw-parens "（.+）")
 
-(defvar japanlaw-paren-exclude-regexp
+(defconst japanlaw-paren-exclude-regexp
   "（\\([０-９]+\\|[一二三四五六七八九十]+\\|[ｉ]+\\)）")
 
 (defvar japanlaw-paren-overlays)
 
 ;; 法、令、規則、新法、旧法等への対応
-(defvar japanlaw-local-name-list
+(defconst japanlaw-local-name-list
   '("法" "新法" "旧法"
     "規則" "新規則" "旧規則"
     "令" "新令" "旧令"
@@ -764,7 +764,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "")
 
 ;; outline
-(defvar japanlaw-heading-regexp
+(defconst japanlaw-heading-regexp
   (let ((number "[一二三四五六七八九十]"))
     (concat "^　*"
 	    "\\(第" number "+編"
@@ -1008,57 +1008,57 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "`japanlaw-index-mode'のキーマップを返す。")
 
 ;; Regexp
-(defvar japanlaw-volume-face-regexp
+(defconst japanlaw-volume-face-regexp
   "\\(^[ 　]*第.+編　[^（）\n]*\\)")
 
-(defvar japanlaw-chapter-face-regexp "\
+(defconst japanlaw-chapter-face-regexp "\
 \\(^[ 　]*第.+章\\([のノ][一二三四五六七八九十]\\)*　[^（）\n]+\\)")
 
-(defvar japanlaw-section-face-regexp "\
+(defconst japanlaw-section-face-regexp "\
 \\(^[ 　]*第.+節\\([のノ][一二三四五六七八九十]\\)*　[^（）\n]+\\)")
 
-(defvar japanlaw-subsection-face-regexp "\
+(defconst japanlaw-subsection-face-regexp "\
 \\(^[ 　]*第.+款\\([のノ][一二三四五六七八九十]\\)*　[^（）\n]+\\)")
 
-(defvar japanlaw-subsection2-face-regexp "\
+(defconst japanlaw-subsection2-face-regexp "\
 ^\\([ 　]*第.+目\\([のノ][一二三四五六七八九十]\\)*　[^（）\n]+\\)")
 
-(defvar japanlaw-article-subitem3-face-regexp "^\\(（[０-９]+）\\|([0-9]+)\\)　")
+(defconst japanlaw-article-subitem3-face-regexp "^\\(（[０-９]+）\\|([0-9]+)\\)　")
 
-(defvar japanlaw-comment-face-regexp "^[ 　]*\\(（\\cj+）\\|(\\cj+) \\)$")
+(defconst japanlaw-comment-face-regexp "^[ 　]*\\(（\\cj+）\\|(\\cj+) \\)$")
 
-(defvar japanlaw-article-subitem4-face-regexp "^（ｉ+）　")
+(defconst japanlaw-article-subitem4-face-regexp "^（ｉ+）　")
 
-(defvar japanlaw-supplementary-face-regexp
+(defconst japanlaw-supplementary-face-regexp
   "^\\([　 ]*附　?則.*$\\)")
 
-(defvar japanlaw-article-subitem2-face-regexp "^\\cK　")
+(defconst japanlaw-article-subitem2-face-regexp "^\\cK　")
 
-(defvar japanlaw-article-number-face-regexp "\
+(defconst japanlaw-article-number-face-regexp "\
 \\(^第[一二三四五六七八九十百千]+条\\([ノの][一二三四五六七八九十百]+\\)*\\)[ 　]*")
 
-(defvar japanlaw-article-paragraph-face-regexp "\
+(defconst japanlaw-article-paragraph-face-regexp "\
 \\(^\\([○◯]\\)?\\([０-９]+\\|[0-9]+\\)\\)[ 　]*")
 
-(defvar japanlaw-article-item-face-regexp "\
+(defconst japanlaw-article-item-face-regexp "\
 \\(^[一二三四五六七八九十]+\\([のノ][一二三四五六七八九十]+\\)*\\)[ 　]*")
 
-(defvar japanlaw-anchor-name-face-regexp2 "\
+(defconst japanlaw-anchor-name-face-regexp2 "\
 \\([^同]\\(\\([新旧]?\\(附則\\|法附則\\|規則附則\\|細則\\|法\\|規則\\|令\\)\\)\
 \\(\\(第[一二三四五六七八九十百千]+条\\)\\([のノ][一二三四五六七八九十]+\\)*\
 \\(第[一二三四五六七八九十]+項\\)*\
 \\(第[一二三四五六七八九十]+号\\([のノ][一二三四五六七八九十]+\\)*\\)*\\)\\)\\)")
 
-(defvar japanlaw-anchor-article-face-regexp3 "\
+(defconst japanlaw-anchor-article-face-regexp3 "\
 .\\(\\(第[一二三四五六七八九十百千]+条\\)\\([のノ][一二三四五六七八九十]+\\)*\
 \\(第[一二三四五六七八九十]+項\\)*\
 \\(第[一二三四五六七八九十]+号\\([のノ][一二三四五六七八九十]+\\)*\\)*\\)")
 
-(defvar japanlaw-article-regexp
+(defconst japanlaw-article-regexp
   "^第[一二三四五六七八九十百千]+条\\([のノ][一二三四五六七八九十]+\\)\\{0,3\\}"
   "条数の正規表現。")
 
-(defvar japanlaw-paragraph-regexp
+(defconst japanlaw-paragraph-regexp
   (concat "^[○◯]?\\(" japanlaw-article-regexp "\\|[０-９]\\|[0-9]\\)\\{1,2\\}")
   "項数の正規表現。")
 
