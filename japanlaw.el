@@ -341,356 +341,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'string
   :group 'japanlaw)
 
-;;
-;; font-lock-keyword-face
-;;
-
-;; 以下、defcustomされている`japanlaw-*-face'の値(シンボル名)を他に変更しないこと。
-(defvar japanlaw-index-flag-face 'japanlaw-index-flag-face
-  "Face name to use for open or close flag of law index mode.")
-
-(defvar japanlaw-index-header-key-face 'japanlaw-index-header-key-face
-  "Face name to use for shortcut key of header line.")
-
-(defvar japanlaw-index-header-foreground-face 'japanlaw-index-header-foreground-face
-  "Face name to use for foreground of header line.")
-
-(defvar japanlaw-index-header-selected-face 'japanlaw-index-header-selected-face
-  "Face name to use for selected foreground of header line.")
-
-(defvar japanlaw-article-number-face 'japanlaw-article-number-face
-  "Face name to use for number of article.")
-
-(defvar japanlaw-article-paragraph-face 'japanlaw-article-paragraph-face
-  "Face name to use for number of article.")
-
-(defvar japanlaw-article-item-face 'japanlaw-article-item-face
-  "Face name to use for number of article.")
-
-(defvar japanlaw-anchor-name-face 'japanlaw-anchor-name-face
-  "Face name to use for japanlaw name.")
-
-(defvar japanlaw-anchor-article-face 'japanlaw-anchor-article-face
-  "Face name to use for anchor article.")
-
-(defvar japanlaw-anchor-paragraph-face 'japanlaw-anchor-paragraph-face
-  "Face name to use for number of terms.")
-
-(defvar japanlaw-article-subnumber-face 'japanlaw-article-subnumber-face
-  "Face name to use for articl sub number.")
-
-(defvar japanlaw-article-subitem1-face 'japanlaw-article-subitem1-face
-  "Face name to use for article sub item.")
-
-(defvar japanlaw-article-subitem2-face 'japanlaw-article-subitem2-face
-  "Face name to use for article sub item-2.")
-
-(defvar japanlaw-article-subitem3-face 'japanlaw-article-subitem3-face
-  "Face name to use for article sub item-3.")
-
-(defvar japanlaw-article-subitem4-face 'japanlaw-article-subitem4-face
-  "Face name to use for article sub item-4.")
-
-(defvar japanlaw-volume-face 'japanlaw-volume-face
-  "Face name to use for volume.")
-
-(defvar japanlaw-chapter-face 'japanlaw-chapter-face
-  "Face name to use for chapter.")
-
-(defvar japanlaw-section-face 'japanlaw-section-face
-  "Face name to use for section.")
-
-(defvar japanlaw-subsection-face 'japanlaw-subsection-face
-  "Face name to use for subsection.")
-
-(defvar japanlaw-subsection2-face 'japanlaw-subsection2-face
-  "Face name to use for subsection-2.")
-
-(defvar japanlaw-comment-face 'japanlaw-comment-face
-  "Face name to use for comment.")
-
-(defvar japanlaw-supplementary-face 'japanlaw-supplementary-face
-  "Face name to use for supplementary.")
-
-(defvar japanlaw-paren1-face 'japanlaw-paren1-face
-  "Face name to use for Parentheses of the 1'th hierarchy.")
-
-(defvar japanlaw-paren2-face 'japanlaw-paren2-face
-  "Face name to use for Parentheses of the 2'th hierarchy.")
-
-(defvar japanlaw-paren3-face 'japanlaw-paren3-face
-  "Face name to use for Parentheses of the 3'th hierarchy.")
-
-(defvar japanlaw-paren4-face 'japanlaw-paren4-face
-  "Face name tp use for Parentheses of the 4'th hierarchy.")
-
-(defvar japanlaw-paren5-face 'japanlaw-paren5-face
-  "Face name tp use for Parentheses of the 5'th hierarchy.")
-
-(defvar japanlaw-paren6-face 'japanlaw-paren6-face
-  "Face name to use for Parentheses of the 6'th hierarchy.")
-
-(defvar japanlaw-paren-error-face 'japanlaw-paren-error-face
-  "Face name to use for Parentheses of the max hierarchy.")
-
-;;
-;; faces
-;;
-
-(defface japanlaw-index-flag-face
-  '((((class color) (background light))
-     (:foreground "CadetBlue"))
-    (((class color) (background dark))
-     (:foreground "Aquamarine"))
-    (t (:foreground "SkyBlue")))
-  "Font Lock mode face used to highlight japanlaw index folder flag."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-index-header-key-face
-  '((((class color) (background light))
-     (:foreground "Black" :background nil :underline nil :weight bold))
-    (((class color) (background dark))
-     (:foreground "White" :background nil :underline nil :weight bold))
-    (t (:foreground nil :underline t)))
-  "Font Lock mode face used to highlight japanlaw index header line."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-index-header-selected-face
-  '((((class color) (background light))
-     (:foreground "Black" :background nil :underline nil :weight bold
-                  :box (:line-width -1 :color nil :style pressed-button)))
-    (((class color) (background dark))
-     (:foreground "White" :background nil :underline nil :weight bold
-                  :box (:line-width -1 :color nil :style pressed-button)))
-    (t (:foreground nil :underline t :weight bold)))
-  "Font Lock mode face used to highlight japanlaw index header line."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-index-header-foreground-face
-  '((((class color) (background light))
-     (:foreground "Gray60" :background nil :weight bold))
-    (((class color) (background dark))
-     (:foreground "CornflowerBlue" :background nil :weight bold))
-    (t (:foreground nil :weight bold)))
-  "Font Lock mode face used to highlight japanlaw index header line."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-volume-face
-  '((((class color) (background light))
-     (:foreground "Blue"))
-    (((class color) (background dark))
-     (:foreground "Medium aquamarine"))
-    (t (:foreground "Medium aquamarine")))
-  "Font Lock mode face used to highlight volume lines."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-chapter-face
-  '((((class color) (background light))
-     (:foreground "DarkGoldenrod"))
-    (((class color) (background dark))
-     (:foreground "Green3"))
-    (t (:foreground "Green3")))
-  "Font Lock mode face used to highlight chapter lines."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-section-face
-  '((((class color) (background light))
-     (:foreground "Purple"))
-    (((class color) (background dark))
-     (:foreground "Cyan"))
-    (t (:foreground "Cyan")))
-  "Font Lock mode face used to highlight section lines."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-subsection-face
-  '((((class color) (background light))
-     (:foreground "Orchid"))
-    (((class color) (background dark))
-     (:foreground "LightSteelBlue"))
-    (t (:foreground "LightSteelBlue")))
-  "Font Lock mode face used to highlight subsection lines."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-subsection2-face
-  '((((class color) (background light))
-     (:foreground "red"))
-    (((class color) (background dark))
-     (:foreground "Dark sea green"))
-    (t (:foreground "Dark sea green")))
-  "Font Lock mode face used to highlight subsection-2."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-comment-face
-  '((((class color) (background light))
-     (:foreground "CadetBlue"))
-    (((class color) (background dark))
-     (:foreground "LightSteelBlue"))
-    (t (:foreground "LightSteelBlue")))
-  "Font Lock mode face used to highlight comment."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-anchor-article-face
-  '((((class color) (background light))
-     (:foreground nil :underline t))
-    (((class color) (background dark))
-     (:foreground nil :underline t))
-    (t (:foreground nil :underline t)))
-  "Font Lock mode face used to highlight reference."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-anchor-name-face
-  '((((class color) (background light))
-     (:foreground nil :underline t))
-    (((class color) (background dark))
-     (:foreground nil :underline t))
-    (t (:foreground nil :underline t)))
-  "Font Lock mode face used to highlight japanlaw name."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-supplementary-face
-  '((((class color) (background light))
-     (:foreground "CadetBlue"))
-    (((class color) (background dark))
-     (:foreground "Brown3"))
-    (t (:foreground "Brown3")))
-  "Font Lock mode face used to highlight comment."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-paren1-face
-  '((((class color) (background light))
-     (:foreground "Palevioletred3"))
-    (((class color) (background dark))
-     (:foreground "Palevioletred3"))
-    (t (:foreground "Palevioletred3")))
-  "Parentheses of the 1'th hierarchy."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-paren2-face
-  '((((class color) (background light))
-     (:foreground "Brown"))
-    (((class color) (background dark))
-     (:foreground "Brown"))
-    (t (:foreground "Brown")))
-  "Parentheses of the 2'th hierarchy."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-paren3-face
-  '((((class color) (background light))
-     (:foreground "Yellow4"))
-    (((class color) (background dark))
-     (:foreground "Yellow4"))
-    (t (:foreground "Yellow4")))
-  "Parentheses of the 3'th hierarchy."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-paren4-face
-  '((((class color) (background light))
-     (:foreground "Tan3"))
-    (((class color) (background dark))
-     (:foreground "Tan3"))
-    (t (:foreground "Tan3")))
-  "Parentheses of the 4'th hierarchy."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-paren5-face
-  '((((class color) (background light))
-     (:foreground "RosyBrown3"))
-    (((class color) (background dark))
-     (:foreground "RosyBrown3"))
-    (t (:foreground "RosyBrown3")))
-  "Parentheses of the 5'th hierarchy."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-paren6-face
-  '((((class color) (background light))
-     (:foreground "Blue"))
-    (((class color) (background dark))
-     (:foreground "Blue"))
-    (t (:foreground "Blue")))
-  "Parentheses of the 6'th hierarchy."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-article-number-face
-  '((((class color) (background light))
-     (:foreground "Blue"))
-    (((class color) (background dark))
-     (:foreground "LightSkyBlue"))
-    (t (:foreground "LightSkyBlue")))
-  "Font Lock mode face used to highlight article number."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-article-paragraph-face
-  '((((class color) (background light))
-     (:foreground "DarkGreen"))
-    (((class color) (background dark))
-     (:foreground "Cyan"))
-    (t (:foreground "Cyan")))
-  "Font Lock mode face used to highlight paragraph number."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-article-item-face
-  '((((class color) (background light))
-     (:foreground "Blue"))
-    (((class color) (background dark))
-     (:foreground "Red"))
-    (t (:foreground "Red")))
-  "Font Lock mode face used to highlight item number."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-anchor-paragraph-face
-  '((((class color) (background light))
-     (:foreground "Blue"))
-    (((class color) (background dark))
-     (:foreground "LightSkyBlue"))
-    (t (:foreground "LightSkyBlue")))
-  "Font Lock mode face used to highlight number of termss."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-article-subnumber-face
-  '((((class color) (background light))
-     (:foreground "Blue"))
-    (((class color) (background dark))
-     (:foreground "IndianRed1"))
-    (t (:foreground "IndianRed1")))
-  "Font Lock mode face used to highlight article sub number."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-article-subitem1-face
-  '((((class color) (background light))
-     (:foreground "Blue"))
-    (((class color) (background dark))
-     (:foreground "Green"))
-    (t (:foreground "Green")))
-  "Font Lock mode face used to highlight article sub item."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-article-subitem2-face
-  '((((class color) (background light))
-     (:foreground "Orange"))
-    (((class color) (background dark))
-     (:foreground "Orange"))
-    (t (:foreground "Orange")))
-  "Font Lock mode face used to highlight article sub item-2."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-article-subitem3-face
-  '((((class color) (background light))
-     (:foreground "Red"))
-    (((class color) (background dark))
-     (:foreground "HotPink1"))
-    (t (:foreground "HotPink1":weight bold)))
-  "Font Lock mode face used to highlight article sub item-3."
-  :group 'japanlaw-faces)
-
-(defface japanlaw-article-subitem4-face
-  '((((class color) (background light))
-     (:foreground "Maroon"))
-    (((class color) (background dark))
-     (:foreground "Pink4"))
-    (t (:foreground "Pink4")))
-  "Font Lock mode face used to highlight article sub item-4."
-  :group 'japanlaw-faces)
-
 ;;;
 ;;; Internal variables
 ;;;
@@ -814,79 +464,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-setup-p t
   "Non-nil means do setup, else not setup.")
 
-(defvar japanlaw-mode-name "JapanLaw")
-
-(defvar japanlaw-mode-map
-  (let ((map (make-sparse-keymap)))
-    (suppress-keymap map)
-    ;; japanlaw-anchor-clickable
-    (define-key map [mouse-2] 'japanlaw-push-mouse-2)
-    (define-key map [follow-link] 'mouse-face)
-    ;; quit
-    (define-key map "q" 'japanlaw-view-quit)
-    (define-key map "Q" 'japanlaw-exit)
-    ;; search
-    (dotimes (i 10)
-      (define-key map (format "%d" i) 'digit-argument))
-    (define-key map "-" 'japanlaw-digit-argument-suffix)
-    (define-key map " " 'japanlaw-search-or-push-anchor)
-    ;; bookmark
-    (define-key map "A" 'japanlaw-bookmark-this-file)
-    ;; scroll
-    (define-key map "n" 'japanlaw-forward-article)
-    (define-key map "p" 'japanlaw-backward-article)
-    (define-key map "[" 'japanlaw-backward-paragraph)
-    (define-key map "]" 'japanlaw-forward-paragraph)
-    (define-key map "j" 'japanlaw-scroll-up-screen)
-    (define-key map "k" 'japanlaw-scroll-down-screen)
-    ;; anchor
-    (define-key map "\C-i" 'japanlaw-forward-anchor)
-    (define-key map "\C-\M-i" 'japanlaw-backward-anchor)
-    (define-key map "hc" 'japanlaw-print-current-url)
-    ;; window
-    (define-key map "v" 'japanlaw-display-toggle)
-    (define-key map "o" 'japanlaw-other-window)
-    ;; winconf
-    (define-key map "wp" 'japanlaw-backward-winconf)
-    (define-key map "wn" 'japanlaw-forward-winconf)
-    (define-key map "wi" 'japanlaw-winconf-insert)
-    (define-key map "wa" 'japanlaw-winconf-add)
-    (define-key map "wo" 'japanlaw-winconf-override)
-    (define-key map "wd" 'japanlaw-winconf-delete)
-    (define-key map "wD" 'japanlaw-winconf-delete-all)
-    (define-key map "wh" 'japanlaw-winconf-backward-delete)
-    (define-key map "wf" 'japanlaw-restore-first-winconf)
-    (define-key map "wl" 'japanlaw-restore-last-winconf)
-    (define-key map "wc" 'japanlaw-restore-current-winconf)
-    (define-key map "," 'japanlaw-backward-winconf)
-    (define-key map "." 'japanlaw-forward-winconf)
-    (define-key map "<" 'japanlaw-restore-first-winconf)
-    (define-key map ">" 'japanlaw-restore-last-winconf)
-    (define-key map "wm" 'japanlaw-winconf-message)
-    ;; paren
-    (define-key map "e" 'japanlaw-fontify-or-defontify-paren)
-    (define-key map "dd" 'japanlaw-decompose-paren)
-    (define-key map "de" 'japanlaw-compose-paren)
-    ;; outline
-    (define-key map "gt" 'japanlaw-goto-toc)
-    (define-key map "t" 'japanlaw-goto-toc)
-    (define-key map "gu" 'japanlaw-up-heading)
-    (define-key map "u" 'japanlaw-up-heading)
-    (define-key map "gf" 'japanlaw-next-visible-heading)
-    (define-key map "f" 'japanlaw-next-visible-heading)
-    (define-key map "gb" 'japanlaw-previous-visible-heading)
-    (define-key map "b" 'japanlaw-previous-visible-heading)
-    (define-key map "gn" 'japanlaw-forward-same-level)
-    (define-key map "gp" 'japanlaw-backward-same-level)
-    (define-key map "gg" 'japanlaw-heading-jump)
-    (define-key map "gc" 'japanlaw-move-to-tables)
-    (define-key map "c" 'japanlaw-move-to-tables)
-    ;; iswitchb
-    ;;    (define-key map "\C-c\C-b" 'japanlaw-iswitchb)
-    ;; help
-    (define-key map "?" 'japanlaw-help)
-    map))
-
 ;; japanlaw-index-mode
 (defvar japanlaw-menuview--mode-name "JapanLaw"
   "`japanlaw-index-mode'のモード名。")
@@ -971,41 +548,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
             (1 japanlaw-index-flag-face t)
             )))
   "`japanlaw-index-mode'のための`font-lock-keywords'")
-
-(defvar japanlaw-index-mode-map
-  (let ((map (make-sparse-keymap)))
-    (mapc (lambda (mode)
-	    (define-key map (vector (downcase (aref mode 0)))
-	      `(lambda () (interactive) (japanlaw-index-goto-mode (intern ,mode)))))
-	  japanlaw-menuview--header-items)
-    (define-key map [mouse-2] 'japanlaw-index-mouse-open-or-close)
-    (define-key map [follow-link] 'mouse-face)
-    (define-key map " " 'japanlaw-index-open-or-close)
-    (define-key map "u" 'japanlaw-index-upper-level)
-    (define-key map "\M-[" 'japanlaw-index-open-all)
-    (define-key map "\M-]" 'japanlaw-index-close-all)
-    (define-key map "p" 'japanlaw-index-previous-line)
-    (define-key map "n" 'japanlaw-index-next-line)
-    (define-key map "j" 'japanlaw-index-scroll-up-line)
-    (define-key map "k" 'japanlaw-index-scroll-down-line)
-    (define-key map "\M-p" 'japanlaw-index-previous-folder)
-    (define-key map "\M-n" 'japanlaw-index-next-folder)
-    (define-key map "\M-<" 'japanlaw-index-beginning-of-buffer)
-    (define-key map "\M->" 'japanlaw-index-end-of-buffer)
-    (define-key map "\C-j" 'japanlaw-index-goto-folder)
-    (define-key map "A" 'japanlaw-index-bookmark-add)
-    (define-key map "m" 'japanlaw-index-put-deletion-flag)
-    (define-key map "x" 'japanlaw-index-do-delete-marks)
-    (define-key map "P" 'japanlaw-index-bookmark-move-up)
-    (define-key map "N" 'japanlaw-index-bookmark-move-down)
-    (define-key map "S" 'japanlaw-index-search)
-    (define-key map "g" 'japanlaw-index-update)
-    (define-key map "q" 'bury-buffer)
-    (define-key map "Q" 'japanlaw-exit)
-    ;;    (define-key map "\C-c\C-b" 'japanlaw-iswitchb)
-    (define-key map "?" 'japanlaw-index-help)
-    map)
-  "`japanlaw-index-mode'のキーマップを返す。")
 
 ;; Regexp
 (defconst japanlaw-volume-face-regexp
@@ -1871,7 +1413,8 @@ FUNCSは引数を取らない関数のリスト。"
 (defun japanlaw--read-sexp (file)
   (and (file-exists-p file)
        (with-temp-buffer
-         (insert-file-contents file)
+         (let ((coding-system-for-read japanlaw-coding-system-for-write))
+           (insert-file-contents file))
          (read (current-buffer)))))
 
 ;; インデックスファイルの内容を保持するローカル変数。
@@ -4111,114 +3654,9 @@ FULL が非-nilなら path/file を返す。"
      "Not stored.")))
 
 ;;
-;; parenthesis
+;; todo 
 ;;
-(defun japanlaw-forward-paren (arg)
-  (interactive "P")
-  (cond
-   (current-prefix-arg
-    (japanlaw-backward-paren))
-   ((eq (char-after) ?\（)
-    (forward-list)
-    (japanlaw-forward-paren nil))
-   ((re-search-forward ".（" nil t)
-    (backward-char))))
 
-(defun japanlaw-backward-paren ()
-  (and (re-search-backward ".（" nil t)
-       (forward-char)))
-
-(defun japanlaw-fontify-or-defontify-paren ()
-  (interactive)
-  (cl-destructuring-bind (beg . end) (japanlaw-current-article)
-    (or (let ((pos (and japanlaw-paren-overlays
-			(overlay-start (car japanlaw-paren-overlays)))))
-	  ;; overlayが設定済みか
-	  ;; overlayの位置が現在の条文内か
-	  (and pos
-	       (< beg pos)
-	       (< pos end)
-	       ;; defontify
-	       (japanlaw-defontify-paren)))
-	(or (and japanlaw-paren-overlays
-		 ;; 他の条項でoverlayが設定済み
-		 ;; defontify other
-		 (japanlaw-defontify-paren)
-		 ;; fontify
-		 (japanlaw-fontify-paren))
-	    ;; 通常のケース
-	    ;; fontify
-	    (japanlaw-fontify-paren)))))
-
-(defun japanlaw-fontify-paren (&optional beg end)
-  (interactive)
-  (or (and beg end)
-      (cl-destructuring-bind (bg . ed) (japanlaw-current-article)
-	(setq beg bg end ed)))
-  (let ((paren (japanlaw-matching-parens beg end)))
-    (save-excursion
-      (mapc (lambda (x)
-	      (japanlaw-paren-overlay-put (goto-char (car x)) (cdr x)))
-	    paren))))
-
-(defun japanlaw-defontify-paren ()
-  (interactive)
-  (when japanlaw-paren-overlays
-    (mapc #'delete-overlay japanlaw-paren-overlays)))
-
-(defun japanlaw-paren-overlay-put (beg end)
-  (or (looking-at japanlaw-paren-exclude-regexp)
-                                        ;      (looking-at "（[^）]*?」")
-      (let ((overlays '(japanlaw-paren1-face
-			japanlaw-paren2-face
-			japanlaw-paren3-face
-			japanlaw-paren4-face
-			japanlaw-paren5-face
-			japanlaw-paren6-face)))
-	(let ((ov (memq (get-char-property (point) 'face)
-			overlays)))
-	  (overlay-put (car (push (make-overlay beg end)
-				  japanlaw-paren-overlays))
-		       'face
-		       (or (and ov
-				(or (and (eq (car ov)
-					     (last overlays))
-					 (last overlays))
-				    (cadr ov)))
-			   (car overlays)))))))
-
-(defun japanlaw-matching-parens (begin end &optional outside-only)
-  ;; Invalid search bound (wrong side of point)
-  (save-excursion
-    (goto-char begin)
-    (let (parens)
-      (while (re-search-forward japanlaw-parens end t)
-	(push (cons (match-beginning 0)
-		    (scan-lists (match-beginning 0) 1 0)) parens)
-	(goto-char (or (and outside-only
-			    (scan-lists (match-beginning 0) 1 0))
-		       (+ (match-beginning 0) 1))))
-      (nreverse parens))))
-
-(defun japanlaw-compose-paren-toggle ()
-  (interactive)
-  (let ((end (cadr (get-text-property (point) 'composition)))
-	(beg (point)))
-    (and (eq (char-after) ?\（)
-	 (if end
-	     (decompose-region beg (+ beg end))
-	   (japanlaw-compose-paren (point) (scan-lists (point) 1 0))))))
-
-(defun japanlaw-compose-paren (&optional beg end)
-  (interactive)
-  (or (and beg end)
-      (cl-destructuring-bind (bg . ed) (japanlaw-current-article)
-	(setq beg bg end ed)))
-  (let ((parens (japanlaw-matching-parens beg end 'outside-only)))
-    (save-excursion
-      (mapc (lambda (x)
-	      (japanlaw-compose-region (goto-char (car x)) (cdr x)))
-	    parens))))
 
 (defun japanlaw-compose-region (beg end)
   (or (looking-at japanlaw-paren-exclude-regexp)
@@ -4569,6 +4007,7 @@ FULL が非-nilなら path/file を返す。"
 ;;
 ;; Bookmark
 ;;
+
 (defun japanlaw-bookmark-this-file ()
   (interactive)
   (let ((id (japanlaw-get-id (japanlaw-current-buffer-law-name))))
@@ -4576,6 +4015,589 @@ FULL が非-nilなら path/file を返す。"
 	(message "Already exists in Bookmark.")
       (push id japanlaw-menuview--bookmark-data)
       (message "Add to Bookmark `%s'" (japanlaw-current-buffer-law-name)))))
+
+;;;;
+;;;; UI
+;;;;
+
+;;
+;; font-lock-keyword-face
+;;
+
+;; 以下、defvar されている`japanlaw-*-face'の値(シンボル名)を他に変更しないこと。
+(defvar japanlaw-index-flag-face 'japanlaw-index-flag-face
+  "Face name to use for open or close flag of law index mode.")
+
+(defvar japanlaw-index-header-key-face 'japanlaw-index-header-key-face
+  "Face name to use for shortcut key of header line.")
+
+(defvar japanlaw-index-header-foreground-face 'japanlaw-index-header-foreground-face
+  "Face name to use for foreground of header line.")
+
+(defvar japanlaw-index-header-selected-face 'japanlaw-index-header-selected-face
+  "Face name to use for selected foreground of header line.")
+
+(defvar japanlaw-article-number-face 'japanlaw-article-number-face
+  "Face name to use for number of article.")
+
+(defvar japanlaw-article-paragraph-face 'japanlaw-article-paragraph-face
+  "Face name to use for number of article.")
+
+(defvar japanlaw-article-item-face 'japanlaw-article-item-face
+  "Face name to use for number of article.")
+
+(defvar japanlaw-anchor-name-face 'japanlaw-anchor-name-face
+  "Face name to use for japanlaw name.")
+
+(defvar japanlaw-anchor-article-face 'japanlaw-anchor-article-face
+  "Face name to use for anchor article.")
+
+(defvar japanlaw-anchor-paragraph-face 'japanlaw-anchor-paragraph-face
+  "Face name to use for number of terms.")
+
+(defvar japanlaw-article-subnumber-face 'japanlaw-article-subnumber-face
+  "Face name to use for articl sub number.")
+
+(defvar japanlaw-article-subitem1-face 'japanlaw-article-subitem1-face
+  "Face name to use for article sub item.")
+
+(defvar japanlaw-article-subitem2-face 'japanlaw-article-subitem2-face
+  "Face name to use for article sub item-2.")
+
+(defvar japanlaw-article-subitem3-face 'japanlaw-article-subitem3-face
+  "Face name to use for article sub item-3.")
+
+(defvar japanlaw-article-subitem4-face 'japanlaw-article-subitem4-face
+  "Face name to use for article sub item-4.")
+
+(defvar japanlaw-volume-face 'japanlaw-volume-face
+  "Face name to use for volume.")
+
+(defvar japanlaw-chapter-face 'japanlaw-chapter-face
+  "Face name to use for chapter.")
+
+(defvar japanlaw-section-face 'japanlaw-section-face
+  "Face name to use for section.")
+
+(defvar japanlaw-subsection-face 'japanlaw-subsection-face
+  "Face name to use for subsection.")
+
+(defvar japanlaw-subsection2-face 'japanlaw-subsection2-face
+  "Face name to use for subsection-2.")
+
+(defvar japanlaw-comment-face 'japanlaw-comment-face
+  "Face name to use for comment.")
+
+(defvar japanlaw-supplementary-face 'japanlaw-supplementary-face
+  "Face name to use for supplementary.")
+
+(defvar japanlaw-paren1-face 'japanlaw-paren1-face
+  "Face name to use for Parentheses of the 1'th hierarchy.")
+
+(defvar japanlaw-paren2-face 'japanlaw-paren2-face
+  "Face name to use for Parentheses of the 2'th hierarchy.")
+
+(defvar japanlaw-paren3-face 'japanlaw-paren3-face
+  "Face name to use for Parentheses of the 3'th hierarchy.")
+
+(defvar japanlaw-paren4-face 'japanlaw-paren4-face
+  "Face name tp use for Parentheses of the 4'th hierarchy.")
+
+(defvar japanlaw-paren5-face 'japanlaw-paren5-face
+  "Face name tp use for Parentheses of the 5'th hierarchy.")
+
+(defvar japanlaw-paren6-face 'japanlaw-paren6-face
+  "Face name to use for Parentheses of the 6'th hierarchy.")
+
+(defvar japanlaw-paren-error-face 'japanlaw-paren-error-face
+  "Face name to use for Parentheses of the max hierarchy.")
+
+;;
+;; faces
+;;
+
+(defface japanlaw-index-flag-face
+  '((((class color) (background light))
+     (:foreground "CadetBlue"))
+    (((class color) (background dark))
+     (:foreground "Aquamarine"))
+    (t (:foreground "SkyBlue")))
+  "Font Lock mode face used to highlight japanlaw index folder flag."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-index-header-key-face
+  '((((class color) (background light))
+     (:foreground "Black" :background nil :underline nil :weight bold))
+    (((class color) (background dark))
+     (:foreground "White" :background nil :underline nil :weight bold))
+    (t (:foreground nil :underline t)))
+  "Font Lock mode face used to highlight japanlaw index header line."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-index-header-selected-face
+  '((((class color) (background light))
+     (:foreground "Black" :background nil :underline nil :weight bold
+                  :box (:line-width -1 :color nil :style pressed-button)))
+    (((class color) (background dark))
+     (:foreground "White" :background nil :underline nil :weight bold
+                  :box (:line-width -1 :color nil :style pressed-button)))
+    (t (:foreground nil :underline t :weight bold)))
+  "Font Lock mode face used to highlight japanlaw index header line."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-index-header-foreground-face
+  '((((class color) (background light))
+     (:foreground "Gray60" :background nil :weight bold))
+    (((class color) (background dark))
+     (:foreground "CornflowerBlue" :background nil :weight bold))
+    (t (:foreground nil :weight bold)))
+  "Font Lock mode face used to highlight japanlaw index header line."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-volume-face
+  '((((class color) (background light))
+     (:foreground "Blue"))
+    (((class color) (background dark))
+     (:foreground "Medium aquamarine"))
+    (t (:foreground "Medium aquamarine")))
+  "Font Lock mode face used to highlight volume lines."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-chapter-face
+  '((((class color) (background light))
+     (:foreground "DarkGoldenrod"))
+    (((class color) (background dark))
+     (:foreground "Green3"))
+    (t (:foreground "Green3")))
+  "Font Lock mode face used to highlight chapter lines."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-section-face
+  '((((class color) (background light))
+     (:foreground "Purple"))
+    (((class color) (background dark))
+     (:foreground "Cyan"))
+    (t (:foreground "Cyan")))
+  "Font Lock mode face used to highlight section lines."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-subsection-face
+  '((((class color) (background light))
+     (:foreground "Orchid"))
+    (((class color) (background dark))
+     (:foreground "LightSteelBlue"))
+    (t (:foreground "LightSteelBlue")))
+  "Font Lock mode face used to highlight subsection lines."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-subsection2-face
+  '((((class color) (background light))
+     (:foreground "red"))
+    (((class color) (background dark))
+     (:foreground "Dark sea green"))
+    (t (:foreground "Dark sea green")))
+  "Font Lock mode face used to highlight subsection-2."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-comment-face
+  '((((class color) (background light))
+     (:foreground "CadetBlue"))
+    (((class color) (background dark))
+     (:foreground "LightSteelBlue"))
+    (t (:foreground "LightSteelBlue")))
+  "Font Lock mode face used to highlight comment."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-anchor-article-face
+  '((((class color) (background light))
+     (:foreground nil :underline t))
+    (((class color) (background dark))
+     (:foreground nil :underline t))
+    (t (:foreground nil :underline t)))
+  "Font Lock mode face used to highlight reference."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-anchor-name-face
+  '((((class color) (background light))
+     (:foreground nil :underline t))
+    (((class color) (background dark))
+     (:foreground nil :underline t))
+    (t (:foreground nil :underline t)))
+  "Font Lock mode face used to highlight japanlaw name."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-supplementary-face
+  '((((class color) (background light))
+     (:foreground "CadetBlue"))
+    (((class color) (background dark))
+     (:foreground "Brown3"))
+    (t (:foreground "Brown3")))
+  "Font Lock mode face used to highlight comment."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-paren1-face
+  '((((class color) (background light))
+     (:foreground "Palevioletred3"))
+    (((class color) (background dark))
+     (:foreground "Palevioletred3"))
+    (t (:foreground "Palevioletred3")))
+  "Parentheses of the 1'th hierarchy."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-paren2-face
+  '((((class color) (background light))
+     (:foreground "Brown"))
+    (((class color) (background dark))
+     (:foreground "Brown"))
+    (t (:foreground "Brown")))
+  "Parentheses of the 2'th hierarchy."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-paren3-face
+  '((((class color) (background light))
+     (:foreground "Yellow4"))
+    (((class color) (background dark))
+     (:foreground "Yellow4"))
+    (t (:foreground "Yellow4")))
+  "Parentheses of the 3'th hierarchy."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-paren4-face
+  '((((class color) (background light))
+     (:foreground "Tan3"))
+    (((class color) (background dark))
+     (:foreground "Tan3"))
+    (t (:foreground "Tan3")))
+  "Parentheses of the 4'th hierarchy."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-paren5-face
+  '((((class color) (background light))
+     (:foreground "RosyBrown3"))
+    (((class color) (background dark))
+     (:foreground "RosyBrown3"))
+    (t (:foreground "RosyBrown3")))
+  "Parentheses of the 5'th hierarchy."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-paren6-face
+  '((((class color) (background light))
+     (:foreground "Blue"))
+    (((class color) (background dark))
+     (:foreground "Blue"))
+    (t (:foreground "Blue")))
+  "Parentheses of the 6'th hierarchy."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-article-number-face
+  '((((class color) (background light))
+     (:foreground "Blue"))
+    (((class color) (background dark))
+     (:foreground "LightSkyBlue"))
+    (t (:foreground "LightSkyBlue")))
+  "Font Lock mode face used to highlight article number."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-article-paragraph-face
+  '((((class color) (background light))
+     (:foreground "DarkGreen"))
+    (((class color) (background dark))
+     (:foreground "Cyan"))
+    (t (:foreground "Cyan")))
+  "Font Lock mode face used to highlight paragraph number."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-article-item-face
+  '((((class color) (background light))
+     (:foreground "Blue"))
+    (((class color) (background dark))
+     (:foreground "Red"))
+    (t (:foreground "Red")))
+  "Font Lock mode face used to highlight item number."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-anchor-paragraph-face
+  '((((class color) (background light))
+     (:foreground "Blue"))
+    (((class color) (background dark))
+     (:foreground "LightSkyBlue"))
+    (t (:foreground "LightSkyBlue")))
+  "Font Lock mode face used to highlight number of termss."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-article-subnumber-face
+  '((((class color) (background light))
+     (:foreground "Blue"))
+    (((class color) (background dark))
+     (:foreground "IndianRed1"))
+    (t (:foreground "IndianRed1")))
+  "Font Lock mode face used to highlight article sub number."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-article-subitem1-face
+  '((((class color) (background light))
+     (:foreground "Blue"))
+    (((class color) (background dark))
+     (:foreground "Green"))
+    (t (:foreground "Green")))
+  "Font Lock mode face used to highlight article sub item."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-article-subitem2-face
+  '((((class color) (background light))
+     (:foreground "Orange"))
+    (((class color) (background dark))
+     (:foreground "Orange"))
+    (t (:foreground "Orange")))
+  "Font Lock mode face used to highlight article sub item-2."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-article-subitem3-face
+  '((((class color) (background light))
+     (:foreground "Red"))
+    (((class color) (background dark))
+     (:foreground "HotPink1"))
+    (t (:foreground "HotPink1":weight bold)))
+  "Font Lock mode face used to highlight article sub item-3."
+  :group 'japanlaw-faces)
+
+(defface japanlaw-article-subitem4-face
+  '((((class color) (background light))
+     (:foreground "Maroon"))
+    (((class color) (background dark))
+     (:foreground "Pink4"))
+    (t (:foreground "Pink4")))
+  "Font Lock mode face used to highlight article sub item-4."
+  :group 'japanlaw-faces)
+
+
+
+;;
+;; User visibility
+;;
+
+(defvar japanlaw-mode-name "JapanLaw")
+
+;;
+;; Keybindings
+;;
+
+(defvar japanlaw-index-mode-map
+  (let ((map (make-sparse-keymap)))
+    (mapc (lambda (mode)
+	    (define-key map (vector (downcase (aref mode 0)))
+	      `(lambda () (interactive) (japanlaw-index-goto-mode (intern ,mode)))))
+	  japanlaw-menuview--header-items)
+    (define-key map [mouse-2] 'japanlaw-index-mouse-open-or-close)
+    (define-key map [follow-link] 'mouse-face)
+    (define-key map " " 'japanlaw-index-open-or-close)
+    (define-key map "u" 'japanlaw-index-upper-level)
+    (define-key map "\M-[" 'japanlaw-index-open-all)
+    (define-key map "\M-]" 'japanlaw-index-close-all)
+    (define-key map "p" 'japanlaw-index-previous-line)
+    (define-key map "n" 'japanlaw-index-next-line)
+    (define-key map "j" 'japanlaw-index-scroll-up-line)
+    (define-key map "k" 'japanlaw-index-scroll-down-line)
+    (define-key map "\M-p" 'japanlaw-index-previous-folder)
+    (define-key map "\M-n" 'japanlaw-index-next-folder)
+    (define-key map "\M-<" 'japanlaw-index-beginning-of-buffer)
+    (define-key map "\M->" 'japanlaw-index-end-of-buffer)
+    (define-key map "\C-j" 'japanlaw-index-goto-folder)
+    (define-key map "A" 'japanlaw-index-bookmark-add)
+    (define-key map "m" 'japanlaw-index-put-deletion-flag)
+    (define-key map "x" 'japanlaw-index-do-delete-marks)
+    (define-key map "P" 'japanlaw-index-bookmark-move-up)
+    (define-key map "N" 'japanlaw-index-bookmark-move-down)
+    (define-key map "S" 'japanlaw-index-search)
+    (define-key map "g" 'japanlaw-index-update)
+    (define-key map "q" 'bury-buffer)
+    (define-key map "Q" 'japanlaw-exit)
+    ;;    (define-key map "\C-c\C-b" 'japanlaw-iswitchb)
+    (define-key map "?" 'japanlaw-index-help)
+    map)
+  "`japanlaw-index-mode'のキーマップを返す。")
+
+(defvar japanlaw-mode-map
+  (let ((map (make-sparse-keymap)))
+    (suppress-keymap map)
+    ;; japanlaw-anchor-clickable
+    (define-key map [mouse-2] 'japanlaw-push-mouse-2)
+    (define-key map [follow-link] 'mouse-face)
+    ;; quit
+    (define-key map "q" 'japanlaw-view-quit)
+    (define-key map "Q" 'japanlaw-exit)
+    ;; search
+    (dotimes (i 10)
+      (define-key map (format "%d" i) 'digit-argument))
+    (define-key map "-" 'japanlaw-digit-argument-suffix)
+    (define-key map " " 'japanlaw-search-or-push-anchor)
+    ;; bookmark
+    (define-key map "A" 'japanlaw-bookmark-this-file)
+    ;; scroll
+    (define-key map "n" 'japanlaw-forward-article)
+    (define-key map "p" 'japanlaw-backward-article)
+    (define-key map "[" 'japanlaw-backward-paragraph)
+    (define-key map "]" 'japanlaw-forward-paragraph)
+    (define-key map "j" 'japanlaw-scroll-up-screen)
+    (define-key map "k" 'japanlaw-scroll-down-screen)
+    ;; anchor
+    (define-key map "\C-i" 'japanlaw-forward-anchor)
+    (define-key map "\C-\M-i" 'japanlaw-backward-anchor)
+    (define-key map "hc" 'japanlaw-print-current-url)
+    ;; window
+    (define-key map "v" 'japanlaw-display-toggle)
+    (define-key map "o" 'japanlaw-other-window)
+    ;; winconf
+    (define-key map "wp" 'japanlaw-backward-winconf)
+    (define-key map "wn" 'japanlaw-forward-winconf)
+    (define-key map "wi" 'japanlaw-winconf-insert)
+    (define-key map "wa" 'japanlaw-winconf-add)
+    (define-key map "wo" 'japanlaw-winconf-override)
+    (define-key map "wd" 'japanlaw-winconf-delete)
+    (define-key map "wD" 'japanlaw-winconf-delete-all)
+    (define-key map "wh" 'japanlaw-winconf-backward-delete)
+    (define-key map "wf" 'japanlaw-restore-first-winconf)
+    (define-key map "wl" 'japanlaw-restore-last-winconf)
+    (define-key map "wc" 'japanlaw-restore-current-winconf)
+    (define-key map "," 'japanlaw-backward-winconf)
+    (define-key map "." 'japanlaw-forward-winconf)
+    (define-key map "<" 'japanlaw-restore-first-winconf)
+    (define-key map ">" 'japanlaw-restore-last-winconf)
+    (define-key map "wm" 'japanlaw-winconf-message)
+    ;; paren
+    (define-key map "e" 'japanlaw-fontify-or-defontify-paren)
+    (define-key map "dd" 'japanlaw-decompose-paren)
+    (define-key map "de" 'japanlaw-compose-paren)
+    ;; outline
+    (define-key map "gt" 'japanlaw-goto-toc)
+    (define-key map "t" 'japanlaw-goto-toc)
+    (define-key map "gu" 'japanlaw-up-heading)
+    (define-key map "u" 'japanlaw-up-heading)
+    (define-key map "gf" 'japanlaw-next-visible-heading)
+    (define-key map "f" 'japanlaw-next-visible-heading)
+    (define-key map "gb" 'japanlaw-previous-visible-heading)
+    (define-key map "b" 'japanlaw-previous-visible-heading)
+    (define-key map "gn" 'japanlaw-forward-same-level)
+    (define-key map "gp" 'japanlaw-backward-same-level)
+    (define-key map "gg" 'japanlaw-heading-jump)
+    (define-key map "gc" 'japanlaw-move-to-tables)
+    (define-key map "c" 'japanlaw-move-to-tables)
+    ;; iswitchb
+    ;;    (define-key map "\C-c\C-b" 'japanlaw-iswitchb)
+    ;; help
+    (define-key map "?" 'japanlaw-help)
+    map))
+
+;;
+;; parenthesis
+;;
+
+(defun japanlaw-forward-paren (arg)
+  (interactive "P")
+  (cond
+   (current-prefix-arg
+    (japanlaw-backward-paren))
+   ((eq (char-after) ?\（)
+    (forward-list)
+    (japanlaw-forward-paren nil))
+   ((re-search-forward ".（" nil t)
+    (backward-char))))
+
+(defun japanlaw-backward-paren ()
+  (and (re-search-backward ".（" nil t)
+       (forward-char)))
+
+(defun japanlaw-fontify-or-defontify-paren ()
+  (interactive)
+  (cl-destructuring-bind (beg . end) (japanlaw-current-article)
+    (or (let ((pos (and japanlaw-paren-overlays
+			(overlay-start (car japanlaw-paren-overlays)))))
+	  ;; overlayが設定済みか
+	  ;; overlayの位置が現在の条文内か
+	  (and pos
+	       (< beg pos)
+	       (< pos end)
+	       ;; defontify
+	       (japanlaw-defontify-paren)))
+	(or (and japanlaw-paren-overlays
+		 ;; 他の条項でoverlayが設定済み
+		 ;; defontify other
+		 (japanlaw-defontify-paren)
+		 ;; fontify
+		 (japanlaw-fontify-paren))
+	    ;; 通常のケース
+	    ;; fontify
+	    (japanlaw-fontify-paren)))))
+
+(defun japanlaw-fontify-paren (&optional beg end)
+  (interactive)
+  (or (and beg end)
+      (cl-destructuring-bind (bg . ed) (japanlaw-current-article)
+	(setq beg bg end ed)))
+  (let ((paren (japanlaw-matching-parens beg end)))
+    (save-excursion
+      (mapc (lambda (x)
+	      (japanlaw-paren-overlay-put (goto-char (car x)) (cdr x)))
+	    paren))))
+
+(defun japanlaw-defontify-paren ()
+  (interactive)
+  (when japanlaw-paren-overlays
+    (mapc #'delete-overlay japanlaw-paren-overlays)))
+
+(defun japanlaw-paren-overlay-put (beg end)
+  (or (looking-at japanlaw-paren-exclude-regexp)
+                                        ;      (looking-at "（[^）]*?」")
+      (let ((overlays '(japanlaw-paren1-face
+			japanlaw-paren2-face
+			japanlaw-paren3-face
+			japanlaw-paren4-face
+			japanlaw-paren5-face
+			japanlaw-paren6-face)))
+	(let ((ov (memq (get-char-property (point) 'face)
+			overlays)))
+	  (overlay-put (car (push (make-overlay beg end)
+				  japanlaw-paren-overlays))
+		       'face
+		       (or (and ov
+				(or (and (eq (car ov)
+					     (last overlays))
+					 (last overlays))
+				    (cadr ov)))
+			   (car overlays)))))))
+
+(defun japanlaw-matching-parens (begin end &optional outside-only)
+  ;; Invalid search bound (wrong side of point)
+  (save-excursion
+    (goto-char begin)
+    (let (parens)
+      (while (re-search-forward japanlaw-parens end t)
+	(push (cons (match-beginning 0)
+		    (scan-lists (match-beginning 0) 1 0)) parens)
+	(goto-char (or (and outside-only
+			    (scan-lists (match-beginning 0) 1 0))
+		       (+ (match-beginning 0) 1))))
+      (nreverse parens))))
+
+(defun japanlaw-compose-paren-toggle ()
+  (interactive)
+  (let ((end (cadr (get-text-property (point) 'composition)))
+	(beg (point)))
+    (and (eq (char-after) ?\（)
+	 (if end
+	     (decompose-region beg (+ beg end))
+	   (japanlaw-compose-paren (point) (scan-lists (point) 1 0))))))
+
+(defun japanlaw-compose-paren (&optional beg end)
+  (interactive)
+  (or (and beg end)
+      (cl-destructuring-bind (bg . ed) (japanlaw-current-article)
+	(setq beg bg end ed)))
+  (let ((parens (japanlaw-matching-parens beg end 'outside-only)))
+    (save-excursion
+      (mapc (lambda (x)
+	      (japanlaw-compose-region (goto-char (car x)) (cdr x)))
+	    parens))))
 
 ;;
 ;; iswitchb
@@ -4632,6 +4654,7 @@ migemoとiswitchbの設定が必要。"
 ;;
 ;; japanlaw-mode
 ;;
+
 (easy-menu-define japanlaw-mode-menu
   japanlaw-mode-map
   "japanlaw-mode-menu"
@@ -4730,6 +4753,10 @@ migemoとiswitchbの設定が必要。"
        (setq mode-line-buffer-identification japanlaw-mode-line))
   (run-hooks 'japanlaw-mode-hook))
 
+;;;;
+;;;; Initialize / Finalize
+;;;;
+
 (defun japanlaw-setup ()
   (when japanlaw-setup-p
 
@@ -4788,6 +4815,8 @@ migemoとiswitchbの設定が必要。"
 
 (add-hook 'japanlaw-index-mode-hook 'japanlaw-setup)
 (add-hook 'japanlaw-mode-hook 'japanlaw-setup)
+
+
 
 (provide 'japanlaw)
 
