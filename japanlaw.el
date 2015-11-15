@@ -469,100 +469,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	nil
       (regexp-opt result))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; japanlaw-index
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;
-;; Header line
-;;
-(defun japanlaw-menuview--header-line-keymap (mode)
-  "ヘッダラインのキーマップを返す。"
-  (let ((map (make-sparse-keymap)))
-    (define-key map [header-line mouse-1]
-      `(lambda (e) (interactive "e")
-         (set-buffer (window-buffer (posn-window (event-end e))))
-         (japanlaw-menuview--goto-mode (intern ,mode))))
-    map))
-
-(defun japanlaw-menuview--header-line-format (mode)
-  "`japanlaw-index-mode'の。`header-line-format'"
-  (cl-labels
-      ((spc (n)
-            (propertize " " 'display `(space :width (,n)))))
-    (concat " "
-            (mapconcat
-             (lambda (s)
-               (if (string= s mode)
-                   (concat
-                    (propertize (concat (spc 5) s (spc 5))
-                                'face
-                                japanlaw-index-header-selected-face
-                                'mouse-face 'highlight
-                                'help-echo (format "`%s'" s))
-                    (spc 1))
-                 (concat
-                  (propertize
-                   (concat
-                    (propertize (concat (spc 5) (substring s 0 1))
-                                'face
-                                japanlaw-index-header-key-face)
-                    (propertize (concat (substring s 1) (spc 5))
-                                'face
-                                japanlaw-index-header-foreground-face))
-                   'mouse-face 'highlight
-                   'help-echo (format "mouse-1: Goto `%s' mode" s)
-                   'local-map (japanlaw-menuview--header-line-keymap s))
-                  (spc 1))))
-             japanlaw-menuview--header-items ""))))
-
-(defun japanlaw-menuview--update-config ()
-  "現在のバッファの情報を保存する。"
-  (setq japanlaw-menuview--current-config
-	(delete (assoc japanlaw-menuview--current-item japanlaw-menuview--current-config)
-		japanlaw-menuview--current-config))
-  (push `(,japanlaw-menuview--current-item
-	  ,(line-number-at-pos)
-	  ,(window-start))
-	japanlaw-menuview--current-config))
-
-(defun japanlaw-menuview--restore-config ()
-  "以前のバッファの状態を復元する。"
-  (let ((cel (assoc japanlaw-menuview--current-item japanlaw-menuview--current-config)))
-    (when cel
-      (cl-destructuring-bind (mode line start)
-	  (assoc japanlaw-menuview--current-item japanlaw-menuview--current-config)
-	(set-window-start (selected-window) start)
-	(japanlaw-goto-line line)
-	(japanlaw-index-move-to-column)))))
-
-(defun japanlaw-menuview--goto-mode (mode &optional update)
-  "`japanlaw-index-mode'の各、個別のモード`japanlaw-menuview--current-item'に遷移する。
-MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')。"
-  (japanlaw-menuview--update-config)
-  (let ((name (lambda (mode)
-		(format "%s:%s" japanlaw-index--mode-name mode))))
-    (unless (and (not update) (string= mode-name (funcall name mode)))
-      (setq header-line-format
-	    (if japanlaw-use-index-header-line
-		(japanlaw-menuview--header-line-format mode)
-	      nil))
-      (setq mode-name (funcall name mode)
-	    japanlaw-menuview--current-item mode)
-      (force-mode-line-update)
-      (japanlaw-index-insert-contents mode)
-      (japanlaw-menuview--restore-config))))
-
-(defun japanlaw-menuview-update ()
-  "現在のモードの表示を更新する。
-更新するのは、Opened,Recent,Bookmarkの場合。それ以外のモードでは更新しない。"
-  (interactive)
-  (when (memq japanlaw-menuview--current-item '(Opened Recent Bookmark))
-    (japanlaw-menuview--goto-mode japanlaw-menuview--current-item 'update)
-    (message "Updating %s...done" japanlaw-menuview--current-item)))
-
-(defalias 'japanlaw-index-update 'japanlaw-menuview-update)
-
 ;;
 ;; Common
 ;;
@@ -4725,6 +4631,93 @@ migemoとiswitchbの設定が必要。"
 ;; 個別のモードの状態を保存するローカル変数。(TODO ローカル？)
 (defvar japanlaw-menuview--current-item nil)
 (defvar japanlaw-menuview--current-config nil)
+
+(defun japanlaw-menuview--header-line-keymap (mode)
+  "ヘッダラインのキーマップを返す。"
+  (let ((map (make-sparse-keymap)))
+    (define-key map [header-line mouse-1]
+      `(lambda (e) (interactive "e")
+         (set-buffer (window-buffer (posn-window (event-end e))))
+         (japanlaw-menuview--goto-mode (intern ,mode))))
+    map))
+
+(defun japanlaw-menuview--header-line-format (mode)
+  "`japanlaw-index-mode'の。`header-line-format'"
+  (cl-labels
+      ((spc (n)
+            (propertize " " 'display `(space :width (,n)))))
+    (concat " "
+            (mapconcat
+             (lambda (s)
+               (if (string= s mode)
+                   (concat
+                    (propertize (concat (spc 5) s (spc 5))
+                                'face
+                                japanlaw-index-header-selected-face
+                                'mouse-face 'highlight
+                                'help-echo (format "`%s'" s))
+                    (spc 1))
+                 (concat
+                  (propertize
+                   (concat
+                    (propertize (concat (spc 5) (substring s 0 1))
+                                'face
+                                japanlaw-index-header-key-face)
+                    (propertize (concat (substring s 1) (spc 5))
+                                'face
+                                japanlaw-index-header-foreground-face))
+                   'mouse-face 'highlight
+                   'help-echo (format "mouse-1: Goto `%s' mode" s)
+                   'local-map (japanlaw-menuview--header-line-keymap s))
+                  (spc 1))))
+             japanlaw-menuview--header-items ""))))
+
+(defun japanlaw-menuview--update-config ()
+  "現在のバッファの情報を保存する。"
+  (setq japanlaw-menuview--current-config
+	(delete (assoc japanlaw-menuview--current-item japanlaw-menuview--current-config)
+		japanlaw-menuview--current-config))
+  (push `(,japanlaw-menuview--current-item
+	  ,(line-number-at-pos)
+	  ,(window-start))
+	japanlaw-menuview--current-config))
+
+(defun japanlaw-menuview--restore-config ()
+  "以前のバッファの状態を復元する。"
+  (let ((cel (assoc japanlaw-menuview--current-item japanlaw-menuview--current-config)))
+    (when cel
+      (cl-destructuring-bind (mode line start)
+	  (assoc japanlaw-menuview--current-item japanlaw-menuview--current-config)
+	(set-window-start (selected-window) start)
+	(japanlaw-goto-line line)
+	(japanlaw-index-move-to-column)))))
+
+(defun japanlaw-menuview--goto-mode (mode &optional update)
+  "`japanlaw-index-mode'の各、個別のモード`japanlaw-menuview--current-item'に遷移する。
+MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')。"
+  (japanlaw-menuview--update-config)
+  (let ((name (lambda (mode)
+		(format "%s:%s" japanlaw-index--mode-name mode))))
+    (unless (and (not update) (string= mode-name (funcall name mode)))
+      (setq header-line-format
+	    (if japanlaw-use-index-header-line
+		(japanlaw-menuview--header-line-format mode)
+	      nil))
+      (setq mode-name (funcall name mode)
+	    japanlaw-menuview--current-item mode)
+      (force-mode-line-update)
+      (japanlaw-index-insert-contents mode)
+      (japanlaw-menuview--restore-config))))
+
+(defun japanlaw-menuview-update ()
+  "現在のモードの表示を更新する。
+更新するのは、Opened,Recent,Bookmarkの場合。それ以外のモードでは更新しない。"
+  (interactive)
+  (when (memq japanlaw-menuview--current-item '(Opened Recent Bookmark))
+    (japanlaw-menuview--goto-mode japanlaw-menuview--current-item 'update)
+    (message "Updating %s...done" japanlaw-menuview--current-item)))
+
+(defalias 'japanlaw-index-update 'japanlaw-menuview-update)
 
 ;;
 ;; menu
