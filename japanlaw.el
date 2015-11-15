@@ -713,117 +713,10 @@ LFUNCは、NAMEからなるリストを返す関数。"
   (japanlaw-index-index-oc-function
    (lambda () (japanlaw-make-alist-from-name #'japanlaw-load--bookmark-view))))
 
-;; Index
-(defun japanlaw-index-index-oc ()
-  "`Index'で、フォルダの開閉をする。"
-  (japanlaw-index-index-oc-function #'japanlaw-load--index-view))
-
-(defun japanlaw-index-index-oc-all (open)
-  "`Index'で、すべてのフォルダの開閉をする。"
-  (japanlaw-index-index-oc-all-function
-   open #'japanlaw-load--index-view #'japanlaw-index-insert-index))
-
-;; Directory
-(defun japanlaw-index-directory-oc ()
-  "`Directory'で、フォルダの開閉をする。"
-  (japanlaw-index-index-oc-function #'japanlaw-load--directory-view))
-
-(defun japanlaw-index-directory-oc-all (open)
-  "`Directory'で、すべてのフォルダの開閉をする。"
-  (japanlaw-index-index-oc-all-function
-   open #'japanlaw-load--directory-view #'japanlaw-index-insert-directory))
-
-;; Abbrev
-(defun japanlaw-index-set-abbrev-alist (name opened)
-  "`japanlaw-load--abbrev-view'のフォルダの開閉フラグをセットする関数。"
-  (cond ((japanlaw-index-folder-level-1)
-	 ;; sub folder
-	 (save-excursion
-	   (japanlaw-index-upper-level)
-           ;;TODO test
-	   (let* ((plist (japanlaw--get-plist))
-                  (name (plist-get plist :name))
-                  (cell
-                   (cdr (assoc name (japanlaw-load--abbrev-view)))))
-	     (let ((cell (cdr (assoc name cell))))
-	       (setcar cell (not opened))
-	       (cdr cell)))))
-	((japanlaw-index-folder-level-0)
-	 ;; folder
-	 (let ((cell (cdr (assoc name (japanlaw-load--abbrev-view)))))
-	   (setcar cell (not opened))
-	   (cdr cell)))))
-
-(defun japanlaw-index-abbrev-folder (name opened sub)
-  "`Abbrev'で、フォルダの開閉を処理する関数。"
-  (let ((cell (japanlaw-index-set-abbrev-alist name opened)))
-    (cond
-     ((> (japanlaw-index-folder-level) 1)
-      ;; folder 最下層
-      )
-     (opened
-      (japanlaw--draw-buffer
-       (let ((start (progn (forward-line 1) (point)))
-             (end (progn (while (and (not (eobp))
-                                     (not (if sub
-                                              (/= (japanlaw-index-folder-level) 2)
-                                            (japanlaw-index-folder-level-0))))
-                           (forward-line 1))
-                         (point))))
-         (unless (= start end)
-           (delete-region start end)
-           (forward-line -1)
-           (japanlaw-index-folder-toggle-state)))))
-     (t
-      ;; closed
-      (japanlaw--draw-buffer
-       (japanlaw-index-folder-toggle-state)
-       (forward-line 1)
-       (if sub
-           ;; sub folder
-           (cl-do ((zs cell (cdr zs)))
-               ((null zs))
-             (japanlaw-index-insert-line 4 nil (caar zs) (cdar zs)))
-         ;; folder
-         (cl-do ((ys cell (cdr ys)))
-             ((null ys))
-           (let ((opened (car (cdar ys))))
-             (japanlaw-index-insert-line 2 (not opened) (caar ys))
-             (when opened
-               (cl-do ((zs (cdr (cdar ys)) (cdr zs)))
-                   ((null zs))
-                 (japanlaw-index-insert-line 4 nil (caar zs) (cdar zs)))))))
-       (japanlaw-index-upper-level))))))
-
-(defun japanlaw-index-insert-line (level flag name &optional id)
-  (let* ((old-flag (concat (make-string level ?\s) (if flag "+" "-")))
-         (plist (list :open-flag old-flag :name name :id id))
-         (start (point)))
-    (insert (format "%s %s\n" old-flag name))
-    (put-text-property (point-at-bol 0) (point-at-eol 0)
-                       'japanlaw-item-plist plist)))
-
-;;TODO not test
-(defun japanlaw-index-abbrev-oc ()
-  "`Abbrev'で、フォルダなら開閉し法令なら開く。"
-  (let* ((plist (japanlaw--get-plist))
-	 (name (plist-get plist :name))
-	 (id (plist-get plist :id)))
-    (if (< (japanlaw-index-folder-level) 2)
-	;; menu open or close
-	(japanlaw-index-abbrev-folder
-	 name (japanlaw-index-folder-open-p) (japanlaw-index-folder-level-1))
-      ;; file open
-      (japanlaw-open-file id))))
-
-(defun japanlaw-index-abbrev-oc-all (open)
-  "`Abbrev'で、すべてのフォルダの開閉をする。"
-  (japanlaw-index-index-oc-all-function
-   open #'japanlaw-load--abbrev-view #'japanlaw-index-insert-abbrev))
-
 ;;
 ;; Scroll commands
 ;;
+
 (defun japanlaw-index-move-to-column ()
   "フォルダの開閉を表わすマーク位置に移動する関数。"
   (forward-line 0)
@@ -4726,6 +4619,123 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
     (japanlaw--draw-buffer
      (erase-buffer))
     (funcall ifunc)))
+
+;;
+;; Index
+;;
+
+(defun japanlaw-index-index-oc ()
+  "`Index'で、フォルダの開閉をする。"
+  (japanlaw-index-index-oc-function #'japanlaw-load--index-view))
+
+(defun japanlaw-index-index-oc-all (open)
+  "`Index'で、すべてのフォルダの開閉をする。"
+  (japanlaw-index-index-oc-all-function
+   open #'japanlaw-load--index-view #'japanlaw-index-insert-index))
+
+;;
+;; Directory
+;;
+
+(defun japanlaw-index-directory-oc ()
+  "`Directory'で、フォルダの開閉をする。"
+  (japanlaw-index-index-oc-function #'japanlaw-load--directory-view))
+
+(defun japanlaw-index-directory-oc-all (open)
+  "`Directory'で、すべてのフォルダの開閉をする。"
+  (japanlaw-index-index-oc-all-function
+   open #'japanlaw-load--directory-view #'japanlaw-index-insert-directory))
+
+;;
+;; Abbrev
+;;
+
+(defun japanlaw-index-set-abbrev-alist (name opened)
+  "`japanlaw-load--abbrev-view'のフォルダの開閉フラグをセットする関数。"
+  (cond ((japanlaw-index-folder-level-1)
+	 ;; sub folder
+	 (save-excursion
+	   (japanlaw-index-upper-level)
+           ;;TODO test
+	   (let* ((plist (japanlaw--get-plist))
+                  (name (plist-get plist :name))
+                  (cell
+                   (cdr (assoc name (japanlaw-load--abbrev-view)))))
+	     (let ((cell (cdr (assoc name cell))))
+	       (setcar cell (not opened))
+	       (cdr cell)))))
+	((japanlaw-index-folder-level-0)
+	 ;; folder
+	 (let ((cell (cdr (assoc name (japanlaw-load--abbrev-view)))))
+	   (setcar cell (not opened))
+	   (cdr cell)))))
+
+(defun japanlaw-index-abbrev-folder (name opened sub)
+  "`Abbrev'で、フォルダの開閉を処理する関数。"
+  (let ((cell (japanlaw-index-set-abbrev-alist name opened)))
+    (cond
+     ((> (japanlaw-index-folder-level) 1)
+      ;; folder 最下層
+      )
+     (opened
+      (japanlaw--draw-buffer
+       (let ((start (progn (forward-line 1) (point)))
+             (end (progn (while (and (not (eobp))
+                                     (not (if sub
+                                              (/= (japanlaw-index-folder-level) 2)
+                                            (japanlaw-index-folder-level-0))))
+                           (forward-line 1))
+                         (point))))
+         (unless (= start end)
+           (delete-region start end)
+           (forward-line -1)
+           (japanlaw-index-folder-toggle-state)))))
+     (t
+      ;; closed
+      (japanlaw--draw-buffer
+       (japanlaw-index-folder-toggle-state)
+       (forward-line 1)
+       (if sub
+           ;; sub folder
+           (cl-do ((zs cell (cdr zs)))
+               ((null zs))
+             (japanlaw-index-insert-line 4 nil (caar zs) (cdar zs)))
+         ;; folder
+         (cl-do ((ys cell (cdr ys)))
+             ((null ys))
+           (let ((opened (car (cdar ys))))
+             (japanlaw-index-insert-line 2 (not opened) (caar ys))
+             (when opened
+               (cl-do ((zs (cdr (cdar ys)) (cdr zs)))
+                   ((null zs))
+                 (japanlaw-index-insert-line 4 nil (caar zs) (cdar zs)))))))
+       (japanlaw-index-upper-level))))))
+
+(defun japanlaw-index-insert-line (level flag name &optional id)
+  (let* ((old-flag (concat (make-string level ?\s) (if flag "+" "-")))
+         (plist (list :open-flag old-flag :name name :id id))
+         (start (point)))
+    (insert (format "%s %s\n" old-flag name))
+    (put-text-property (point-at-bol 0) (point-at-eol 0)
+                       'japanlaw-item-plist plist)))
+
+;;TODO not test
+(defun japanlaw-index-abbrev-oc ()
+  "`Abbrev'で、フォルダなら開閉し法令なら開く。"
+  (let* ((plist (japanlaw--get-plist))
+	 (name (plist-get plist :name))
+	 (id (plist-get plist :id)))
+    (if (< (japanlaw-index-folder-level) 2)
+	;; menu open or close
+	(japanlaw-index-abbrev-folder
+	 name (japanlaw-index-folder-open-p) (japanlaw-index-folder-level-1))
+      ;; file open
+      (japanlaw-open-file id))))
+
+(defun japanlaw-index-abbrev-oc-all (open)
+  "`Abbrev'で、すべてのフォルダの開閉をする。"
+  (japanlaw-index-index-oc-all-function
+   open #'japanlaw-load--abbrev-view #'japanlaw-index-insert-abbrev))
 
 ;;
 ;; Command
