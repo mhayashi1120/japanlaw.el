@@ -545,175 +545,6 @@ FUNCSは引数を取らない関数のリスト。"
           (japanlaw-recent-alist))))))
 
 ;;
-;; Insert contents
-;;
-
-;; Common
-(defun japanlaw-make-alist-from-name (lfunc)
-  "NAME(\"M29HO089\"のような形式)から法令名とNAMEの連想リストを生成する関数。
-LFUNCは、NAMEからなるリストを返す関数。"
-  (mapcar (lambda (name)
-	    (or (cl-block nil
-		  (cl-do ((xs (japanlaw-load--main-data) (cdr xs)))
-		      ((null xs))
-		    (let ((cell (rassoc (upcase name) (cdar xs))))
-		      (when cell
-			(cl-return (cons (concat (caar cell) (cdar cell))
-                                         (cdr cell)))))))
-		(cons "未登録法令" name)))
-	  (funcall lfunc)))
-
-(defun japanlaw-index-insert-alist-function (func)
-  "Index,Directoryで、ツリーの挿入処理をする関数。"
-  (let ((alist (funcall func)))
-    (cl-case japanlaw-menuview--current-item
-      ((Index Directory)
-       (japanlaw--draw-buffer
-        ;; Test:
-        ;; (error Lisp nesting exceeds `max-lisp-eval-depth')
-        ;; (japanlaw-index-search-insert-func alist)
-        (dolist (cell alist)
-          (let ((opened (cadr cell)))
-            (japanlaw-index-insert-line 0 (not opened) (car cell))
-            (when opened
-              (dolist (x (cddr cell))
-                (japanlaw-index-insert-line 2 nil (car x) (cdr x))))))))
-      ((Abbrev)
-       (japanlaw--draw-buffer
-	;; Test:
-	;; (error Lisp nesting exceeds `max-lisp-eval-depth')
-	;; (japanlaw-index-search-insert-func alist)
-	(dolist (x alist)
-	  (let ((opened (cadr x)))
-	    (japanlaw-index-insert-line 0 (not opened) (car x))
-	    (when opened
-	      (dolist (y (cddr x))
-		(let ((opened (cadr y)))
-		  (japanlaw-index-insert-line 2 (not opened) (car y))
-		  (when opened
-		    (dolist (z (cddr y))
-		      (japanlaw-index-insert-line 4 nil (car z) (cdr z)))))))))))
-      ((Bookmark Opened Recent)
-       (japanlaw--draw-buffer
-	(dolist (cell alist)
-          (japanlaw-index-insert-line 1 nil (car cell) (cdr cell)))))
-      ((Search)
-       (japanlaw--draw-buffer
-	(japanlaw-index-search-insert-func alist))
-       (japanlaw-index-highlight-search-buffer)))))
-
-;; recursion
-(defun japanlaw-index-search-insert-func (alist)
-  (cl-loop for (category opened . contents) in alist
-           ;; 検索式
-           do (japanlaw-index-insert-line 0 (not opened) category)
-           ;; 完全一致,略称法令名検索,法令名検索結果を挿入
-           when opened
-           do (cl-loop for (name opened2 . contents2) in contents
-                       do (japanlaw-index-insert-line 2 (not opened2) name)
-                       when opened2
-                       do (dolist (x contents2)
-                            (if (atom (cdr x))
-                                ;; 末端ノード
-                                (japanlaw-index-insert-line 4 nil (car x) (cdr x))
-                              (let ((opened3 (cadr x)))
-                                (japanlaw-index-insert-line 4 (not opened3) (car x))
-                                (when opened3
-                                  (dolist (y (cddr x))
-                                    (japanlaw-index-insert-line
-                                     6 nil (car y)
-                                     (cdr y))))))))))
-
-;; Opened
-(defun japanlaw-index-insert-opened ()
-  (japanlaw-index-insert-alist-function #'japanlaw-opened-alist))
-
-;; Recent
-(defun japanlaw-index-insert-recent ()
-  (japanlaw-index-insert-alist-function
-   (lambda () (japanlaw-make-alist-from-name #'japanlaw-recent-alist))))
-
-;; Search
-(defun japanlaw-index-insert-search ()
-  (japanlaw-index-insert-alist-function #'japanlaw-search-alist))
-
-;; Bookmark
-(defun japanlaw-index-insert-bookmark ()
-  (japanlaw-index-insert-alist-function
-   (lambda () (japanlaw-make-alist-from-name #'japanlaw-load--bookmark-view))))
-
-;; Index
-(defun japanlaw-index-insert-index ()
-  "Indexで、バッファにツリーを挿入する。"
-  (japanlaw-index-insert-alist-function #'japanlaw-load--index-view))
-
-;; Directory
-(defun japanlaw-index-insert-directory ()
-  "Directoryで、バッファにツリーを挿入する。"
-  (japanlaw-index-insert-alist-function #'japanlaw-load--directory-view))
-
-;; Abbrev
-(defun japanlaw-index-insert-abbrev ()
-  "Abbrevで、バッファにツリーを挿入する。"
-  (japanlaw-index-insert-alist-function #'japanlaw-load--abbrev-view))
-
-;; Opened
-
-;; Recent
-
-(defun japanlaw-index-search-oc ()
-  "`Search'で、フォルダなら開閉をし、法令名なら開く。"
-  (let* ((plist (japanlaw--get-plist))
-         (id (plist-get plist :id))
-         (name (plist-get plist :name))
-         (keys nil))
-    (unless name
-      (error "Not a law data."))
-    (if id
-	(japanlaw-open-file id)
-      (let ((cell (save-excursion
-		    (dotimes (x (japanlaw-index-folder-level))
-		      (japanlaw-index-upper-level)
-		      (push (plist-get (japanlaw--get-plist) :name) keys))
-		    (assoc (plist-get (japanlaw--get-plist) :name)
-                           (japanlaw-search-alist)))))
-	(japanlaw-index-set-search-alist
-	 cell keys name (japanlaw-index-folder-open-p))))))
-
-(defun japanlaw-index-set-search-alist (cell keys name opened)
-  "`japanlaw-search-alist'のCELLの中でキーがNAMEのフォルダの開閉フラグ
-を(not opened)に変更してバッファを更新する。"
-  (cl-case (length keys)
-    (0 (setcar (cdr cell) (not opened)))
-    (1 (setcar (cdr (assoc name cell)) (not opened)))
-    (2 (setcar (cdr (assoc name (cdr (assoc (cadr keys) cell))))
-	       (not opened))))
-  (unless (japanlaw-menuview--goto-mode 'Search)
-    (let ((line (line-number-at-pos)))
-      (japanlaw--draw-buffer
-       (erase-buffer)
-       (japanlaw-index-search-insert-func (japanlaw-search-alist)))
-      (japanlaw-index-highlight-search-buffer)
-      (japanlaw-goto-line line))))
-
-;; Opened
-(defun japanlaw-index-opened-oc ()
-  "`Opened'で、法令ファイルに切り替える。"
-  (japanlaw-index-index-oc-function #'japanlaw-opened-alist))
-
-;; Recent
-(defun japanlaw-index-recent-oc ()
-  "`Recent'で、法令ファイルに切り替える。"
-  (japanlaw-index-index-oc-function
-   (lambda () (japanlaw-make-alist-from-name #'japanlaw-recent-alist))))
-
-;; Bookmark
-(defun japanlaw-index-bookmark-oc ()
-  "`Bookmark'で、法令ファイルを開く。"
-  (japanlaw-index-index-oc-function
-   (lambda () (japanlaw-make-alist-from-name #'japanlaw-load--bookmark-view))))
-
-;;
 ;; Scroll commands
 ;;
 
@@ -4378,6 +4209,171 @@ Openedの場合、ファイルを閉じる。"
 	    (insert (format "%S" japanlaw-menuview--recent-data))
 	    (message "Wrote %s" (japanlaw-recent-file)))
 	  t)))))
+
+;; Common
+(defun japanlaw-make-alist-from-name (lfunc)
+  "NAME(\"M29HO089\"のような形式)から法令名とNAMEの連想リストを生成する関数。
+LFUNCは、NAMEからなるリストを返す関数。"
+  (mapcar (lambda (name)
+	    (or (cl-block nil
+		  (cl-do ((xs (japanlaw-load--main-data) (cdr xs)))
+		      ((null xs))
+		    (let ((cell (rassoc (upcase name) (cdar xs))))
+		      (when cell
+			(cl-return (cons (concat (caar cell) (cdar cell))
+                                         (cdr cell)))))))
+		(cons "未登録法令" name)))
+	  (funcall lfunc)))
+
+(defun japanlaw-index-insert-alist-function (func)
+  "Index,Directoryで、ツリーの挿入処理をする関数。"
+  (let ((alist (funcall func)))
+    (cl-case japanlaw-menuview--current-item
+      ((Index Directory)
+       (japanlaw--draw-buffer
+        ;; Test:
+        ;; (error Lisp nesting exceeds `max-lisp-eval-depth')
+        ;; (japanlaw-index-search-insert-func alist)
+        (dolist (cell alist)
+          (let ((opened (cadr cell)))
+            (japanlaw-index-insert-line 0 (not opened) (car cell))
+            (when opened
+              (dolist (x (cddr cell))
+                (japanlaw-index-insert-line 2 nil (car x) (cdr x))))))))
+      ((Abbrev)
+       (japanlaw--draw-buffer
+	;; Test:
+	;; (error Lisp nesting exceeds `max-lisp-eval-depth')
+	;; (japanlaw-index-search-insert-func alist)
+	(dolist (x alist)
+	  (let ((opened (cadr x)))
+	    (japanlaw-index-insert-line 0 (not opened) (car x))
+	    (when opened
+	      (dolist (y (cddr x))
+		(let ((opened (cadr y)))
+		  (japanlaw-index-insert-line 2 (not opened) (car y))
+		  (when opened
+		    (dolist (z (cddr y))
+		      (japanlaw-index-insert-line 4 nil (car z) (cdr z)))))))))))
+      ((Bookmark Opened Recent)
+       (japanlaw--draw-buffer
+	(dolist (cell alist)
+          (japanlaw-index-insert-line 1 nil (car cell) (cdr cell)))))
+      ((Search)
+       (japanlaw--draw-buffer
+	(japanlaw-index-search-insert-func alist))
+       (japanlaw-index-highlight-search-buffer)))))
+
+;; recursion
+(defun japanlaw-index-search-insert-func (alist)
+  (cl-loop for (category opened . contents) in alist
+           ;; 検索式
+           do (japanlaw-index-insert-line 0 (not opened) category)
+           ;; 完全一致,略称法令名検索,法令名検索結果を挿入
+           when opened
+           do (cl-loop for (name opened2 . contents2) in contents
+                       do (japanlaw-index-insert-line 2 (not opened2) name)
+                       when opened2
+                       do (dolist (x contents2)
+                            (if (atom (cdr x))
+                                ;; 末端ノード
+                                (japanlaw-index-insert-line 4 nil (car x) (cdr x))
+                              (let ((opened3 (cadr x)))
+                                (japanlaw-index-insert-line 4 (not opened3) (car x))
+                                (when opened3
+                                  (dolist (y (cddr x))
+                                    (japanlaw-index-insert-line
+                                     6 nil (car y)
+                                     (cdr y))))))))))
+
+;; Opened
+(defun japanlaw-index-insert-opened ()
+  (japanlaw-index-insert-alist-function #'japanlaw-opened-alist))
+
+;; Recent
+(defun japanlaw-index-insert-recent ()
+  (japanlaw-index-insert-alist-function
+   (lambda () (japanlaw-make-alist-from-name #'japanlaw-recent-alist))))
+
+;; Search
+(defun japanlaw-index-insert-search ()
+  (japanlaw-index-insert-alist-function #'japanlaw-search-alist))
+
+;; Bookmark
+(defun japanlaw-index-insert-bookmark ()
+  (japanlaw-index-insert-alist-function
+   (lambda () (japanlaw-make-alist-from-name #'japanlaw-load--bookmark-view))))
+
+;; Index
+(defun japanlaw-index-insert-index ()
+  "Indexで、バッファにツリーを挿入する。"
+  (japanlaw-index-insert-alist-function #'japanlaw-load--index-view))
+
+;; Directory
+(defun japanlaw-index-insert-directory ()
+  "Directoryで、バッファにツリーを挿入する。"
+  (japanlaw-index-insert-alist-function #'japanlaw-load--directory-view))
+
+;; Abbrev
+(defun japanlaw-index-insert-abbrev ()
+  "Abbrevで、バッファにツリーを挿入する。"
+  (japanlaw-index-insert-alist-function #'japanlaw-load--abbrev-view))
+
+;; Opened
+
+;; Recent
+
+(defun japanlaw-index-search-oc ()
+  "`Search'で、フォルダなら開閉をし、法令名なら開く。"
+  (let* ((plist (japanlaw--get-plist))
+         (id (plist-get plist :id))
+         (name (plist-get plist :name))
+         (keys nil))
+    (unless name
+      (error "Not a law data."))
+    (if id
+	(japanlaw-open-file id)
+      (let ((cell (save-excursion
+		    (dotimes (x (japanlaw-index-folder-level))
+		      (japanlaw-index-upper-level)
+		      (push (plist-get (japanlaw--get-plist) :name) keys))
+		    (assoc (plist-get (japanlaw--get-plist) :name)
+                           (japanlaw-search-alist)))))
+	(japanlaw-index-set-search-alist
+	 cell keys name (japanlaw-index-folder-open-p))))))
+
+(defun japanlaw-index-set-search-alist (cell keys name opened)
+  "`japanlaw-search-alist'のCELLの中でキーがNAMEのフォルダの開閉フラグ
+を(not opened)に変更してバッファを更新する。"
+  (cl-case (length keys)
+    (0 (setcar (cdr cell) (not opened)))
+    (1 (setcar (cdr (assoc name cell)) (not opened)))
+    (2 (setcar (cdr (assoc name (cdr (assoc (cadr keys) cell))))
+	       (not opened))))
+  (unless (japanlaw-menuview--goto-mode 'Search)
+    (let ((line (line-number-at-pos)))
+      (japanlaw--draw-buffer
+       (erase-buffer)
+       (japanlaw-index-search-insert-func (japanlaw-search-alist)))
+      (japanlaw-index-highlight-search-buffer)
+      (japanlaw-goto-line line))))
+
+;; Opened
+(defun japanlaw-index-opened-oc ()
+  "`Opened'で、法令ファイルに切り替える。"
+  (japanlaw-index-index-oc-function #'japanlaw-opened-alist))
+
+;; Recent
+(defun japanlaw-index-recent-oc ()
+  "`Recent'で、法令ファイルに切り替える。"
+  (japanlaw-index-index-oc-function
+   (lambda () (japanlaw-make-alist-from-name #'japanlaw-recent-alist))))
+
+;; Bookmark
+(defun japanlaw-index-bookmark-oc ()
+  "`Bookmark'で、法令ファイルを開く。"
+  (japanlaw-index-index-oc-function
+   (lambda () (japanlaw-make-alist-from-name #'japanlaw-load--bookmark-view))))
 
 ;;
 ;; Open / Close
