@@ -2122,27 +2122,13 @@ FULL が非-nilなら path/file を返す。"
 ;;
 ;; Window change
 ;;
+
 (defun japanlaw-other-window (&optional window)
   (interactive)
   (when (not (one-window-p))
     (select-window
      (or window
 	 (cadr (memq (selected-window) (window-list)))))))
-
-;;
-;; Scroll
-;;
-
-(defun japanlaw-scroll-up-screen (n)
-  (interactive "p")
-  (scroll-up n))
-
-(defun japanlaw-scroll-down-screen (n)
-  (interactive "p")
-  (scroll-down n))
-
-(make-obsolete 'japanlaw-scroll-down-screen 'scroll-down-command "0.9.2")
-(make-obsolete 'japanlaw-scroll-up-screen 'scroll-up-command "0.9.2")
 
 ;;
 ;; other
@@ -2701,6 +2687,21 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;;
 ;; Interactive Command
 ;;
+
+;;
+;; Scroll
+;;
+
+(defun japanlaw-scroll-up-screen (n)
+  (interactive "p")
+  (scroll-up n))
+
+(defun japanlaw-scroll-down-screen (n)
+  (interactive "p")
+  (scroll-down n))
+
+(make-obsolete 'japanlaw-scroll-down-screen 'scroll-down-command "0.9.2")
+(make-obsolete 'japanlaw-scroll-up-screen 'scroll-up-command "0.9.2")
 
 
 ;;;;
