@@ -544,60 +544,6 @@ FUNCSは引数を取らない関数のリスト。"
           (setq japanlaw-menuview--recent-data nil)
           (japanlaw-recent-alist))))))
 
-;; Opened
-
-(defun japanlaw-opened-alist ()
-  "現在開いている法令データの連想リストを返す。"
-  ;; 法令データかどうかは、パスファイル名が法令データのパスファイル名と等しい
-  ;; かどうかで判定。ディレクトリは大文字、urlは小文字。
-  (japanlaw-make-alist-from-name
-   (lambda ()
-     (cl-labels ((nameof (file) (japanlaw-file-sans-name file)))
-       (mapcar #'nameof
-               (japanlaw:filter
-                (lambda (file)
-                  (string= (japanlaw-expand-data-file (nameof file))
-                           file))
-                (delete nil (mapcar #'buffer-file-name (buffer-list)))))))))
-
-;; Recent
-(defun japanlaw-recent-alist ()
-  "最近開いたファイルの連想リストを返す。"
-  (or japanlaw-menuview--recent-data
-      (and (file-exists-p (japanlaw-recent-file))
-	   (setq japanlaw-menuview--recent-data
-		 (with-temp-buffer
-		   (insert-file-contents (japanlaw-recent-file))
-		   (read (current-buffer)))))))
-
-(defun japanlaw-recent-add ()
-  (ignore-errors
-    (let ((name (upcase (japanlaw-file-sans-name (buffer-file-name)))))
-      (when (string= (buffer-file-name)
-		     (japanlaw-expand-data-file name))
-	(setq japanlaw-menuview--recent-data (cons name (delete name (japanlaw-recent-alist))))
-	(when (> (length japanlaw-menuview--recent-data) japanlaw-recent-max)
-	  (setq japanlaw-menuview--recent-data
-		(butlast japanlaw-menuview--recent-data
-			 (- (length japanlaw-menuview--recent-data) japanlaw-recent-max))))))))
-
-(defun japanlaw-recent-save ()
-  "最近開いた法令ファイル: `japanlaw-recent-file'に
-`japanlaw-recent-alist'を出力する。変更がなかった場合は出力しない。"
-  (ignore-errors
-    (when (and (japanlaw-recent-file)
-	       (file-exists-p (file-name-directory (japanlaw-recent-file))))
-      (with-temp-buffer
-	(save-excursion
-	  (if (file-exists-p (japanlaw-recent-file))
-	      (insert-file-contents (japanlaw-recent-file))
-	    (princ nil (current-buffer))))
-	(unless (equal (read (current-buffer)) (japanlaw-recent-alist))
-	  (with-temp-file (japanlaw-recent-file)
-	    (insert (format "%S" japanlaw-menuview--recent-data))
-	    (message "Wrote %s" (japanlaw-recent-file)))
-	  t)))))
-
 ;;
 ;; Insert contents
 ;;
@@ -874,228 +820,6 @@ LFUNCは、NAMEからなるリストを返す関数。"
   "`Abbrev'で、すべてのフォルダの開閉をする。"
   (japanlaw-index-index-oc-all-function
    open #'japanlaw-load--abbrev-view #'japanlaw-index-insert-abbrev))
-
-;;
-;; Search
-;;
-(defalias 'japanlaw-search 'japanlaw-index-search)
-
-(defun japanlaw-index-search (rx &optional noclear)
-  "法令名(略称法令名を含む)を検索するコマンド。引数付きで実行した
-場合は、以前の検索結果を初期化しない。"
-  (interactive (japanlaw-index-search-interactive))
-  (let ((complete '())
-        (fuzzy '())
-        (abbrevs '())
-        (mishikou '()))
-    (message "Searching...")
-    (cl-loop for (category . contents) in (japanlaw-load--main-data)
-             do
-             (cl-loop for ((name . name2) . id) in contents
-                      ;; 民法（民法第一編第二編第三編）（明治二十九年四月二十七日法律第八十九号）
-                      ;; のうち、括弧を除いた部分の検索。
-                      when (string-match rx name)
-                      do (let ((match (cons (concat name name2) id)))
-                           (if (string= name rx)
-                               ;; 完全一致(民法など複数マッチする場合がある)
-                               (push match complete)
-                             ;; 一部一致
-                             ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
-                             (unless (or (member match fuzzy)
-                                         (member match complete))
-                               (push match fuzzy))))
-                      ;; 後半の括弧部分の検索(括弧内も検索対象に入れる)。
-                      ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
-                      when (string-match rx name2)
-                      do (let ((match (cons (concat name name2) id)))
-                           (unless (or (member match fuzzy)
-                                       (member match complete))
-                             (push match fuzzy)))))
-    (cl-loop for (initial . contents) in (japanlaw-load--abbrev-data)
-             do (cl-loop for (abbrev . entities) in contents
-                         when (string-match rx abbrev)
-                         do (push (append (list abbrev nil) entities) abbrevs)))
-    (cl-loop for (id name1 name2 url) in (japanlaw-load--mishikou-data)
-             when (string-match rx name1)
-             do (push (cons (concat name1 name2) id) mishikou))
-    ;; 以前の検索結果の初期化。
-    (unless noclear (setq japanlaw-menuview--search-data nil))
-    ;; t: opened flag
-    (push
-     (list (format "検索式 `%s'" rx) t
-           `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
-           `(,(format "略称法令名検索 該当件数 %d" (length abbrevs)) t ,@abbrevs)
-           `(,(format "法令名検索 該当件数 %d" (length fuzzy)) t ,@fuzzy)
-           `(,(format "未施行法令名検索 該当件数 %d" (length mishikou)) t ,@mishikou))
-     japanlaw-menuview--search-data)
-    ;; バッファ更新
-    ;; japanlaw-index-goto-mode: Return nil if same local-mode.
-    (unless (japanlaw-menuview--goto-mode 'Search)
-      (japanlaw--draw-buffer
-       (erase-buffer))
-      (japanlaw-index-insert-alist-function #'japanlaw-search-alist))
-    (message "%sdone" (current-message))))
-
-(defun japanlaw-index-search-interactive ()
-  (unless (file-exists-p (japanlaw-index-file))
-    (error "Try `M-x japanlaw'"))
-  (when japanlaw-setup-p (japanlaw-setup))
-  (let ((rx (read-string "Search: " nil 'japanlaw-search-history)))
-    (when (equal rx "")
-      (error ""))
-    (unless (eq major-mode 'japanlaw-index-mode)
-      (if (get-buffer japanlaw-index--buffer-name)
-	  (switch-to-buffer japanlaw-index--buffer-name)
-	(japanlaw-index)))
-    (when (assoc (format "検索式 `%s'" rx) japanlaw-menuview--search-data)
-      (error "`%s' is retrieved." rx))
-    (list rx current-prefix-arg)))
-
-;; Searchモードで検索結果をハイライトする
-(defun japanlaw-index-highlight-search-buffer ()
-  (cl-labels
-      ((put-overlay ()
-                    (let ((rx (and (re-search-forward
-                                    "`\\(.+?\\)'" (point-at-eol) t)
-                                   (match-string 1))))
-                      ;; 検索式
-                      (overlay-put
-                       (car (push (make-overlay (match-beginning 1)
-                                                (match-end 1))
-                                  japanlaw-index-search-overlaies))
-                       'face '(:foreground "red"))
-                      ;; 検索結果
-                      (forward-line 1)
-                      (while (and (/= (japanlaw-index-folder-level) 0)
-                                  (not (eobp)))
-                        (while (= (japanlaw-index-folder-level) 1)
-                          (forward-line 1))
-                        (when (>= (japanlaw-index-folder-level) 2)
-                          (let* ((end (re-search-forward "[-+]\" \"\\(.+?\\)\""
-                                                         (point-at-eol) t))
-                                 (beg (and end (match-beginning 1))))
-                            (when (and beg
-                                       (string-match
-                                        rx (buffer-substring-no-properties beg end)))
-                              (overlay-put
-                               (car (push (make-overlay (+ beg (match-beginning 0))
-                                                        (+ beg (match-end 0)))
-                                          japanlaw-index-search-overlaies))
-                               'face 'match)))
-                          (forward-line 1)))
-                      (and (= (japanlaw-index-folder-level) 0)
-                           (put-overlay)))))
-    (mapc 'delete-overlay japanlaw-index-search-overlaies)
-    (setq japanlaw-index-search-overlaies nil)
-    (save-excursion
-      (goto-char (point-min))
-      (unless (eobp) (put-overlay)))))
-
-;;
-;; Bookmark
-;;
-(defun japanlaw-index-bookmark-add ()
-  "ブックマークに法令名を追加するコマンド。
-ファイル:`japanlaw-bookmark-file'に書き出す。"
-  (interactive)
-  (unless (eq japanlaw-menuview--current-item 'Bookmark)
-    (condition-case err
-        (let ((plist (japanlaw--get-plist)))
-	  (unless plist
-            (error "Not a law data."))
-	  (let ((id (plist-get plist :id)))
-	    (if (member id (japanlaw-load--bookmark-view))
-		(message "Already exists in Bookmark.")
-	      (push id japanlaw-menuview--bookmark-data)
-	      (message "Add to Bookmark `%s'" (plist-get plist :name)))))
-      (error nil))))
-
-(defun japanlaw-index-put-deletion-flag ()
-  "Bookmark,Opened,Recentで削除マークを付ける。"
-  (interactive)
-  (when (member japanlaw-menuview--current-item '(Opened Recent Bookmark))
-    (japanlaw--draw-buffer
-     (forward-line 0)
-     (when (re-search-forward "\\([ D]\\)-" (point-at-eol) t)
-       (let ((current (match-string 1)))
-         (replace-match
-          (string (+ ?\s (- ?D) (string-to-char current)))
-          nil nil nil 1))))
-    (forward-line 1)
-    (when (eobp)
-      (goto-char (point-min)))
-    (japanlaw-index-move-to-column)))
-
-(defun japanlaw-index-get-cells (&optional marks)
-  "バッファからブックマークの各項目を取得して返す。
-MARKSが非nilなら削除マークが付いた項目のみ。"
-  (save-excursion
-    (let ((result nil))
-      (goto-char (point-min))
-      (while (search-forward (if marks "\"D-" " -") nil t)
-	(let ((id (plist-get (japanlaw--get-plist) :id)))
-	  (push id result)))
-      (nreverse result))))
-
-(defun japanlaw-index-do-delete-marks ()
-  "Bookmark,Opened,Recentで、削除マーク`D'が付いた項目を削除する。
-Bookmarkの場合、ファイル:`japanlaw-bookmark-file'に書き出す。
-Openedの場合、ファイルを閉じる。"
-  (interactive)
-  (cl-labels
-      ((delalist (alist &optional form)
-                 ;; ALIST is a symbol. Return a function.
-                 `(lambda ()
-                    (mapc (lambda (cel)
-                            (setq ,alist (delete cel (funcall (function ,alist)))))
-                          (or ,form (japanlaw-index-get-cells 'marks))))))
-    (cl-case japanlaw-menuview--current-item
-      (Bookmark
-       (funcall
-        (delalist 'japanlaw-menuview--bookmark-data
-                  '(mapcar (lambda (x) (upcase x))
-                           (japanlaw-index-get-cells 'marks))))
-       (japanlaw--draw-buffer
-        (erase-buffer))
-       (japanlaw-index-insert-bookmark))
-      (Opened
-       (mapc (lambda (cel)
-               (kill-buffer
-                (get-file-buffer (japanlaw-expand-data-file cel))))
-             ;; mapc(delalist) returns it's arg identical.
-             (funcall (delalist 'japanlaw-menuview--opened-data)))
-       (japanlaw--draw-buffer
-        (erase-buffer))
-       (japanlaw-index-insert-opened))
-      (Recent
-       (funcall
-        (delalist 'japanlaw-menuview--recent-data
-                  '(mapcar (lambda (x) (upcase x))
-                           (japanlaw-index-get-cells 'marks))))
-       (japanlaw--draw-buffer
-        (erase-buffer))
-       (japanlaw-index-insert-recent)))))
-
-(defun japanlaw-index-bookmark-move-up ()
-  "項目を1行上に移動する。"
-  (interactive)
-  (japanlaw-index-bookmark-move-down t))
-
-(defun japanlaw-index-bookmark-move-down (&optional up)
-  "項目を1行下に移動する。"
-  (interactive)
-  (when (eq japanlaw-menuview--current-item 'Bookmark)
-    (japanlaw--draw-buffer
-     (let* ((start (progn (forward-line 0) (point)))
-	    (end   (progn (forward-line 1) (point)))
-	    (line  (buffer-substring start end)))
-       (delete-region start end)
-       (forward-line (if up -1 1))
-       (insert line)))
-    (forward-line (if up -2 1))
-    (when (eobp) (forward-line -1))
-    (japanlaw-index-move-to-column)
-    (setq japanlaw-menuview--bookmark-data (japanlaw-index-get-cells))))
 
 ;;
 ;; Scroll commands
@@ -2288,18 +2012,6 @@ FULL が非-nilなら path/file を返す。"
 	(forward-line 0)
       (goto-char backto)
       (error "No chart found."))))
-
-;;
-;; Bookmark
-;;
-
-(defun japanlaw-bookmark-this-file ()
-  (interactive)
-  (let ((id (japanlaw-get-id (japanlaw-current-buffer-law-name))))
-    (if (member id (japanlaw-load--bookmark-view))
-	(message "Already exists in Bookmark.")
-      (push id japanlaw-menuview--bookmark-data)
-      (message "Add to Bookmark `%s'" (japanlaw-current-buffer-law-name)))))
 
 
 ;;;;
@@ -4466,6 +4178,128 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
                      (insert-file-contents file)
                      (read (current-buffer))))))))
 
+;;
+;; Search
+;;
+
+(defalias 'japanlaw-search 'japanlaw-index-search)
+
+(defun japanlaw-index-search (rx &optional noclear)
+  "法令名(略称法令名を含む)を検索するコマンド。引数付きで実行した
+場合は、以前の検索結果を初期化しない。"
+  (interactive (japanlaw-index-search-interactive))
+  (let ((complete '())
+        (fuzzy '())
+        (abbrevs '())
+        (mishikou '()))
+    (message "Searching...")
+    (cl-loop for (category . contents) in (japanlaw-load--main-data)
+             do
+             (cl-loop for ((name . name2) . id) in contents
+                      ;; 民法（民法第一編第二編第三編）（明治二十九年四月二十七日法律第八十九号）
+                      ;; のうち、括弧を除いた部分の検索。
+                      when (string-match rx name)
+                      do (let ((match (cons (concat name name2) id)))
+                           (if (string= name rx)
+                               ;; 完全一致(民法など複数マッチする場合がある)
+                               (push match complete)
+                             ;; 一部一致
+                             ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
+                             (unless (or (member match fuzzy)
+                                         (member match complete))
+                               (push match fuzzy))))
+                      ;; 後半の括弧部分の検索(括弧内も検索対象に入れる)。
+                      ;; 完全一致、また既に一部一致に含まれる場合は、consしない。
+                      when (string-match rx name2)
+                      do (let ((match (cons (concat name name2) id)))
+                           (unless (or (member match fuzzy)
+                                       (member match complete))
+                             (push match fuzzy)))))
+    (cl-loop for (initial . contents) in (japanlaw-load--abbrev-data)
+             do (cl-loop for (abbrev . entities) in contents
+                         when (string-match rx abbrev)
+                         do (push (append (list abbrev nil) entities) abbrevs)))
+    (cl-loop for (id name1 name2 url) in (japanlaw-load--mishikou-data)
+             when (string-match rx name1)
+             do (push (cons (concat name1 name2) id) mishikou))
+    ;; 以前の検索結果の初期化。
+    (unless noclear (setq japanlaw-menuview--search-data nil))
+    ;; t: opened flag
+    (push
+     (list (format "検索式 `%s'" rx) t
+           `(,(format "法令名完全一致 該当件数 %d" (length complete)) t ,@complete)
+           `(,(format "略称法令名検索 該当件数 %d" (length abbrevs)) t ,@abbrevs)
+           `(,(format "法令名検索 該当件数 %d" (length fuzzy)) t ,@fuzzy)
+           `(,(format "未施行法令名検索 該当件数 %d" (length mishikou)) t ,@mishikou))
+     japanlaw-menuview--search-data)
+    ;; バッファ更新
+    ;; japanlaw-index-goto-mode: Return nil if same local-mode.
+    (unless (japanlaw-menuview--goto-mode 'Search)
+      (japanlaw--draw-buffer
+       (erase-buffer))
+      (japanlaw-index-insert-alist-function #'japanlaw-search-alist))
+    (message "%sdone" (current-message))))
+
+(defun japanlaw-index-search-interactive ()
+  (unless (file-exists-p (japanlaw-index-file))
+    (error "Try `M-x japanlaw'"))
+  (when japanlaw-setup-p (japanlaw-setup))
+  (let ((rx (read-string "Search: " nil 'japanlaw-search-history)))
+    (when (equal rx "")
+      (error ""))
+    (unless (eq major-mode 'japanlaw-index-mode)
+      (if (get-buffer japanlaw-index--buffer-name)
+	  (switch-to-buffer japanlaw-index--buffer-name)
+	(japanlaw-index)))
+    (when (assoc (format "検索式 `%s'" rx) japanlaw-menuview--search-data)
+      (error "`%s' is retrieved." rx))
+    (list rx current-prefix-arg)))
+
+;; Searchモードで検索結果をハイライトする
+(defun japanlaw-index-highlight-search-buffer ()
+  (cl-labels
+      ((put-overlay ()
+                    (let ((rx (and (re-search-forward
+                                    "`\\(.+?\\)'" (point-at-eol) t)
+                                   (match-string 1))))
+                      ;; 検索式
+                      (overlay-put
+                       (car (push (make-overlay (match-beginning 1)
+                                                (match-end 1))
+                                  japanlaw-index-search-overlaies))
+                       'face '(:foreground "red"))
+                      ;; 検索結果
+                      (forward-line 1)
+                      (while (and (/= (japanlaw-index-folder-level) 0)
+                                  (not (eobp)))
+                        (while (= (japanlaw-index-folder-level) 1)
+                          (forward-line 1))
+                        (when (>= (japanlaw-index-folder-level) 2)
+                          (let* ((end (re-search-forward "[-+]\" \"\\(.+?\\)\""
+                                                         (point-at-eol) t))
+                                 (beg (and end (match-beginning 1))))
+                            (when (and beg
+                                       (string-match
+                                        rx (buffer-substring-no-properties beg end)))
+                              (overlay-put
+                               (car (push (make-overlay (+ beg (match-beginning 0))
+                                                        (+ beg (match-end 0)))
+                                          japanlaw-index-search-overlaies))
+                               'face 'match)))
+                          (forward-line 1)))
+                      (and (= (japanlaw-index-folder-level) 0)
+                           (put-overlay)))))
+    (mapc 'delete-overlay japanlaw-index-search-overlaies)
+    (setq japanlaw-index-search-overlaies nil)
+    (save-excursion
+      (goto-char (point-min))
+      (unless (eobp) (put-overlay)))))
+
+
+;;
+;; Bookmark
+;;
+
 ;;TODO rename
 (defun japanlaw-bookmark-save ()
   "ブックマークファイル:`japanlaw-bookmark-file'に
@@ -4484,6 +4318,173 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
               (insert (format "%S" japanlaw-menuview--bookmark-data))
               (message "Wrote %s" file))
             t))))))
+
+(defun japanlaw-bookmark-this-file ()
+  (interactive)
+  (let ((id (japanlaw-get-id (japanlaw-current-buffer-law-name))))
+    (if (member id (japanlaw-load--bookmark-view))
+	(message "Already exists in Bookmark.")
+      (push id japanlaw-menuview--bookmark-data)
+      (message "Add to Bookmark `%s'" (japanlaw-current-buffer-law-name)))))
+
+(defun japanlaw-index-bookmark-add ()
+  "ブックマークに法令名を追加するコマンド。
+ファイル:`japanlaw-bookmark-file'に書き出す。"
+  (interactive)
+  (unless (eq japanlaw-menuview--current-item 'Bookmark)
+    (condition-case err
+        (let ((plist (japanlaw--get-plist)))
+	  (unless plist
+            (error "Not a law data."))
+	  (let ((id (plist-get plist :id)))
+	    (if (member id (japanlaw-load--bookmark-view))
+		(message "Already exists in Bookmark.")
+	      (push id japanlaw-menuview--bookmark-data)
+	      (message "Add to Bookmark `%s'" (plist-get plist :name)))))
+      (error nil))))
+
+(defun japanlaw-index-put-deletion-flag ()
+  "Bookmark,Opened,Recentで削除マークを付ける。"
+  (interactive)
+  (when (member japanlaw-menuview--current-item '(Opened Recent Bookmark))
+    (japanlaw--draw-buffer
+     (forward-line 0)
+     (when (re-search-forward "\\([ D]\\)-" (point-at-eol) t)
+       (let ((current (match-string 1)))
+         (replace-match
+          (string (+ ?\s (- ?D) (string-to-char current)))
+          nil nil nil 1))))
+    (forward-line 1)
+    (when (eobp)
+      (goto-char (point-min)))
+    (japanlaw-index-move-to-column)))
+
+(defun japanlaw-index-get-cells (&optional marks)
+  "バッファからブックマークの各項目を取得して返す。
+MARKSが非nilなら削除マークが付いた項目のみ。"
+  (save-excursion
+    (let ((result nil))
+      (goto-char (point-min))
+      (while (search-forward (if marks "\"D-" " -") nil t)
+	(let ((id (plist-get (japanlaw--get-plist) :id)))
+	  (push id result)))
+      (nreverse result))))
+
+(defun japanlaw-index-do-delete-marks ()
+  "Bookmark,Opened,Recentで、削除マーク`D'が付いた項目を削除する。
+Bookmarkの場合、ファイル:`japanlaw-bookmark-file'に書き出す。
+Openedの場合、ファイルを閉じる。"
+  (interactive)
+  (cl-labels
+      ((delalist (alist &optional form)
+                 ;; ALIST is a symbol. Return a function.
+                 `(lambda ()
+                    (mapc (lambda (cel)
+                            (setq ,alist (delete cel (funcall (function ,alist)))))
+                          (or ,form (japanlaw-index-get-cells 'marks))))))
+    (cl-case japanlaw-menuview--current-item
+      (Bookmark
+       (funcall
+        (delalist 'japanlaw-menuview--bookmark-data
+                  '(mapcar (lambda (x) (upcase x))
+                           (japanlaw-index-get-cells 'marks))))
+       (japanlaw--draw-buffer
+        (erase-buffer))
+       (japanlaw-index-insert-bookmark))
+      (Opened
+       (mapc (lambda (cel)
+               (kill-buffer
+                (get-file-buffer (japanlaw-expand-data-file cel))))
+             ;; mapc(delalist) returns it's arg identical.
+             (funcall (delalist 'japanlaw-menuview--opened-data)))
+       (japanlaw--draw-buffer
+        (erase-buffer))
+       (japanlaw-index-insert-opened))
+      (Recent
+       (funcall
+        (delalist 'japanlaw-menuview--recent-data
+                  '(mapcar (lambda (x) (upcase x))
+                           (japanlaw-index-get-cells 'marks))))
+       (japanlaw--draw-buffer
+        (erase-buffer))
+       (japanlaw-index-insert-recent)))))
+
+(defun japanlaw-index-bookmark-move-up ()
+  "項目を1行上に移動する。"
+  (interactive)
+  (japanlaw-index-bookmark-move-down t))
+
+(defun japanlaw-index-bookmark-move-down (&optional up)
+  "項目を1行下に移動する。"
+  (interactive)
+  (when (eq japanlaw-menuview--current-item 'Bookmark)
+    (japanlaw--draw-buffer
+     (let* ((start (progn (forward-line 0) (point)))
+	    (end   (progn (forward-line 1) (point)))
+	    (line  (buffer-substring start end)))
+       (delete-region start end)
+       (forward-line (if up -1 1))
+       (insert line)))
+    (forward-line (if up -2 1))
+    (when (eobp) (forward-line -1))
+    (japanlaw-index-move-to-column)
+    (setq japanlaw-menuview--bookmark-data (japanlaw-index-get-cells))))
+
+;;
+;; Opened
+;;
+
+(defun japanlaw-opened-alist ()
+  "現在開いている法令データの連想リストを返す。"
+  ;; 法令データかどうかは、パスファイル名が法令データのパスファイル名と等しい
+  ;; かどうかで判定。ディレクトリは大文字、urlは小文字。
+  (japanlaw-make-alist-from-name
+   (lambda ()
+     (cl-labels ((nameof (file) (japanlaw-file-sans-name file)))
+       (mapcar #'nameof
+               (japanlaw:filter
+                (lambda (file)
+                  (string= (japanlaw-expand-data-file (nameof file))
+                           file))
+                (delete nil (mapcar #'buffer-file-name (buffer-list)))))))))
+
+;; Recent
+(defun japanlaw-recent-alist ()
+  "最近開いたファイルの連想リストを返す。"
+  (or japanlaw-menuview--recent-data
+      (and (file-exists-p (japanlaw-recent-file))
+	   (setq japanlaw-menuview--recent-data
+		 (with-temp-buffer
+		   (insert-file-contents (japanlaw-recent-file))
+		   (read (current-buffer)))))))
+
+(defun japanlaw-recent-add ()
+  (ignore-errors
+    (let ((name (upcase (japanlaw-file-sans-name (buffer-file-name)))))
+      (when (string= (buffer-file-name)
+		     (japanlaw-expand-data-file name))
+	(setq japanlaw-menuview--recent-data (cons name (delete name (japanlaw-recent-alist))))
+	(when (> (length japanlaw-menuview--recent-data) japanlaw-recent-max)
+	  (setq japanlaw-menuview--recent-data
+		(butlast japanlaw-menuview--recent-data
+			 (- (length japanlaw-menuview--recent-data) japanlaw-recent-max))))))))
+
+(defun japanlaw-recent-save ()
+  "最近開いた法令ファイル: `japanlaw-recent-file'に
+`japanlaw-recent-alist'を出力する。変更がなかった場合は出力しない。"
+  (ignore-errors
+    (when (and (japanlaw-recent-file)
+	       (file-exists-p (file-name-directory (japanlaw-recent-file))))
+      (with-temp-buffer
+	(save-excursion
+	  (if (file-exists-p (japanlaw-recent-file))
+	      (insert-file-contents (japanlaw-recent-file))
+	    (princ nil (current-buffer))))
+	(unless (equal (read (current-buffer)) (japanlaw-recent-alist))
+	  (with-temp-file (japanlaw-recent-file)
+	    (insert (format "%S" japanlaw-menuview--recent-data))
+	    (message "Wrote %s" (japanlaw-recent-file)))
+	  t)))))
 
 ;;
 ;; Open / Close
