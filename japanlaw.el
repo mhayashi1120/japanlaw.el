@@ -661,7 +661,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')。"
   (japanlaw-index-set-mode-conf)
   (let ((name (lambda (mode)
-		(format "%s:%s" japanlaw-menuview--mode-name mode))))
+		(format "%s:%s" japanlaw-index--mode-name mode))))
     (unless (and (not update) (string= mode-name (funcall name mode)))
       (setq header-line-format
 	    (if japanlaw-use-index-header-line
@@ -1264,8 +1264,8 @@ LFUNCは、NAMEからなるリストを返す関数。"
      (t
       (push "Index was not updated." msg)))
     (when (and (japanlaw:filter 'identity updated)
-	       (get-buffer japanlaw-menuview--buffer-name))
-      (kill-buffer japanlaw-menuview--buffer-name)
+	       (get-buffer japanlaw-index--buffer-name))
+      (kill-buffer japanlaw-index--buffer-name)
       (japanlaw-index))
     (message "%s" (mapconcat 'identity msg "  "))))
 
@@ -1651,8 +1651,8 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
     (when (equal rx "")
       (error ""))
     (unless (eq major-mode 'japanlaw-index-mode)
-      (if (get-buffer japanlaw-menuview--buffer-name)
-	  (switch-to-buffer japanlaw-menuview--buffer-name)
+      (if (get-buffer japanlaw-index--buffer-name)
+	  (switch-to-buffer japanlaw-index--buffer-name)
 	(japanlaw-index)))
     (when (assoc (format "検索式 `%s'" rx) japanlaw-menuview--search-data)
       (error "`%s' is retrieved." rx))
@@ -4542,6 +4542,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;;
 ;; iswitchb
 ;;
+
 (defun japanlaw-icompleting-read (prompt choices)
   ;; See iswitchb.el commentary.
   (let ((minibuffer-setup-hook 'iswitchb-minibuffer-setup)
@@ -4696,6 +4697,31 @@ migemoとiswitchbの設定が必要。"
 ;;
 ;; japanlaw index menu
 ;;
+
+;;
+;; menuview
+;;
+
+;; japanlaw-index-mode
+(defvar japanlaw-index--mode-name "JapanLaw"
+  "`japanlaw-index-mode'のモード名。")
+
+(defvar japanlaw-index--buffer-name "*JapanLaw*"
+  "`japanlaw-index-mode'のバッファ名。")
+
+;; menu item のそれぞれの表示状態を退避保存する変数
+(defvar japanlaw-menuview--opened-data nil) ;;TODO not used?
+(defvar japanlaw-menuview--recent-data nil)
+(defvar japanlaw-menuview--search-data nil)
+(defvar japanlaw-menuview--bookmark-data nil)
+(defvar japanlaw-menuview--index-data nil)
+(defvar japanlaw-menuview--directory-data nil)
+(defvar japanlaw-menuview--abbrev-data nil)
+
+;; 個別のモードの状態を保存するローカル変数。(TODO ローカル？)
+(defvar japanlaw-menuview--current-item nil)
+(defvar japanlaw-menuview--current-config nil)
+
 (easy-menu-define japanlaw-index-mode-menu
   japanlaw-index-mode-map
   "japanlaw-index-menu"
@@ -4744,7 +4770,7 @@ migemoとiswitchbの設定が必要。"
   "`japanlaw-index'のためのメジャーモード。"
   (kill-all-local-variables)
   (use-local-map japanlaw-index-mode-map)
-  (setq mode-name japanlaw-menuview--mode-name)
+  (setq mode-name japanlaw-index--mode-name)
   (setq major-mode 'japanlaw-index-mode)
   ;;TODO should not local
   (set (make-local-variable 'japanlaw-menuview--current-item)
@@ -4763,29 +4789,6 @@ migemoとiswitchbの設定が必要。"
   (run-hooks 'japanlaw-index-mode-hook)
   )
 
-;;
-;; menuview
-;;
-
-;; japanlaw-index-mode
-(defvar japanlaw-menuview--mode-name "JapanLaw"
-  "`japanlaw-index-mode'のモード名。")
-
-(defvar japanlaw-menuview--buffer-name "*JapanLaw*"
-  "`japanlaw-index-mode'のバッファ名。")
-
-;; menu item のそれぞれの表示状態を退避保存する変数
-(defvar japanlaw-menuview--opened-data nil) ;;TODO not used?
-(defvar japanlaw-menuview--recent-data nil)
-(defvar japanlaw-menuview--search-data nil)
-(defvar japanlaw-menuview--bookmark-data nil)
-(defvar japanlaw-menuview--index-data nil)
-(defvar japanlaw-menuview--directory-data nil)
-(defvar japanlaw-menuview--abbrev-data nil)
-
-;; 個別のモードの状態を保存するローカル変数。(TODO ローカル？)
-(defvar japanlaw-menuview--current-item nil)
-(defvar japanlaw-menuview--current-config nil)
 ;;;;
 ;;;; Initialize / Finalize
 ;;;;
@@ -4842,8 +4845,8 @@ migemoとiswitchbの設定が必要。"
 	japanlaw-iswitchb-present-list nil)
   (setq japanlaw-setup-p t)
   (message "Initialize japanlaw variables...done")
-  (when (get-buffer japanlaw-menuview--buffer-name)
-    (kill-buffer japanlaw-menuview--buffer-name))
+  (when (get-buffer japanlaw-index--buffer-name)
+    (kill-buffer japanlaw-index--buffer-name))
   (message "Kill all japanlaw buffers...done"))
 
 (add-hook 'japanlaw-index-mode-hook 'japanlaw-setup)
@@ -4860,10 +4863,10 @@ migemoとiswitchbの設定が必要。"
     (unless japanlaw-online-mode
       (error "Try `M-x japanlaw-online-or-offline', and turn to online mode."))
     (japanlaw-make-index-files))
-  (let ((buffer (get-buffer japanlaw-menuview--buffer-name)))
+  (let ((buffer (get-buffer japanlaw-index--buffer-name)))
     (unless buffer
       (setq buffer
-            (get-buffer-create japanlaw-menuview--buffer-name))
+            (get-buffer-create japanlaw-index--buffer-name))
       (set-buffer buffer)
       (japanlaw-index-mode))
     (switch-to-buffer buffer)))
