@@ -1324,7 +1324,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defun japanlaw--split-fullname (fullname)
   (cond
-   ((string-match "\\(?:(\\([^)]+\\))\\|（\\([^）]+\\)）\\)\\'" fullname)
+   ((string-match "\\(?:\\(([^)]+)\\)\\|\\(（[^）]+）\\)\\)\\'" fullname)
     (let ((name1 (substring fullname 0 (match-beginning 0)))
           (name2 (or (match-string 1 fullname)
                      (match-string 2 fullname))))
@@ -2545,7 +2545,8 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
          (id (plist-get plist :id))
          (name (plist-get plist :name))
          (keys nil))
-    (unless name (error "Not a law data."))
+    (unless name
+      (error "Not a law data."))
     (if id
 	(japanlaw-open-file id)
       (let ((cell (save-excursion
