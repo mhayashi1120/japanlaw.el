@@ -516,7 +516,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
                   (spc 1))))
              japanlaw-menuview--header-items ""))))
 
-(defun japanlaw-index-update ()
+(defun japanlaw-menuview-update ()
   "現在のモードの表示を更新する。
 更新するのは、Opened,Recent,Bookmarkの場合。それ以外のモードでは更新しない。"
   (interactive)
@@ -526,24 +526,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defalias 'japanlaw-index-update 'japanlaw-menuview-update)
 
-(defun japanlaw-menuview--goto-mode (mode &optional update)
-  "`japanlaw-index-mode'の各、個別のモード`japanlaw-menuview--current-item'に遷移する。
-MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')。"
-  (japanlaw-menuview--update-config)
-  (let ((name (lambda (mode)
-		(format "%s:%s" japanlaw-index--mode-name mode))))
-    (unless (and (not update) (string= mode-name (funcall name mode)))
-      (setq header-line-format
-	    (if japanlaw-use-index-header-line
-		(japanlaw-menuview--header-line-format mode)
-	      nil))
-      (setq mode-name (funcall name mode)
-	    japanlaw-menuview--current-item mode)
-      (force-mode-line-update)
-      (japanlaw-index-insert-contents mode)
-      (japanlaw-menuview--restore-config))))
-
-;; Buffer configuration
 (defun japanlaw-menuview--update-config ()
   "現在のバッファの情報を保存する。"
   (setq japanlaw-menuview--current-config
@@ -563,6 +545,23 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
 	(set-window-start (selected-window) start)
 	(japanlaw-goto-line line)
 	(japanlaw-index-move-to-column)))))
+
+(defun japanlaw-menuview--goto-mode (mode &optional update)
+  "`japanlaw-index-mode'の各、個別のモード`japanlaw-menuview--current-item'に遷移する。
+MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')。"
+  (japanlaw-menuview--update-config)
+  (let ((name (lambda (mode)
+		(format "%s:%s" japanlaw-index--mode-name mode))))
+    (unless (and (not update) (string= mode-name (funcall name mode)))
+      (setq header-line-format
+	    (if japanlaw-use-index-header-line
+		(japanlaw-menuview--header-line-format mode)
+	      nil))
+      (setq mode-name (funcall name mode)
+	    japanlaw-menuview--current-item mode)
+      (force-mode-line-update)
+      (japanlaw-index-insert-contents mode)
+      (japanlaw-menuview--restore-config))))
 
 ;;
 ;; Common
@@ -4293,7 +4292,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     (define-key map "P" 'japanlaw-index-bookmark-move-up)
     (define-key map "N" 'japanlaw-index-bookmark-move-down)
     (define-key map "S" 'japanlaw-index-search)
-    (define-key map "g" 'japanlaw-index-update)
+    (define-key map "g" 'japanlaw-menuview-update)
     (define-key map "q" 'bury-buffer)
     (define-key map "Q" 'japanlaw-exit)
     ;;    (define-key map "\C-c\C-b" 'japanlaw-iswitchb)
@@ -4740,7 +4739,7 @@ migemoとiswitchbの設定が必要。"
     ["Search Law Name"		japanlaw-index-search t]
     ["JapanLaw Iswitchb"		japanlaw-iswitchb t]
     "-"
-    ["Update Buffer"		japanlaw-index-update t]
+    ["Update Buffer"		japanlaw-menuview-update t]
     "-"
     ["Bookmark Add"		japanlaw-index-bookmark-add t]
     ["Move Up Bookmark Item"	japanlaw-index-bookmark-move-up t]
