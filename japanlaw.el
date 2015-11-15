@@ -490,55 +490,6 @@ FUNCSは引数を取らない関数のリスト。"
 
 ;; Common
 
-(defun japanlaw--read-sexp (file)
-  (and (file-exists-p file)
-       (with-temp-buffer
-         (let ((coding-system-for-read japanlaw-coding-system-for-write))
-           (insert-file-contents file))
-         (read (current-buffer)))))
-
-;; インデックスファイルの内容を保持するローカル変数。
-(defun japanlaw-load--main-data ()
-  "インデックスファイルをロードする関数。"
-  (or japanlaw-index--main-data
-      (setq japanlaw-index--main-data
-            (japanlaw--read-sexp (japanlaw-index-file)))))
-
-;; 略称法令名のインデックスファイルの内容を保持するローカル変数。
-(defun japanlaw-load--abbrev-data ()
-  "略称法令名のインデックスファイルをロードする関数。"
-  (or japanlaw-index--abbrev-data
-      (setq japanlaw-index--abbrev-data
-            (japanlaw--read-sexp (japanlaw-abbrev-file)))))
-
-(defun japanlaw-load--mishikou-data ()
-  (or japanlaw-index--mishikou-data
-      (setq japanlaw-index--mishikou-data
-            (let ((data (japanlaw--read-sexp (japanlaw-mishikou-file))))
-              (setq japanlaw-index--mishikou-url-alist nil)
-              (cl-loop for (id _name1 _name2 url) in data
-                       do (setq japanlaw-index--mishikou-url-alist
-                                (cons (cons id url)
-                                      japanlaw-index--mishikou-url-alist)))
-              data))))
-
-(defun japanlaw-load--all-names ()
-  "登録法令名と略称法令名のリストを返す。"
-  (append
-   ;; 登録法令名
-   (cl-loop for (category . contents) in (japanlaw-load--main-data)
-            append (cl-loop for ((name . _) . id) in contents
-                            collect name))
-   ;; 略称法令名
-   (cl-loop for (initial . contents) in (japanlaw-load--abbrev-data)
-            append (cl-loop for (abbrev (name . id)) in contents
-                            ;; abbrev には 鉤括弧がついているため substring
-                            ;; e.g. "「あっせん利得処罰法」"
-                            collect (substring abbrev 1 -1)))
-   ;; 未施行法令
-   (cl-loop for (id name1 name2 url) in (japanlaw-load--mishikou-data)
-            collect (concat name1 name2))))
-
 (defun japanlaw-download-list (type)
   (when (file-exists-p (japanlaw-htmldata-path))
     (let ((func
@@ -562,132 +513,6 @@ FUNCSは引数を取らない関数のリスト。"
 
 (defun japanlaw-search-alist ()
   japanlaw-menuview--search-data)
-
-;; Index
-;; `japanlaw-load--main-data'から生成した、`japanlaw-index'のIndexモードで利用する連想リスト。
-(defun japanlaw-load--index-view ()
-  "`japanlaw-menuview--index-data'を生成する関数。"
-  (or japanlaw-menuview--index-data
-      (setq japanlaw-menuview--index-data
-	    (cl-do ((xs (japanlaw-load--main-data) (cdr xs))
-                    (result nil))
-		((null xs) (nreverse result))
-	      (push (cons (caar xs)
-			  (cons nil
-				(cl-do ((ys (cdar xs) (cdr ys))
-                                        (acc nil))
-				    ((null ys) (nreverse acc))
-				  (push (cons (concat (car (caar ys)) (cdr (caar ys)))
-					      (cdar ys))
-					acc))))
-		    result)))))
-
-;; Directory
-;; `japanlaw-load--main-data'から生成した、`japanlaw-index'のDirectoryモードで利用する連想リスト。
-(defun japanlaw-load--directory-view ()
-  "`japanlaw-menuview--directory-data'を生成する関数。"
-  (or japanlaw-menuview--directory-data
-      (setq japanlaw-menuview--directory-data
-	    (let ((dirs (cl-do ((xs (japanlaw-load--main-data) (cdr xs))
-                                (result nil))
-			    ((null xs)
-			     (sort result
-				   (lambda (x y) (string< (car x) (car y)))))
-			  (let ((category (caar xs)))
-			    (cl-do ((ys (cdar xs) (cdr ys)))
-				((null ys))
-			      (let ((gengo (substring (cdar ys) 0 3)))
-				(push (cons gengo
-					    (cons (concat category ":"
-							  (car (caar ys))
-							  (cdr (caar ys)))
-						  (cdar ys)))
-				      result)))))))
-	      (let* ((s0 (make-string 2 0))
-		     ;; dirsをソートする比較関数
-		     (compfun (lambda (x y)
-				(let ((s1 (aref (car x) 0))
-				      (s2 (aref (car y) 0)))
-				  (if (= s1 s2)
-				      (let ((n1 (string-to-number
-						 (progn
-						   (aset s0 0 (aref (car x) 1))
-						   (aset s0 1 (aref (car x) 2))
-						   s0)))
-					    (n2 (string-to-number
-						 (progn
-						   (aset s0 0 (aref (car y) 1))
-						   (aset s0 1 (aref (car y) 2))
-						   s0))))
-					(> n1 n2))
-				    (cond ((or (= s1 ?H)
-					       (= s2 ?H)) nil)
-					  ((or (= s1 ?M)
-					       (= s2 ?M)) t)
-					  ((or (= s1 ?S)
-					       (= s2 ?S)) nil)
-					  (t t)))))))
-		;; 同じ年数の要素を集める。
-		(let ((result nil)
-		      (ls (sort dirs compfun)))
-		  (while ls
-		    (let ((tmp (caar ls)))
-		      (push (cons tmp
-				  (cons nil ; closed flag
-					(let ((acc nil))
-					  (while (string= (caar ls) tmp)
-					    (push (cdar ls) acc)
-					    (pop ls))
-					  acc)))
-			    result)))
-		  (nreverse result)))))))
-
-;; Abbrev
-;; `japanlaw-load--abbrev-data'から生成した、`japanlaw-index'のAbbrevモードで利用する連想リスト。
-(defun japanlaw-load--abbrev-view ()
-  "`japanlaw-menuview--abbrev-data'を生成する関数。"
-  (or japanlaw-menuview--abbrev-data
-      (setq japanlaw-menuview--abbrev-data
-            (cl-loop for (initial . contents) in (japanlaw-load--abbrev-data)
-                     collect
-                     (append
-                      (list initial nil)
-                      (cl-loop for (abbrev . entities) in contents
-                               collect
-                               (append
-                                (list abbrev nil)
-                                (cl-loop for (fullname . id) in entities
-                                         collect (cons fullname id)))))))))
-
-;; Bookmark
-(defun japanlaw-load--bookmark-view ()
-  "ブックマークの連想リストを返す関数。"
-  (let ((file (japanlaw-bookmark-file)))
-    (or japanlaw-menuview--bookmark-data
-        (and (file-exists-p file)
-             (setq japanlaw-menuview--bookmark-data
-                   (with-temp-buffer
-                     (insert-file-contents file)
-                     (read (current-buffer))))))))
-
-;;TODO rename
-(defun japanlaw-bookmark-save ()
-  "ブックマークファイル:`japanlaw-bookmark-file'に
-`japanlaw-load--bookmark-view'を出力する。変更がなかった場合は出力しない。"
-  (let ((file (japanlaw-bookmark-file)))
-    (ignore-errors
-      (when (and file
-                 (file-exists-p (file-name-directory file)))
-        (with-temp-buffer
-          (save-excursion
-            (if (file-exists-p file)
-                (insert-file-contents file)
-              (princ nil (current-buffer))))
-          (unless (equal (read (current-buffer)) (japanlaw-load--bookmark-view))
-            (with-temp-file file
-              (insert (format "%S" japanlaw-menuview--bookmark-data))
-              (message "Wrote %s" file))
-            t))))))
 
 (defun japanlaw-convert-files ()
   "Bookmark's format change in v0.8.5 from v0.8.4."
@@ -3017,6 +2842,55 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
    (t
     (list fullname ""))))
 
+(defun japanlaw--read-sexp (file)
+  (and (file-exists-p file)
+       (with-temp-buffer
+         (let ((coding-system-for-read japanlaw-coding-system-for-write))
+           (insert-file-contents file))
+         (read (current-buffer)))))
+
+;; インデックスファイルの内容を保持するローカル変数。
+(defun japanlaw-load--main-data ()
+  "インデックスファイルをロードする関数。"
+  (or japanlaw-index--main-data
+      (setq japanlaw-index--main-data
+            (japanlaw--read-sexp (japanlaw-index-file)))))
+
+;; 略称法令名のインデックスファイルの内容を保持するローカル変数。
+(defun japanlaw-load--abbrev-data ()
+  "略称法令名のインデックスファイルをロードする関数。"
+  (or japanlaw-index--abbrev-data
+      (setq japanlaw-index--abbrev-data
+            (japanlaw--read-sexp (japanlaw-abbrev-file)))))
+
+(defun japanlaw-load--mishikou-data ()
+  (or japanlaw-index--mishikou-data
+      (setq japanlaw-index--mishikou-data
+            (let ((data (japanlaw--read-sexp (japanlaw-mishikou-file))))
+              (setq japanlaw-index--mishikou-url-alist nil)
+              (cl-loop for (id _name1 _name2 url) in data
+                       do (setq japanlaw-index--mishikou-url-alist
+                                (cons (cons id url)
+                                      japanlaw-index--mishikou-url-alist)))
+              data))))
+
+(defun japanlaw-load--all-names ()
+  "登録法令名と略称法令名のリストを返す。"
+  (append
+   ;; 登録法令名
+   (cl-loop for (category . contents) in (japanlaw-load--main-data)
+            append (cl-loop for ((name . _) . id) in contents
+                            collect name))
+   ;; 略称法令名
+   (cl-loop for (initial . contents) in (japanlaw-load--abbrev-data)
+            append (cl-loop for (abbrev (name . id)) in contents
+                            ;; abbrev には 鉤括弧がついているため substring
+                            ;; e.g. "「あっせん利得処罰法」"
+                            collect (substring abbrev 1 -1)))
+   ;; 未施行法令
+   (cl-loop for (id name1 name2 url) in (japanlaw-load--mishikou-data)
+            collect (concat name1 name2))))
+
 ;;
 ;; Law File
 ;;
@@ -4484,6 +4358,132 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
     (message "Updating %s...done" japanlaw-menuview--current-item)))
 
 (defalias 'japanlaw-index-update 'japanlaw-menuview-update)
+
+;; Index
+;; `japanlaw-load--main-data'から生成した、`japanlaw-index'のIndexモードで利用する連想リスト。
+(defun japanlaw-load--index-view ()
+  "`japanlaw-menuview--index-data'を生成する関数。"
+  (or japanlaw-menuview--index-data
+      (setq japanlaw-menuview--index-data
+	    (cl-do ((xs (japanlaw-load--main-data) (cdr xs))
+                    (result nil))
+		((null xs) (nreverse result))
+	      (push (cons (caar xs)
+			  (cons nil
+				(cl-do ((ys (cdar xs) (cdr ys))
+                                        (acc nil))
+				    ((null ys) (nreverse acc))
+				  (push (cons (concat (car (caar ys)) (cdr (caar ys)))
+					      (cdar ys))
+					acc))))
+		    result)))))
+
+;; Directory
+;; `japanlaw-load--main-data'から生成した、`japanlaw-index'のDirectoryモードで利用する連想リスト。
+(defun japanlaw-load--directory-view ()
+  "`japanlaw-menuview--directory-data'を生成する関数。"
+  (or japanlaw-menuview--directory-data
+      (setq japanlaw-menuview--directory-data
+	    (let ((dirs (cl-do ((xs (japanlaw-load--main-data) (cdr xs))
+                                (result nil))
+			    ((null xs)
+			     (sort result
+				   (lambda (x y) (string< (car x) (car y)))))
+			  (let ((category (caar xs)))
+			    (cl-do ((ys (cdar xs) (cdr ys)))
+				((null ys))
+			      (let ((gengo (substring (cdar ys) 0 3)))
+				(push (cons gengo
+					    (cons (concat category ":"
+							  (car (caar ys))
+							  (cdr (caar ys)))
+						  (cdar ys)))
+				      result)))))))
+	      (let* ((s0 (make-string 2 0))
+		     ;; dirsをソートする比較関数
+		     (compfun (lambda (x y)
+				(let ((s1 (aref (car x) 0))
+				      (s2 (aref (car y) 0)))
+				  (if (= s1 s2)
+				      (let ((n1 (string-to-number
+						 (progn
+						   (aset s0 0 (aref (car x) 1))
+						   (aset s0 1 (aref (car x) 2))
+						   s0)))
+					    (n2 (string-to-number
+						 (progn
+						   (aset s0 0 (aref (car y) 1))
+						   (aset s0 1 (aref (car y) 2))
+						   s0))))
+					(> n1 n2))
+				    (cond ((or (= s1 ?H)
+					       (= s2 ?H)) nil)
+					  ((or (= s1 ?M)
+					       (= s2 ?M)) t)
+					  ((or (= s1 ?S)
+					       (= s2 ?S)) nil)
+					  (t t)))))))
+		;; 同じ年数の要素を集める。
+		(let ((result nil)
+		      (ls (sort dirs compfun)))
+		  (while ls
+		    (let ((tmp (caar ls)))
+		      (push (cons tmp
+				  (cons nil ; closed flag
+					(let ((acc nil))
+					  (while (string= (caar ls) tmp)
+					    (push (cdar ls) acc)
+					    (pop ls))
+					  acc)))
+			    result)))
+		  (nreverse result)))))))
+
+;; Abbrev
+;; `japanlaw-load--abbrev-data'から生成した、`japanlaw-index'のAbbrevモードで利用する連想リスト。
+(defun japanlaw-load--abbrev-view ()
+  "`japanlaw-menuview--abbrev-data'を生成する関数。"
+  (or japanlaw-menuview--abbrev-data
+      (setq japanlaw-menuview--abbrev-data
+            (cl-loop for (initial . contents) in (japanlaw-load--abbrev-data)
+                     collect
+                     (append
+                      (list initial nil)
+                      (cl-loop for (abbrev . entities) in contents
+                               collect
+                               (append
+                                (list abbrev nil)
+                                (cl-loop for (fullname . id) in entities
+                                         collect (cons fullname id)))))))))
+
+;; Bookmark
+(defun japanlaw-load--bookmark-view ()
+  "ブックマークの連想リストを返す関数。"
+  (let ((file (japanlaw-bookmark-file)))
+    (or japanlaw-menuview--bookmark-data
+        (and (file-exists-p file)
+             (setq japanlaw-menuview--bookmark-data
+                   (with-temp-buffer
+                     (insert-file-contents file)
+                     (read (current-buffer))))))))
+
+;;TODO rename
+(defun japanlaw-bookmark-save ()
+  "ブックマークファイル:`japanlaw-bookmark-file'に
+`japanlaw-load--bookmark-view'を出力する。変更がなかった場合は出力しない。"
+  (let ((file (japanlaw-bookmark-file)))
+    (ignore-errors
+      (when (and file
+                 (file-exists-p (file-name-directory file)))
+        (with-temp-buffer
+          (save-excursion
+            (if (file-exists-p file)
+                (insert-file-contents file)
+              (princ nil (current-buffer))))
+          (unless (equal (read (current-buffer)) (japanlaw-load--bookmark-view))
+            (with-temp-file file
+              (insert (format "%S" japanlaw-menuview--bookmark-data))
+              (message "Wrote %s" file))
+            t))))))
 
 ;;
 ;; Open / Close
