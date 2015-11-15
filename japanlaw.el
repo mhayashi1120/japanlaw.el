@@ -380,10 +380,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 ;; TODO hack
 (defvar japanlaw-index--mishikou-url-alist nil)
 
-;; 個別のモードの状態を保存するローカル変数。
-(defvar japanlaw-menuview--current-item nil)
-(defvar japanlaw-menuview--current-config nil)
-
 ;; japanlaw-mode
 (defvar japanlaw-mishikou-list nil)		;ローカル変数
 
@@ -392,40 +388,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 (defvar japanlaw-iswitchb-present-list nil
   "`japanlaw-iswitchb'の現在の検索対象の法令リスト。")
-
-;; japanlaw-index
-(defun japanlaw-set-face-invisible (n)
-  "不可視のプロパティを設定するフォームを返す。"
-  `(,n (progn (put-text-property
-	       (match-beginning ,n) (match-end ,n)
-	       'invisible t)
-	      nil)))
-
-(defun japanlaw-set-mouse-face-1 (n)
-  `(,n (progn (add-text-properties
-	       (match-beginning ,n) (match-end ,n)
-	       (list
-		'mouse-face 'highlight
-		'local-map 'japanlaw-index-mode-map))
-	      nil)))
-
-(defun japanlaw-set-mouse-face-2 (n)
-  `(,n (progn (add-text-properties
-	       (match-beginning ,n) (match-end ,n)
-	       (list
-		'mouse-face 'highlight
-		'local-map 'japanlaw-mode-map))
-	      nil)))
-
-(defvar japanlaw-index-font-lock-keywords
-  (let ((fcolor (cdr (assq 'foreground-color
-        		   (frame-parameters (selected-frame))))))
-    (list `(
-            ;; folder
-            "^ *\\([+-]\\)"
-            (1 japanlaw-index-flag-face t)
-            )))
-  "`japanlaw-index-mode'のための`font-lock-keywords'")
 
 ;; Regexp
 (defconst japanlaw-volume-face-regexp
@@ -481,42 +443,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defconst japanlaw-paragraph-regexp
   (concat "^[○◯]?\\(" japanlaw-article-regexp "\\|[０-９]\\|[0-9]\\)\\{1,2\\}")
   "項数の正規表現。")
-
-;; font-lock-keywords
-(defvar japanlaw-font-lock-keywords)
-(defvar japanlaw-font-lock-keywords-0
-  (list `(,(concat "\\(" (regexp-opt japanlaw-excluded-law-names) "\\)[^人]")
-          (1 japanlaw-anchor-name-face nil))))
-
-(defvar japanlaw-font-lock-keywords-1
-  (list `(,japanlaw-chapter-face-regexp 1 japanlaw-chapter-face)
-	`(,japanlaw-section-face-regexp 1 japanlaw-section-face)
-	`(,japanlaw-subsection-face-regexp 1 japanlaw-subsection-face)
-	`(,japanlaw-subsection2-face-regexp 1 japanlaw-subsection2-face)
-	`(,japanlaw-supplementary-face-regexp 1 japanlaw-supplementary-face)
-	`(,japanlaw-article-number-face-regexp 1 japanlaw-article-number-face)
-	`(,japanlaw-anchor-name-face-regexp2 3 japanlaw-anchor-name-face)
-	`(,japanlaw-anchor-name-face-regexp2 4 japanlaw-anchor-name-face)
-	'("同法" 0 japanlaw-anchor-name-face)
-	`(,japanlaw-anchor-article-face-regexp3 1 japanlaw-anchor-article-face)
-	`(,japanlaw-anchor-article-face-regexp3 ,(japanlaw-set-mouse-face-2 1))
-	`("同法" ,(japanlaw-set-mouse-face-2 0))
-	`(,japanlaw-article-paragraph-face-regexp 1 japanlaw-article-paragraph-face)
-	`(,japanlaw-article-item-face-regexp 1 japanlaw-article-item-face)
-	`(,japanlaw-article-subitem2-face-regexp 0 japanlaw-article-subitem2-face)
-	`(,japanlaw-article-subitem3-face-regexp  0 japanlaw-article-subitem3-face)
-	`(,japanlaw-article-subitem4-face-regexp 0 japanlaw-article-subitem4-face)
-	`(,japanlaw-volume-face-regexp 1 japanlaw-volume-face)
-	`(,japanlaw-comment-face-regexp 1 japanlaw-comment-face)
-	`(,japanlaw-anchor-name-face-regexp2 ,(japanlaw-set-mouse-face-2 2)))
-  "Font lock keywords to highlight the `japanlaw-mode' buffer.")
-
-(unless japanlaw-anchor-clickable
-  (mapc (lambda (x)
-	  (delete x japanlaw-font-lock-keywords-1))
-	(list `(,japanlaw-anchor-name-face-regexp2 ,(japanlaw-set-mouse-face-2 2))
-	      `(,japanlaw-anchor-article-face-regexp3 ,(japanlaw-set-mouse-face-2 1))
-	      `("同法" ,(japanlaw-set-mouse-face-2 0)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; japanlaw-data
@@ -948,9 +874,6 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (while (re-search-forward "<IMG SRC=\"\\(.+?\\)\" [^>]+>" nil t)
 	(push (match-string 1) result))
       (nreverse result))))
-
-(defun japanlaw-expand-image-file-name (path)
-  (concat japanlaw-path path))
 
 (defun japanlaw-expand-image-file-url (path)
   (concat japanlaw-egov-url (substring path 1)))
@@ -3779,14 +3702,10 @@ FULL が非-nilなら path/file を返す。"
   "未施行法令一覧を取得できるURL")
 
 (defconst japanlaw-egov-url "http://law.e-gov.go.jp/"
-  "法令データ提供システムのURL。"
-  :type 'directory
-  :group 'japanlaw)
+  "法令データ提供システムのURL。")
 
 (defconst japanlaw-egov-htmldata-url "http://law.e-gov.go.jp/htmldata/"
-  "法令データ提供システムから html を取得する基本となる URL。"
-  :type 'directory
-  :group 'japanlaw)
+  "法令データ提供システムから html を取得する基本となる URL。")
 
 ;;
 ;; Physical filename
@@ -3846,6 +3765,10 @@ FULL が非-nilなら path/file を返す。"
   "最近開いたファイルのリストの保存先ファイル名"
   (expand-file-name ".recent" japanlaw-path))
 
+(defun japanlaw-expand-image-file-name (path)
+  ;;TODO expand
+  (concat japanlaw-path path))
+
 (make-obsolete-variable 'japanlaw-recent-file nil "0.8.11")
 (make-obsolete-variable 'japanlaw-data-path nil "0.8.11")
 (make-obsolete-variable 'japanlaw-temp-path nil "0.8.11")
@@ -3857,6 +3780,23 @@ FULL が非-nilなら path/file を返す。"
 ;;;;
 ;;;; UI
 ;;;;
+
+;;
+;; Constants
+;;
+
+;; NOTE: 頭文字を Key に割り当てているので、
+;;  他の単語と頭文字も重複しないようにすること。
+(defconst japanlaw-menuview--header-items
+  '("Opened"
+    "Recent"
+    "Search"
+    "Bookmark"
+    "Index"
+    "Directory"
+    "Abbrev")
+  "`japanlaw-index-mode'のヘッダラインのモードを表わす項目。")
+
 
 ;;
 ;; font-lock-keyword-face
@@ -4209,6 +4149,78 @@ FULL が非-nilなら path/file を返す。"
   :group 'japanlaw-faces)
 
 
+;;
+;; font-lock-keywords
+;;
+
+;; japanlaw-index
+(defun japanlaw-set-face-invisible (n)
+  "不可視のプロパティを設定するフォームを返す。"
+  `(,n (progn (put-text-property
+	       (match-beginning ,n) (match-end ,n)
+	       'invisible t)
+	      nil)))
+
+(defun japanlaw-set-mouse-face-1 (n)
+  `(,n (progn (add-text-properties
+	       (match-beginning ,n) (match-end ,n)
+	       (list
+		'mouse-face 'highlight
+		'local-map 'japanlaw-index-mode-map))
+	      nil)))
+
+(defun japanlaw-set-mouse-face-2 (n)
+  `(,n (progn (add-text-properties
+	       (match-beginning ,n) (match-end ,n)
+	       (list
+		'mouse-face 'highlight
+		'local-map 'japanlaw-mode-map))
+	      nil)))
+
+(defvar japanlaw-index-font-lock-keywords
+  (let ((fcolor (cdr (assq 'foreground-color
+        		   (frame-parameters (selected-frame))))))
+    (list `(
+            ;; folder
+            "^ *\\([+-]\\)"
+            (1 japanlaw-index-flag-face t)
+            )))
+  "`japanlaw-index-mode'のための`font-lock-keywords'")
+
+(defvar japanlaw-font-lock-keywords)
+(defvar japanlaw-font-lock-keywords-0
+  (list `(,(concat "\\(" (regexp-opt japanlaw-excluded-law-names) "\\)[^人]")
+          (1 japanlaw-anchor-name-face nil))))
+
+(defvar japanlaw-font-lock-keywords-1
+  (list `(,japanlaw-chapter-face-regexp 1 japanlaw-chapter-face)
+	`(,japanlaw-section-face-regexp 1 japanlaw-section-face)
+	`(,japanlaw-subsection-face-regexp 1 japanlaw-subsection-face)
+	`(,japanlaw-subsection2-face-regexp 1 japanlaw-subsection2-face)
+	`(,japanlaw-supplementary-face-regexp 1 japanlaw-supplementary-face)
+	`(,japanlaw-article-number-face-regexp 1 japanlaw-article-number-face)
+	`(,japanlaw-anchor-name-face-regexp2 3 japanlaw-anchor-name-face)
+	`(,japanlaw-anchor-name-face-regexp2 4 japanlaw-anchor-name-face)
+	'("同法" 0 japanlaw-anchor-name-face)
+	`(,japanlaw-anchor-article-face-regexp3 1 japanlaw-anchor-article-face)
+	`(,japanlaw-anchor-article-face-regexp3 ,(japanlaw-set-mouse-face-2 1))
+	`("同法" ,(japanlaw-set-mouse-face-2 0))
+	`(,japanlaw-article-paragraph-face-regexp 1 japanlaw-article-paragraph-face)
+	`(,japanlaw-article-item-face-regexp 1 japanlaw-article-item-face)
+	`(,japanlaw-article-subitem2-face-regexp 0 japanlaw-article-subitem2-face)
+	`(,japanlaw-article-subitem3-face-regexp  0 japanlaw-article-subitem3-face)
+	`(,japanlaw-article-subitem4-face-regexp 0 japanlaw-article-subitem4-face)
+	`(,japanlaw-volume-face-regexp 1 japanlaw-volume-face)
+	`(,japanlaw-comment-face-regexp 1 japanlaw-comment-face)
+	`(,japanlaw-anchor-name-face-regexp2 ,(japanlaw-set-mouse-face-2 2)))
+  "Font lock keywords to highlight the `japanlaw-mode' buffer.")
+
+(unless japanlaw-anchor-clickable
+  (mapc (lambda (x)
+	  (delete x japanlaw-font-lock-keywords-1))
+	(list `(,japanlaw-anchor-name-face-regexp2 ,(japanlaw-set-mouse-face-2 2))
+	      `(,japanlaw-anchor-article-face-regexp3 ,(japanlaw-set-mouse-face-2 1))
+	      `("同法" ,(japanlaw-set-mouse-face-2 0)))))
 
 ;;
 ;; User visibility
@@ -4733,18 +4745,6 @@ migemoとiswitchbの設定が必要。"
 (defvar japanlaw-menuview--buffer-name "*JapanLaw*"
   "`japanlaw-index-mode'のバッファ名。")
 
-;; NOTE: 頭文字を Key に割り当てているので、
-;;  他の単語と頭文字も重複しないようにすること。
-(defconst japanlaw-menuview--header-items
-  '("Opened"
-    "Recent"
-    "Search"
-    "Bookmark"
-    "Index"
-    "Directory"
-    "Abbrev")
-  "`japanlaw-index-mode'のヘッダラインのモードを表わす項目。")
-
 ;; menu item のそれぞれの表示状態を退避保存する変数
 (defvar japanlaw-menuview--opened-data nil) ;;TODO not used?
 (defvar japanlaw-menuview--recent-data nil)
@@ -4754,6 +4754,9 @@ migemoとiswitchbの設定が必要。"
 (defvar japanlaw-menuview--directory-data nil)
 (defvar japanlaw-menuview--abbrev-data nil)
 
+;; 個別のモードの状態を保存するローカル変数。(TODO ローカル？)
+(defvar japanlaw-menuview--current-item nil)
+(defvar japanlaw-menuview--current-config nil)
 ;;;;
 ;;;; Initialize / Finalize
 ;;;;
