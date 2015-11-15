@@ -175,82 +175,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :group 'japanlaw)
 
 ;;
-;; Path/File/Directory names
-;;
-
-(defcustom japanlaw-path
-  (let ((path (locate-user-emacs-file "japanlaw.d" ".japanlaw.d")))
-    (expand-file-name path))
-  "法令データ提供システムから取得したインデックスファイル、法令デー
-タ等の保存先パス。"
-  :type 'directory
-  :group 'japanlaw)
-
-(defcustom japanlaw-egov-url "http://law.e-gov.go.jp/"
-  "法令データ提供システムのURL。"
-  :type 'directory
-  :group 'japanlaw)
-
-(defcustom japanlaw-egov-htmldata-url "http://law.e-gov.go.jp/htmldata/"
-  "法令データ提供システムから html を取得する基本となる URL。"
-  :type 'directory
-  :group 'japanlaw)
-
-(defcustom japanlaw-extention ".law"
-  "法令データファイルの拡張子。`auto-mode-alist'に追加される。"
-  :type 'string
-  :group 'japanlaw)
-
-(defun japanlaw-htmldata-path ()
-  "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
-の親ディレクトリのパス名。"
-  (expand-file-name "htmldata" japanlaw-path))
-
-(defun japanlaw-data-path ()
-  "w3mでdumpした法令ファイルの保存先ディレクトリの親ディレクトリのパス名。"
-  (expand-file-name "data" japanlaw-path))
-
-(defun japanlaw-temp-path ()
-  "w3mでdumpする一時ファイルの保存先ディレクトリのパス名。"
-  (expand-file-name "tmp" japanlaw-path))
-
-(defun japanlaw-index-file ()
-  "事項別インデックスファイル名。"
-  (expand-file-name ".index" japanlaw-path))
-
-(defun japanlaw-abbrev-file ()
-  "略称法令名のインデックスファイル名。"
-  (expand-file-name ".abbrev" japanlaw-path))
-
-;; 蘊蓄: 施行の発音 (Shikou or Sekou)
-;; NHK 建築、土木 -> Sekou
-;; NHK 法律  -> Shikou
-;; 法曹関係者 -> Sekou (執行と聞き間違えるから?)
-;; 当ソースコードでは Shikou 発音で統一する
-(defun japanlaw-mishikou-file ()
-  "未施行法令のインデックスファイル名"
-  (expand-file-name ".mishikou" japanlaw-path))
-
-(defun japanlaw-shinki-list-file ()
-  "新規法令のインデックスファイル名"
-  (expand-file-name ".shinki" japanlaw-path))
-
-(defun japanlaw-bookmark-file ()
-  (expand-file-name ".bookmark" japanlaw-path))
-
-(defun japanlaw-recent-file ()
-  "最近開いたファイルのリストの保存先ファイル名"
-  (expand-file-name ".recent" japanlaw-path))
-
-(make-obsolete-variable 'japanlaw-recent-file nil "0.8.11")
-(make-obsolete-variable 'japanlaw-data-path nil "0.8.11")
-(make-obsolete-variable 'japanlaw-temp-path nil "0.8.11")
-(make-obsolete-variable 'japanlaw-bookmark-file nil "0.8.11")
-(make-obsolete-variable 'japanlaw-abbrev-file nil "0.8.11")
-(make-obsolete-variable 'japanlaw-index-file nil "0.8.11")
-(make-obsolete-variable 'japanlaw-htmldata-path nil "0.8.11")
-
-;;
 ;; Control buffer name
 ;;
 
@@ -3835,9 +3759,9 @@ FULL が非-nilなら path/file を返す。"
 ;;;; Data
 ;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; japanlaw-vars
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; URL
+;;
 
 (defconst japanlaw-version "version 0.9.2"
   "Version of japanlaw.el")
@@ -3853,6 +3777,82 @@ FULL が非-nilなら path/file を返す。"
 (defconst japanlaw-mishikou-index-url
   "http://law.e-gov.go.jp/announce.html"
   "未施行法令一覧を取得できるURL")
+
+(defconst japanlaw-egov-url "http://law.e-gov.go.jp/"
+  "法令データ提供システムのURL。"
+  :type 'directory
+  :group 'japanlaw)
+
+(defconst japanlaw-egov-htmldata-url "http://law.e-gov.go.jp/htmldata/"
+  "法令データ提供システムから html を取得する基本となる URL。"
+  :type 'directory
+  :group 'japanlaw)
+
+;;
+;; Physical filename
+;;
+
+(defcustom japanlaw-path
+  (let ((path (locate-user-emacs-file "japanlaw.d" ".japanlaw.d")))
+    (expand-file-name path))
+  "法令データ提供システムから取得したインデックスファイル、法令デー
+タ等の保存先パス。"
+  :type 'directory
+  :group 'japanlaw)
+
+(defcustom japanlaw-extention ".law"
+  "法令データファイルの拡張子。`auto-mode-alist'に追加される。"
+  :type 'string
+  :group 'japanlaw)
+
+(defun japanlaw-htmldata-path ()
+  "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
+の親ディレクトリのパス名。"
+  (expand-file-name "htmldata" japanlaw-path))
+
+(defun japanlaw-data-path ()
+  "w3mでdumpした法令ファイルの保存先ディレクトリの親ディレクトリのパス名。"
+  (expand-file-name "data" japanlaw-path))
+
+(defun japanlaw-temp-path ()
+  "w3mでdumpする一時ファイルの保存先ディレクトリのパス名。"
+  (expand-file-name "tmp" japanlaw-path))
+
+(defun japanlaw-index-file ()
+  "事項別インデックスファイル名。"
+  (expand-file-name ".index" japanlaw-path))
+
+(defun japanlaw-abbrev-file ()
+  "略称法令名のインデックスファイル名。"
+  (expand-file-name ".abbrev" japanlaw-path))
+
+;; 蘊蓄: 施行の発音 (Shikou or Sekou)
+;; NHK 建築、土木 -> Sekou
+;; NHK 法律  -> Shikou
+;; 法曹関係者 -> Sekou (執行と聞き間違えるから?)
+;; 当ソースコードでは Shikou 発音で統一する
+(defun japanlaw-mishikou-file ()
+  "未施行法令のインデックスファイル名"
+  (expand-file-name ".mishikou" japanlaw-path))
+
+(defun japanlaw-shinki-list-file ()
+  "新規法令のインデックスファイル名"
+  (expand-file-name ".shinki" japanlaw-path))
+
+(defun japanlaw-bookmark-file ()
+  (expand-file-name ".bookmark" japanlaw-path))
+
+(defun japanlaw-recent-file ()
+  "最近開いたファイルのリストの保存先ファイル名"
+  (expand-file-name ".recent" japanlaw-path))
+
+(make-obsolete-variable 'japanlaw-recent-file nil "0.8.11")
+(make-obsolete-variable 'japanlaw-data-path nil "0.8.11")
+(make-obsolete-variable 'japanlaw-temp-path nil "0.8.11")
+(make-obsolete-variable 'japanlaw-bookmark-file nil "0.8.11")
+(make-obsolete-variable 'japanlaw-abbrev-file nil "0.8.11")
+(make-obsolete-variable 'japanlaw-index-file nil "0.8.11")
+(make-obsolete-variable 'japanlaw-htmldata-path nil "0.8.11")
 
 ;;;;
 ;;;; UI
