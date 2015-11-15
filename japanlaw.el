@@ -450,106 +450,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
           (acc nil (cl-acons (car ls) (cdr (assoc (car ls) index)) acc)))
       ((null ls) acc)))
 
-(defun japanlaw-htmldata-retrieve (id force &optional url)
-  "IDのHTMLデータが存在しない場合と、FORCEが非nilの場合に取得する。最後
-に取得した時から変更があった場合、番号付きバックアップファイルを生成する。
-保存先のhtmlのパスファイル名を返す。"
-  (let ((html-path (japanlaw-expand-htmldata-file id))
-	(file (japanlaw-expand-data-file id)))
-    (unless url
-      (setq url (japanlaw-expand-htmldata-url id)))
-    (when (or force (not (file-exists-p html-path)))
-      (let ((buffer (japanlaw-url-retrieve url)))
-	(with-current-buffer buffer
-	  (goto-char (point-min))
-	  ;; (save-excursion (replace-string "\r" ""))    ;Emacs23?
-	  (when (search-forward "404 Not Found" nil t)
-	    (re-search-forward "^$" nil t)
-	    (error "%s"
-                   (concat url
-			   (replace-regexp-in-string
-			    "<.+?>\\|\r\n" ""
-			    (buffer-substring (point) (point-max))))))
-	  ;; ファイルが存在しない場合と、取得したデータと保存されているデータ
-	  ;; を比較し、データが更新された場合、バックアップと出力を行う。
-	  ;; 更新されていなければメッセージを出す。
-	  (let (s1 e1 s2 e2)
-	    (re-search-forward "^$" nil t)
-	    (forward-line 1)
-	    (setq s1 (point))
-	    (setq e1 (point-max))
-	    (if (= (with-temp-buffer
-		     (if (not (file-exists-p html-path))
-			 -1
-		       (insert-file-contents html-path)
-		       (setq s2 (point-min) e2 (point-max))
-		       (compare-buffer-substrings buffer s1 e1 nil s2 e2)))
-		   0)
-		(progn
-		  (message "File `%s.html' not changed from last retrieving." id)
-		  (sit-for 2))
-	      (when (file-exists-p file) (delete-file file)) ;テキストの削除
-	      (japanlaw-make-directory (japanlaw-get-dirname id)) ;ディレクトリ
-	      (japanlaw-make-backup-file html-path) ;バックアップ
-              ;; e-gov の html はすべて shift_jis のようで、
-              ;; 当分変わると思えないのでハードコーディング。
-              (let ((coding-system-for-write 'japanese-shift-jis-dos))
-                (write-region
-                 (point) (point-max) html-path))))
-	  (kill-buffer buffer))))
-    html-path))
-
-(defun japanlaw-make-images-list ()
-  "htmldataから画像データのパスリストを取得して返す。"
-  (save-excursion
-    (goto-char (point-min))
-    (let ((result nil)
-	  (case-fold-search t))
-      (while (re-search-forward "<IMG SRC=\"\\(.+?\\)\" [^>]+>" nil t)
-	(push (match-string 1) result))
-      (nreverse result))))
-
-(defun japanlaw-images-retrieve (ls)
-  (save-current-buffer
-    (mapcar #'(lambda (path)
-		(let* ((url (japanlaw-expand-image-file-url path))
-		       (file (japanlaw-expand-image-file-name path))
-		       (dir (file-name-directory file))
-		       (buffer (japanlaw-url-retrieve url)))
-		  (japanlaw-make-directory dir)
-		  (with-current-buffer (set-buffer buffer)
-		    (goto-char (point-min))
-                    (let ((coding-system-for-write 'binary))
-                      (write-region
-                       (progn (re-search-forward "^$" nil t)
-                              (forward-line 1)
-                              (point))
-                       (point-max)
-                       file)))
-		  (kill-buffer buffer)))
-	    ls)))
-
-(defun japanlaw-replace-image-tags (images)
-  (let ((case-fold-search t))
-    (goto-char (point-min))
-    (dolist (img images)
-      (when (re-search-forward
-	     (format "IMG SRC=\"%s\" ALT=\\(\"\"\\)" img) nil t)
-	(replace-match (format "\"<../..%s>\"" img) nil nil nil 1)))))
-
-(defun japanlaw-html-get-h-path ()
-  "htmldataからH-PATHを抽出する。"
-  (let ((case-fold-search t)
-	(h-path nil))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "<A HREF=\".+?H_PATH=\\(.+?\\)\" [^>]+>" nil t)
-	(let ((path (match-string-no-properties 1)))
-	  (when (re-search-forward "\\([^<]+\\)</A>" nil t)
-	    (let ((s (japanlaw-url-decode-string (match-string 1))))
-	      (push (cons s path) h-path)))))
-      (nreverse h-path))))
-
 (defun japanlaw-make-font-lock-regexp-in-buffer (h-path)
   ;; japanlaw-name-search-in-buffer
   (let ((xs (japanlaw-load--all-names))
@@ -1215,29 +1115,6 @@ LFUNCは、NAMEからなるリストを返す関数。"
       (kill-buffer japanlaw-index--buffer-name)
       (japanlaw-index))
     (message "%s" (mapconcat 'identity msg "  "))))
-
-(defun japanlaw-retrieve-html ()
-  "ポイント位置のHTMLデータを再取得。最後に取得してから更新があっ
-た場合、番号付きバックアップを生成する。"
-  (interactive)
-  (let ((id (cond ((eq major-mode 'japanlaw-index-mode)
-		   (plist-get (japanlaw--get-plist) :id))
-		  ((eq major-mode 'japanlaw-mode)
-		   (upcase (japanlaw-file-sans-name (buffer-file-name))))
-		  (t (error "Try in japanlaw-index-mode or japanlaw-mode.")))))
-    (when (and (japanlaw-get-name id)
-	       (or japanlaw-online-mode
-		   (japanlaw-online-mode-message #'error))
-	       (y-or-n-p "Retrieve htmldata from egov? "))
-      (let ((html (japanlaw-expand-htmldata-file id))
-	    (file (japanlaw-expand-data-file id)))
-	(japanlaw-htmldata-retrieve id 'force)
-	(let ((buffer (get-file-buffer file)))
-	  (when (and buffer
-		     ;; 更新された場合 => nil
-		     (not (verify-visited-file-modtime buffer)))
-	    (kill-buffer buffer)))
-	(japanlaw-open-file id)))))
 
 (defun japanlaw-index-open-all ()
   "`Index'で、すべてのフォルダを開くコマンド。"
@@ -3151,6 +3028,10 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     (decode-coding-string
      str (or coding 'iso-8859-1 'iso-2022-7bit 'iso-2022-7bit))))
 
+;;
+;; Interactive Command
+;;
+
 
 ;;;;
 ;;;; Data
@@ -3521,6 +3402,55 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (message "Not exists japanlaw-read-init-file file `%s'" file)
       nil)))
 
+(defun japanlaw-htmldata-retrieve (id force &optional url)
+  "IDのHTMLデータが存在しない場合と、FORCEが非nilの場合に取得する。最後
+に取得した時から変更があった場合、番号付きバックアップファイルを生成する。
+保存先のhtmlのパスファイル名を返す。"
+  (let ((html-path (japanlaw-expand-htmldata-file id))
+	(file (japanlaw-expand-data-file id)))
+    (unless url
+      (setq url (japanlaw-expand-htmldata-url id)))
+    (when (or force (not (file-exists-p html-path)))
+      (let ((buffer (japanlaw-url-retrieve url)))
+	(with-current-buffer buffer
+	  (goto-char (point-min))
+	  ;; (save-excursion (replace-string "\r" ""))    ;Emacs23?
+	  (when (search-forward "404 Not Found" nil t)
+	    (re-search-forward "^$" nil t)
+	    (error "%s"
+                   (concat url
+			   (replace-regexp-in-string
+			    "<.+?>\\|\r\n" ""
+			    (buffer-substring (point) (point-max))))))
+	  ;; ファイルが存在しない場合と、取得したデータと保存されているデータ
+	  ;; を比較し、データが更新された場合、バックアップと出力を行う。
+	  ;; 更新されていなければメッセージを出す。
+	  (let (s1 e1 s2 e2)
+	    (re-search-forward "^$" nil t)
+	    (forward-line 1)
+	    (setq s1 (point))
+	    (setq e1 (point-max))
+	    (if (= (with-temp-buffer
+		     (if (not (file-exists-p html-path))
+			 -1
+		       (insert-file-contents html-path)
+		       (setq s2 (point-min) e2 (point-max))
+		       (compare-buffer-substrings buffer s1 e1 nil s2 e2)))
+		   0)
+		(progn
+		  (message "File `%s.html' not changed from last retrieving." id)
+		  (sit-for 2))
+	      (when (file-exists-p file) (delete-file file)) ;テキストの削除
+	      (japanlaw-make-directory (japanlaw-get-dirname id)) ;ディレクトリ
+	      (japanlaw-make-backup-file html-path) ;バックアップ
+              ;; e-gov の html はすべて shift_jis のようで、
+              ;; 当分変わると思えないのでハードコーディング。
+              (let ((coding-system-for-write 'japanese-shift-jis-dos))
+                (write-region
+                 (point) (point-max) html-path))))
+	  (kill-buffer buffer))))
+    html-path))
+
 (defun japanlaw-make-data (id &optional force url)
   "htmlデータをw3mでダンプする。FORCEが非nilならIDをGET、nilなら既
 にGETしたHTMLを対象とする。また、font-lockのためのタグの埋め込み等
@@ -3580,6 +3510,80 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (message "Getting file and converting...done")
       ;; 生成されたファイルの名前を返す。
       file)))
+
+(defun japanlaw-retrieve-html ()
+  "ポイント位置のHTMLデータを再取得。最後に取得してから更新があっ
+た場合、番号付きバックアップを生成する。"
+  (interactive)
+  (let ((id (cond ((eq major-mode 'japanlaw-index-mode)
+		   (plist-get (japanlaw--get-plist) :id))
+		  ((eq major-mode 'japanlaw-mode)
+		   (upcase (japanlaw-file-sans-name (buffer-file-name))))
+		  (t (error "Try in japanlaw-index-mode or japanlaw-mode.")))))
+    (when (and (japanlaw-get-name id)
+	       (or japanlaw-online-mode
+		   (japanlaw-online-mode-message #'error))
+	       (y-or-n-p "Retrieve htmldata from egov? "))
+      (let ((html (japanlaw-expand-htmldata-file id))
+	    (file (japanlaw-expand-data-file id)))
+	(japanlaw-htmldata-retrieve id 'force)
+	(let ((buffer (get-file-buffer file)))
+	  (when (and buffer
+		     ;; 更新された場合 => nil
+		     (not (verify-visited-file-modtime buffer)))
+	    (kill-buffer buffer)))
+	(japanlaw-open-file id)))))
+
+(defun japanlaw-make-images-list ()
+  "htmldataから画像データのパスリストを取得して返す。"
+  (save-excursion
+    (goto-char (point-min))
+    (let ((result nil)
+	  (case-fold-search t))
+      (while (re-search-forward "<IMG SRC=\"\\(.+?\\)\" [^>]+>" nil t)
+	(push (match-string 1) result))
+      (nreverse result))))
+
+(defun japanlaw-images-retrieve (ls)
+  (save-current-buffer
+    (mapcar #'(lambda (path)
+		(let* ((url (japanlaw-expand-image-file-url path))
+		       (file (japanlaw-expand-image-file-name path))
+		       (dir (file-name-directory file))
+		       (buffer (japanlaw-url-retrieve url)))
+		  (japanlaw-make-directory dir)
+		  (with-current-buffer (set-buffer buffer)
+		    (goto-char (point-min))
+                    (let ((coding-system-for-write 'binary))
+                      (write-region
+                       (progn (re-search-forward "^$" nil t)
+                              (forward-line 1)
+                              (point))
+                       (point-max)
+                       file)))
+		  (kill-buffer buffer)))
+	    ls)))
+
+(defun japanlaw-replace-image-tags (images)
+  (let ((case-fold-search t))
+    (goto-char (point-min))
+    (dolist (img images)
+      (when (re-search-forward
+	     (format "IMG SRC=\"%s\" ALT=\\(\"\"\\)" img) nil t)
+	(replace-match (format "\"<../..%s>\"" img) nil nil nil 1)))))
+
+(defun japanlaw-html-get-h-path ()
+  "htmldataからH-PATHを抽出する。"
+  (let ((case-fold-search t)
+	(h-path nil))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "<A HREF=\".+?H_PATH=\\(.+?\\)\" [^>]+>" nil t)
+	(let ((path (match-string-no-properties 1)))
+	  (when (re-search-forward "\\([^<]+\\)</A>" nil t)
+	    (let ((s (japanlaw-url-decode-string (match-string 1))))
+	      (push (cons s path) h-path)))))
+      (nreverse h-path))))
 
 
 ;;;;
