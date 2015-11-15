@@ -51,7 +51,7 @@
 ;;    未施行法律を表示するため、多くの refactoring を行いました。
 ;;    + namespace の整理に伴う関数名の変更
 ;;    + cl から cl-lib への変更
-;;    + list 内データアクセス を可視化するため do -> loop マクロへ
+;;    + 無名 list 内データを可視化するため do -> loop マクロへ
 ;;    TODO
 
 ;;; Code:
