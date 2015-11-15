@@ -607,7 +607,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
   (cl-loop for (category opened . contents) in alist
            ;; 検索式
            do (japanlaw-index-insert-line 0 (not opened) category)
-           ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
+           ;; 完全一致,略称法令名検索,法令名検索結果を挿入
            when opened
            do (cl-loop for (name opened2 . contents2) in contents
                        do (japanlaw-index-insert-line 2 (not opened2) name)
