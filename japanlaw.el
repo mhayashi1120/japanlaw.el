@@ -4591,9 +4591,9 @@ migemoとiswitchbの設定が必要。"
 	     (directory-files dir nil ext))
 	   (japanlaw:filter 'file-directory-p (directory-files parent t match)))))
 
-;;
-;; japanlaw-mode
-;;
+;;;
+;;; japanlaw-mode
+;;;
 
 (easy-menu-define japanlaw-mode-menu
   japanlaw-mode-map
@@ -4693,9 +4693,9 @@ migemoとiswitchbの設定が必要。"
        (setq mode-line-buffer-identification japanlaw-mode-line))
   (run-hooks 'japanlaw-mode-hook))
 
-;;
-;; japanlaw index menu
-;;
+;;;
+;;; japanlaw-index-mode
+;;;
 
 ;;
 ;; menuview
@@ -4720,6 +4720,10 @@ migemoとiswitchbの設定が必要。"
 ;; 個別のモードの状態を保存するローカル変数。(TODO ローカル？)
 (defvar japanlaw-menuview--current-item nil)
 (defvar japanlaw-menuview--current-config nil)
+
+;;
+;; menu
+;;
 
 (easy-menu-define japanlaw-index-mode-menu
   japanlaw-index-mode-map
