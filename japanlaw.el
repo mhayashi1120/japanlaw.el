@@ -4823,11 +4823,13 @@ migemoとiswitchbの設定が必要。"
     (unless japanlaw-online-mode
       (error "Try `M-x japanlaw-online-or-offline', and turn to online mode."))
     (japanlaw-make-index-files))
-  (switch-to-buffer
-   (or (get-buffer japanlaw-menuview--buffer-name)
-       (prog1
-	   (set-buffer (get-buffer-create japanlaw-menuview--buffer-name))
-	 (japanlaw-index-mode)))))
+  (let ((buffer (get-buffer japanlaw-menuview--buffer-name)))
+    (unless buffer
+      (setq buffer
+            (get-buffer-create japanlaw-menuview--buffer-name))
+      (set-buffer buffer)
+      (japanlaw-index-mode))
+    (switch-to-buffer buffer)))
 
 
 
