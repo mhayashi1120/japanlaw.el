@@ -411,23 +411,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     ;; デフォルト値で作成されている場合
     (rename-file "~/.laws.d" japanlaw-path))))
 
-(defun japanlaw-request-uri-list ()
-  "URLリスト"
-  (cl-loop for (cid . name) in japanlaw-jikoubetsu-index-alist
-           collect
-           (format (mapconcat #'identity
-                              '("H_CTG_%d=%%81%%40"
-                                "H_CTG_GUN=1"
-                                "H_NAME=0"
-                                "H_NAME_YOMI=%%82%%A0"
-                                "H_NO_GENGO=H"
-                                "H_NO_YEAR=0"
-                                "H_NO_TYPE=2"
-                                "H_NO_NO=0"
-                                "H_RYAKU=1"
-                                "H_YOMI_GUN=1") "&")
-                   cid)))
-
 (defun japanlaw-replace-table-value (&optional table-pixel)
   "GETしたhtmlのタグを置換する。"
   (let ((case-fold-search t)
@@ -2115,6 +2098,23 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;;
 ;; Index File
 ;;
+
+(defun japanlaw-request-uri-list ()
+  "URLリスト"
+  (cl-loop for (cid . name) in japanlaw-jikoubetsu-index-alist
+           collect
+           (format (mapconcat #'identity
+                              '("H_CTG_%d=%%81%%40"
+                                "H_CTG_GUN=1"
+                                "H_NAME=0"
+                                "H_NAME_YOMI=%%82%%A0"
+                                "H_NO_GENGO=H"
+                                "H_NO_YEAR=0"
+                                "H_NO_TYPE=2"
+                                "H_NO_NO=0"
+                                "H_RYAKU=1"
+                                "H_YOMI_GUN=1") "&")
+                   cid)))
 
 (defun japanlaw-get-index ()
   "事項別分類索引をGETして、法令名とIDのalistのリストを生成して返す。"
