@@ -60,14 +60,16 @@
 (defconst japanlaw-version "version 0.9.2"
   "Version of japanlaw.el")
 
-(defconst japanlaw-egov "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
+(defconst japanlaw-egov
+  "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
   "法令データ提供システムの URL")
 
 (defconst japanlaw-ryaku-url
-  "法令略名を取得できる URL"
-  "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON")
+  "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON"
+  "法令略名を取得できる URL")
 
-(defconst japanlaw-mishikou-index-url "http://law.e-gov.go.jp/announce.html"
+(defconst japanlaw-mishikou-index-url
+  "http://law.e-gov.go.jp/announce.html"
   "未施行法令一覧を取得できるURL")
 
 ;;;
@@ -2217,34 +2219,25 @@ LFUNCは、NAMEからなるリストを返す関数。"
 
 ;; recursion
 (defun japanlaw-index-search-insert-func (alist)
-  (when alist
-    (let* ((cell (car alist))
-	   (opened (cadr cell)))
-      ;; 検索式
-      (japanlaw-index-insert-line 0 (not opened) (car cell))
-      ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
-      (cl-labels
-          ((rec (ls)
-                (when ls
-                  (let* ((cell (car ls))
-                         (opened (cadr cell)))
-                    (japanlaw-index-insert-line 2 (not opened) (car cell))
-                    (when opened
-                      (let ((cell (cddr cell)))
-                        (dolist (x cell)
-                          (if (atom (cdr x))
-                              (japanlaw-index-insert-line 4 nil (car x) (cdr x))
-                            (let ((opened (cadr x)))
-                              (japanlaw-index-insert-line
-                               4 (not opened)
-                               (car x))
-                              (when opened
-                                (dolist (y (cddr x))
-                                  (japanlaw-index-insert-line 6 nil (car y)
-                                                              (cdr y))))))))))
-                  (rec (cdr ls)))))
-        (when opened (rec (cddr cell)))))
-    (japanlaw-index-search-insert-func (cdr alist))))
+  (cl-loop for (category opened . contents) in alist
+           ;; 検索式
+           do (japanlaw-index-insert-line 0 (not opened) category)
+           ;; 完全一致,略称法令名検索,法令名検索結果を再帰的に挿入
+           when opened
+           do (cl-loop for (name opened2 . contents2) in contents
+                       do (japanlaw-index-insert-line 2 (not opened2) name)
+                       when opened2
+                       do (dolist (x contents2)
+                            (if (atom (cdr x))
+                                ;; 末端ノード
+                                (japanlaw-index-insert-line 4 nil (car x) (cdr x))
+                              (let ((opened3 (cadr x)))
+                                (japanlaw-index-insert-line 4 (not opened3) (car x))
+                                (when opened3
+                                  (dolist (y (cddr x))
+                                    (japanlaw-index-insert-line
+                                     6 nil (car y)
+                                     (cdr y))))))))))
 
 ;; Opened
 (defun japanlaw-index-insert-opened ()
