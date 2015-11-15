@@ -648,46 +648,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (while (re-search-forward rx nil t) (push (match-string 1) result))
     (sort (delete-dups result) (lambda (x y) (< (length x) (length y))))))
 
-(defun japanlaw-detect-coding-region (start end priority-list)
-  ;; `w3m-detect-coding-region'(w3m-fsf.el)の関数名のみ変更。
-  "Detect coding system of the text in the region between START and END.
-Return the first possible coding system.
-
-PRIORITY-LIST is a list of coding systems ordered by priority."
-  (let (category categories)
-    (dolist (codesys priority-list)
-      (setq category (coding-system-category codesys))
-      (unless (or (null category) (assq category categories))
-	(push (cons category codesys) categories)))
-    (with-coding-priority (nreverse categories)
-      (car (detect-coding-region start end)))))
-
-
-(defun japanlaw-url-decode-string (str &optional coding)
-  ;; `w3m-url-decode-string'(w3m.el)のxemacs対応を除いた他、関数名を変更。
-  (let ((start 0)
-	(buf))
-    (while (string-match "+\\|%\\(0D%0A\\|\\([0-9a-fA-F][0-9a-fA-F]\\)\\)"
-			 str start)
-      (push (substring str start (match-beginning 0)) buf)
-      (push (cond
-	     ((match-beginning 2)
-	      (vector (string-to-number (match-string 2 str) 16)))
-	     ((match-beginning 1) "\n")
-	     (t " "))
-	    buf)
-      (setq start (match-end 0)))
-    (setq str (apply 'concat (nreverse (cons (substring str start) buf))))
-    (setq str (string-make-unibyte str))
-    (when (listp coding)
-      (setq coding
-	    (with-temp-buffer
-	      (set-buffer-multibyte nil)
-	      (insert str)
-	      (japanlaw-detect-coding-region (point-min) (point-max) coding))))
-    (decode-coding-string
-     str (or coding 'iso-8859-1 'iso-2022-7bit 'iso-2022-7bit))))
-
 (defun japanlaw-make-substitution-alist (ls index)
   "置換用のalist \(\(\"法令名\" . \"path\"\) ...\) を返す。"
   (cl-do ((ls ls (cdr ls))
@@ -3679,13 +3639,53 @@ FULL が非-nilなら path/file を返す。"
          (append args (list htmldata))))
 
 ;;
-;; String
+;; String / Region
 ;;
 
 (defun japanlaw-replace-zspc ()
   (goto-char (point-min))
   (while (search-forward "  " nil t)
     (replace-match "　")))
+
+(defun japanlaw-detect-coding-region (start end priority-list)
+  ;; `w3m-detect-coding-region'(w3m-fsf.el)の関数名のみ変更。
+  "Detect coding system of the text in the region between START and END.
+Return the first possible coding system.
+
+PRIORITY-LIST is a list of coding systems ordered by priority."
+  (let (category categories)
+    (dolist (codesys priority-list)
+      (setq category (coding-system-category codesys))
+      (unless (or (null category) (assq category categories))
+	(push (cons category codesys) categories)))
+    (with-coding-priority (nreverse categories)
+      (car (detect-coding-region start end)))))
+
+
+(defun japanlaw-url-decode-string (str &optional coding)
+  ;; `w3m-url-decode-string'(w3m.el)のxemacs対応を除いた他、関数名を変更。
+  (let ((start 0)
+	(buf))
+    (while (string-match "+\\|%\\(0D%0A\\|\\([0-9a-fA-F][0-9a-fA-F]\\)\\)"
+			 str start)
+      (push (substring str start (match-beginning 0)) buf)
+      (push (cond
+	     ((match-beginning 2)
+	      (vector (string-to-number (match-string 2 str) 16)))
+	     ((match-beginning 1) "\n")
+	     (t " "))
+	    buf)
+      (setq start (match-end 0)))
+    (setq str (apply 'concat (nreverse (cons (substring str start) buf))))
+    (setq str (string-make-unibyte str))
+    (when (listp coding)
+      (setq coding
+	    (with-temp-buffer
+	      (set-buffer-multibyte nil)
+	      (insert str)
+	      (japanlaw-detect-coding-region (point-min) (point-max) coding))))
+    (decode-coding-string
+     str (or coding 'iso-8859-1 'iso-2022-7bit 'iso-2022-7bit))))
 
 ;;;;
 ;;;; Data
