@@ -568,10 +568,13 @@ FUNCSは引数を取らない関数のリスト。"
 	       (japanlaw-htmldata-path) "\\`[MTSH][0-9]+\\'"
 	       (concat "\\.html\\'"))))))
 
-(defun japanlaw-iswitchb-download-list () (japanlaw-download-list 'name))
+(defun japanlaw-iswitchb-download-list ()
+  (japanlaw-download-list 'name))
 
 (defun japanlaw-iswitchb-bookmark-list ()
-  (mapcar (lambda (x) (japanlaw-get-name x)) (japanlaw-load--bookmark-view)))
+  (mapcar
+   (lambda (x) (japanlaw-get-name x))
+   (japanlaw-load--bookmark-view)))
 
 (defun japanlaw-search-alist ()
   japanlaw-menuview--search-data)
@@ -789,6 +792,7 @@ FUNCSは引数を取らない関数のリスト。"
 ;;
 ;; Insert contents
 ;;
+
 (defun japanlaw-index-insert-contents (mode)
   "各モードごとにツリーの挿入処理を分岐する。"
   ;;(japanlaw-save-)
