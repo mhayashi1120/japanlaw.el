@@ -372,16 +372,20 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defconst japanlaw-subsection2-face-regexp "\
 ^\\([ 　]*第.+目\\([のノ][一二三四五六七八九十]\\)*　[^（）\n]+\\)")
 
-(defconst japanlaw-article-subitem3-face-regexp "^\\(（[０-９]+）\\|([0-9]+)\\)　")
+(defconst japanlaw-article-subitem3-face-regexp
+  "^\\(（[０-９]+）\\|([0-9]+)\\)　")
 
-(defconst japanlaw-comment-face-regexp "^[ 　]*\\(（\\cj+）\\|(\\cj+) \\)$")
+(defconst japanlaw-comment-face-regexp
+  "^[ 　]*\\(（\\cj+）\\|(\\cj+) \\)$")
 
-(defconst japanlaw-article-subitem4-face-regexp "^（ｉ+）　")
+(defconst japanlaw-article-subitem4-face-regexp
+  "^（ｉ+）　")
 
 (defconst japanlaw-supplementary-face-regexp
   "^\\([　 ]*附　?則.*$\\)")
 
-(defconst japanlaw-article-subitem2-face-regexp "^\\cK　")
+(defconst japanlaw-article-subitem2-face-regexp
+  "^\\cK　")
 
 (defconst japanlaw-article-number-face-regexp "\
 \\(^第[一二三四五六七八九十百千]+条\\([ノの][一二三四五六七八九十百]+\\)*\\)[ 　]*")
@@ -408,7 +412,10 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "条数の正規表現。")
 
 (defconst japanlaw-paragraph-regexp
-  (concat "^[○◯]?\\(" japanlaw-article-regexp "\\|[０-９]\\|[0-9]\\)\\{1,2\\}")
+  (concat
+   "^[○◯]?\\("
+   japanlaw-article-regexp
+   "\\|[０-９]\\|[0-9]\\)\\{1,2\\}")
   "項数の正規表現。")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
