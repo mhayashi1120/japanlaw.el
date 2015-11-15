@@ -793,20 +793,6 @@ FUNCSは引数を取らない関数のリスト。"
 ;; Insert contents
 ;;
 
-(defun japanlaw-index-insert-contents (mode)
-  "各モードごとにツリーの挿入処理を分岐する。"
-  ;;(japanlaw-save-)
-  (japanlaw--draw-buffer
-   (erase-buffer))
-  (cl-case mode
-    (Opened	(japanlaw-index-insert-opened))
-    (Recent	(japanlaw-index-insert-recent))
-    (Search	(japanlaw-index-insert-search))
-    (Bookmark	(japanlaw-index-insert-bookmark))
-    (Index	(japanlaw-index-insert-index))
-    (Directory	(japanlaw-index-insert-directory))
-    (Abbrev	(japanlaw-index-insert-abbrev))))
-
 ;; Common
 (defun japanlaw-make-alist-from-name (lfunc)
   "NAME(\"M29HO089\"のような形式)から法令名とNAMEの連想リストを生成する関数。
@@ -4456,6 +4442,20 @@ migemoとiswitchbの設定が必要。"
 	(japanlaw-goto-line line)
 	(japanlaw-index-move-to-column)))))
 
+(defun japanlaw-menuview--insert-contents (mode)
+  "各モードごとにツリーの挿入処理を分岐する。"
+  ;;(japanlaw-save-)
+  (japanlaw--draw-buffer
+   (erase-buffer))
+  (cl-case mode
+    (Opened	(japanlaw-index-insert-opened))
+    (Recent	(japanlaw-index-insert-recent))
+    (Search	(japanlaw-index-insert-search))
+    (Bookmark	(japanlaw-index-insert-bookmark))
+    (Index	(japanlaw-index-insert-index))
+    (Directory	(japanlaw-index-insert-directory))
+    (Abbrev	(japanlaw-index-insert-abbrev))))
+
 (defun japanlaw-menuview--goto-mode (mode &optional update)
   "`japanlaw-index-mode'の各、個別のモード`japanlaw-menuview--current-item'に遷移する。
 MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')。"
@@ -4470,7 +4470,7 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
       (setq mode-name (funcall name mode)
 	    japanlaw-menuview--current-item mode)
       (force-mode-line-update)
-      (japanlaw-index-insert-contents mode)
+      (japanlaw-menuview--insert-contents mode)
       (japanlaw-menuview--restore-config))))
 
 (defun japanlaw-menuview-update ()
