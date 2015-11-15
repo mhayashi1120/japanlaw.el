@@ -220,19 +220,21 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 
 ;; Mode line image
 (defvar japanlaw-online-icon
-  (or (plist-get (cdr (find-image '((:type xpm :file "ezimage/doc-plus.xpm"))))
-		 :file)
+  (or (find-image
+       '((:type xpm :ascent center :file "ezimage/doc-plus.xpm")))
       "[+]")
   "Mode line online image path.")
 
 (defvar japanlaw-offline-icon
-  (or (plist-get (cdr (find-image '((:type xpm :file "ezimage/doc-minus.xpm"))))
-		 :file)
+  (or (find-image
+       '((:type xpm :ascent center :file "ezimage/doc-minus.xpm")))
       "[-]")
   "Mode line offline image path.")
 
 (defvar japanlaw-icon
-  (if japanlaw-online-mode japanlaw-online-icon japanlaw-offline-icon)
+  (if japanlaw-online-mode
+      japanlaw-online-icon
+    japanlaw-offline-icon)
   "Start up mode line image path.")
 
 (defvar japanlaw-mode-line-buffer-identification
@@ -240,23 +242,21 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (make-variable-buffer-local 'japanlaw-mode-line-buffer-identification)
 
 (defvar japanlaw-mode-line
-  (cons `(:eval (propertize
-		 ,@(if (and (file-exists-p japanlaw-online-icon)
-			    (file-exists-p japanlaw-offline-icon))
-		       (list
-			"    "
-			(quote 'display) '(create-image
-					   japanlaw-icon 'xpm nil
-					   :ascent 'center))
-                     (list 'japanlaw-icon))
-		 'local-map (make-mode-line-mouse-map
-			     'mouse-1 'japanlaw-online-or-offline)
-		 'mouse-face 'mode-line-highlight
-		 'help-echo (if japanlaw-online-mode
-				"mouse-1: turn to offline mode."
-			      "mouse-1: turn to online mode.")))
-	(cons " "
-	      (list (car japanlaw-mode-line-buffer-identification))))
+  `((:eval
+     (propertize
+      ,@(cond
+         ((stringp japanlaw-icon)
+          (list japanlaw-icon))
+         (t
+          (list "    " ''display 'japanlaw-icon)))
+      'local-map (make-mode-line-mouse-map
+                  'mouse-1 'japanlaw-online-or-offline)
+      'mouse-face 'mode-line-highlight
+      'help-echo (if japanlaw-online-mode
+                     "mouse-1: turn to offline mode."
+                   "mouse-1: turn to online mode.")))
+    " "
+    japanlaw-mode-line-buffer-identification)
   "JapanLaw mode line format.")
 
 ;; BookMark
@@ -1439,8 +1439,9 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
       (let ((cell (save-excursion
 		    (dotimes (x (japanlaw-index-folder-level))
 		      (japanlaw-index-upper-level)
-		      (push name keys))
-		    (assoc name (japanlaw-search-alist)))))
+		      (push (plist-get (japanlaw--get-plist) :name) keys))
+		    (assoc (plist-get (japanlaw--get-plist) :name)
+                           (japanlaw-search-alist)))))
 	(japanlaw-index-set-search-alist
 	 cell keys name (japanlaw-index-folder-open-p))))))
 
