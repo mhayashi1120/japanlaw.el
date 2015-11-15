@@ -53,28 +53,10 @@
 (require 'iswitchb)
 (require 'url-expand)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; japanlaw-vars
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defconst japanlaw-version "version 0.9.2"
-  "Version of japanlaw.el")
-
-(defconst japanlaw-egov
-  "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
-  "法令データ提供システムの URL")
-
-(defconst japanlaw-ryaku-url
-  "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON"
-  "法令略名を取得できる URL")
-
-(defconst japanlaw-mishikou-index-url
-  "http://law.e-gov.go.jp/announce.html"
-  "未施行法令一覧を取得できるURL")
-
 ;;;
 ;;; Customize group
 ;;;
+
 (defgroup japanlaw nil
   "japanlaw mode."
   :prefix "japanlaw-"
@@ -3848,6 +3830,29 @@ FULL が非-nilなら path/file を返す。"
 	(message "Already exists in Bookmark.")
       (push id japanlaw-menuview--bookmark-data)
       (message "Add to Bookmark `%s'" (japanlaw-current-buffer-law-name)))))
+
+;;;;
+;;;; Data
+;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; japanlaw-vars
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defconst japanlaw-version "version 0.9.2"
+  "Version of japanlaw.el")
+
+(defconst japanlaw-egov
+  "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi"
+  "法令データ提供システムの URL")
+
+(defconst japanlaw-ryaku-url
+  "http://law.e-gov.go.jp/cgi-bin/idxsearch.cgi?H_RYAKU_SUBMIT=ON"
+  "法令略名を取得できる URL")
+
+(defconst japanlaw-mishikou-index-url
+  "http://law.e-gov.go.jp/announce.html"
+  "未施行法令一覧を取得できるURL")
 
 ;;;;
 ;;;; UI
