@@ -2673,6 +2673,7 @@ Openedの場合、ファイルを閉じる。"
 ;;
 ;; search
 ;;
+
 (defun japanlaw-push-mouse-2 (e)
   (interactive "e")
   (mouse-set-point e)
@@ -3135,6 +3136,7 @@ Openedの場合、ファイルを閉じる。"
 ;;
 ;; Move to anchor
 ;;
+
 (defun japanlaw-forward-anchor ()
   (interactive)
   (japanlaw-move-to-anchor 'forward))
@@ -3146,6 +3148,7 @@ Openedの場合、ファイルを閉じる。"
 ;;
 ;; anchor
 ;;
+
 (defun japanlaw-move-to-anchor (direction)
   (cl-labels
       ((point-face (&optional point)
@@ -3314,8 +3317,6 @@ Openedの場合、ファイルを閉じる。"
 第\\([一二三四五六七八九十]+\\)号\\(\\([のノ][一二三四五六七八九十]+\\)*\\)" item)
        (concat "^" (match-string 1 item) (match-string 2 item))))
 
-
-
 (defun japanlaw-file-sans-name (file)
   "ファイル名の主部(m29ho089)を返す。"
   (when file
@@ -3372,6 +3373,7 @@ FULL が非-nilなら path/file を返す。"
 ;;
 ;; Scroll
 ;;
+
 (defun japanlaw-scroll-up-screen (n)
   (interactive "p")
   (scroll-up n))
@@ -3379,6 +3381,9 @@ FULL が非-nilなら path/file を返す。"
 (defun japanlaw-scroll-down-screen (n)
   (interactive "p")
   (scroll-down n))
+
+(make-obsolete 'japanlaw-scroll-down-screen 'scroll-down-command "0.9.2")
+(make-obsolete 'japanlaw-scroll-up-screen 'scroll-up-command "0.9.2")
 
 ;;
 ;; other
