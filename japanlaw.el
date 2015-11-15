@@ -692,15 +692,6 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
     (let ((plist (get-text-property (point) 'japanlaw-item-plist)))
       plist)))
 
-(defsubst japanlaw-read ()
-  "バッファのinvisibleなS式をreadする。"
-  (let* ((plist (japanlaw--get-plist))
-         (flag (plist-get plist :open-flag))
-         (name (plist-get plist :name))
-         (id (plist-get plist :id))
-         (sexp (if id (list flag name id) (list flag name))))
-    sexp))
-
 (defsubst japanlaw-any-function (funcs)
   "FUNCSの中で初めに非nilを返した関数を返す。
 FUNCSは引数を取らない関数のリスト。"
