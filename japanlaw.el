@@ -3714,62 +3714,8 @@ FULL が非-nilなら path/file を返す。"
 ;;
 ;; outline
 ;;
-(defun japanlaw-outline-regexps ()
-  (let ((number "[一二三四五六七八九十]"))
-    (setq outline-regexp
-	  (concat ;; 目次
-	   ;; 目次のアウトラインヘッダが行頭にある場合(廃止法令等一覧)
-	   ;; がある。
-	   "^"
-	   "\\(　\\{2\\}第" number "+編"
-	   "\\|　\\{3\\}第" number "+章"
-	   "\\|　\\{4\\}第" number "+節"
-	   "\\|　\\{5\\}第" number "+款"
-	   "\\|　\\{6\\}第" number "+目"
-	   "\\|　\\{3\\}附　則"
-	   ;; 本文
-	   ;; 本文のアウトラインヘッダは、行頭から始まってい
-	   ;; ないこと。
-	   "\\|第"     number "+編　"
-	   "\\|\\(第"  number "+章"
-	   "\\([のノ]" number "\\)*\\)　"
-	   "\\|\\(第"  number "+節"
-	   "\\([のノ]" number "\\)*\\)　"
-	   "\\|\\(第"  number "+款"
-	   "\\([のノ]" number "\\)*\\)　"
-	   "\\|\\(第"  number "+目"
-	   "\\([のノ]" number "\\)*\\)　"
-	   "\\|附則　?.*$\\)")))
-  (setq outline-level 'japanlaw-outline-level))
 
-(defun japanlaw-outline-level ()
-  (save-excursion
-    (let ((str (if (looking-at outline-regexp) (match-string 1) ""))
-	  (number "[一二三四五六七八九十]"))
-      (cond
-       ((string-match (concat "第" number "+編") str) 1)
-       ((string-match (concat "第" number "+章") str) 2)
-       ((string-match (concat "第" number "+節") str) 3)
-       ((string-match (concat "第" number "+款") str) 4)
-       ((string-match (concat "第" number "+目") str) 5)
-       ((string-match "附　?則" str) japanlaw-supplementary-level)
-       (t 0)))))
-
-(defun japanlaw-outline-forward-same-level (n)
-  ;; from outline.el
-  (outline-back-to-heading)
-  (catch 'loop
-    (while (> n 0)
-      (let ((point-to-move-to (save-excursion
-				(outline-get-next-sibling))))
-	(if point-to-move-to
-	    (progn
-	      (goto-char point-to-move-to)
-	      (setq n (1- n)))
-	  (throw 'loop
-		 (prog1 t
-		   (message "No following same-level heading."))))))))
-
+;;TODO not using
 (defun japanlaw-outline-up-heading (n)
   ;; from outline.el
   (outline-back-to-heading)
@@ -4487,6 +4433,67 @@ FULL が非-nilなら path/file を返す。"
     ;; help
     (define-key map "?" 'japanlaw-help)
     map))
+
+;;
+;; outline
+;;
+
+(defun japanlaw-outline-regexps ()
+  (let ((number "[一二三四五六七八九十]"))
+    (setq outline-regexp
+	  (concat ;; 目次
+	   ;; 目次のアウトラインヘッダが行頭にある場合(廃止法令等一覧)
+	   ;; がある。
+	   "^"
+	   "\\(　\\{2\\}第" number "+編"
+	   "\\|　\\{3\\}第" number "+章"
+	   "\\|　\\{4\\}第" number "+節"
+	   "\\|　\\{5\\}第" number "+款"
+	   "\\|　\\{6\\}第" number "+目"
+	   "\\|　\\{3\\}附　則"
+	   ;; 本文
+	   ;; 本文のアウトラインヘッダは、行頭から始まってい
+	   ;; ないこと。
+	   "\\|第"     number "+編　"
+	   "\\|\\(第"  number "+章"
+	   "\\([のノ]" number "\\)*\\)　"
+	   "\\|\\(第"  number "+節"
+	   "\\([のノ]" number "\\)*\\)　"
+	   "\\|\\(第"  number "+款"
+	   "\\([のノ]" number "\\)*\\)　"
+	   "\\|\\(第"  number "+目"
+	   "\\([のノ]" number "\\)*\\)　"
+	   "\\|附則　?.*$\\)")))
+  (setq outline-level 'japanlaw-outline-level))
+
+(defun japanlaw-outline-level ()
+  (save-excursion
+    (let ((str (if (looking-at outline-regexp) (match-string 1) ""))
+	  (number "[一二三四五六七八九十]"))
+      (cond
+       ((string-match (concat "第" number "+編") str) 1)
+       ((string-match (concat "第" number "+章") str) 2)
+       ((string-match (concat "第" number "+節") str) 3)
+       ((string-match (concat "第" number "+款") str) 4)
+       ((string-match (concat "第" number "+目") str) 5)
+       ((string-match "附　?則" str) japanlaw-supplementary-level)
+       (t 0)))))
+
+;;TODO not use
+(defun japanlaw-outline-forward-same-level (n)
+  ;; from outline.el
+  (outline-back-to-heading)
+  (catch 'loop
+    (while (> n 0)
+      (let ((point-to-move-to (save-excursion
+				(outline-get-next-sibling))))
+	(if point-to-move-to
+	    (progn
+	      (goto-char point-to-move-to)
+	      (setq n (1- n)))
+	  (throw 'loop
+		 (prog1 t
+		   (message "No following same-level heading."))))))))
 
 ;;
 ;; parenthesis
