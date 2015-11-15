@@ -746,32 +746,6 @@ FUNCSは引数を取らない関数のリスト。"
   (goto-char (point-min))
   (forward-line (1- line)))
 
-(defun japanlaw:filter (pred ls)
-  "PREDを適用した結果tを返した要素を集める。"
-  (cl-do ((xs ls (cdr xs))
-          (acc nil (if (funcall pred (car xs)) (cons (car xs) acc) acc)))
-      ((null xs) (nreverse acc))))
-
-(defun japanlaw:append-map (f ls &rest more)
-  (apply 'append (apply 'japanlaw:map f ls more)))
-
-(defun japanlaw:fringe (tree)
-  (if (listp tree)
-      (japanlaw:append-map 'japanlaw:fringe tree)
-    (list tree)))
-
-(defun japanlaw:map (f ls &rest more)
-  (let* ((x (cons ls more))
-	 (n (apply 'min (mapcar 'length x))))
-    (cl-do ((n n (- n 1))
-            (x x (mapcar 'cdr x))
-            (ans nil (cons (apply f (mapcar 'car x)) ans)))
-	((= n 0) (nreverse ans)))))
-
-(unless (fboundp 'cl-set-nthcdr)
-  (defun cl-set-nthcdr (n list x)
-    (if (<= n 0) x (setcdr (nthcdr (1- n) list) x) list)))
-
 ;;
 ;; Load data
 ;;
@@ -3254,6 +3228,36 @@ FULL が非-nilなら path/file を返す。"
 ;;;;
 ;;;; Basic
 ;;;;
+
+;;
+;; List
+;;
+
+(defun japanlaw:filter (pred ls)
+  "PREDを適用した結果tを返した要素を集める。"
+  (cl-do ((xs ls (cdr xs))
+          (acc nil (if (funcall pred (car xs)) (cons (car xs) acc) acc)))
+      ((null xs) (nreverse acc))))
+
+(defun japanlaw:append-map (f ls &rest more)
+  (apply 'append (apply 'japanlaw:map f ls more)))
+
+(defun japanlaw:fringe (tree)
+  (if (listp tree)
+      (japanlaw:append-map 'japanlaw:fringe tree)
+    (list tree)))
+
+(defun japanlaw:map (f ls &rest more)
+  (let* ((x (cons ls more))
+	 (n (apply 'min (mapcar 'length x))))
+    (cl-do ((n n (- n 1))
+            (x x (mapcar 'cdr x))
+            (ans nil (cons (apply f (mapcar 'car x)) ans)))
+	((= n 0) (nreverse ans)))))
+
+(unless (fboundp 'cl-set-nthcdr)
+  (defun cl-set-nthcdr (n list x)
+    (if (<= n 0) x (setcdr (nthcdr (1- n) list) x) list)))
 
 ;;
 ;; external commands
