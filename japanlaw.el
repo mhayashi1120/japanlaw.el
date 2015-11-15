@@ -193,27 +193,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'integer
   :group 'japanlaw)
 
-;;
-;; w3m
-;;
-
-(defcustom japanlaw-w3m-dump-cols 5000
-  "w3mでdumpするときのカラム数。"
-  :type 'integer
-  :group 'japanlaw)
-
-(defcustom japanlaw-table-pixel 550
-  "w3mでdumpするときのテーブルのピクセル数。"
-  :type 'integer
-  :group 'japanlaw)
-
-;; paren
-(defcustom japanlaw-compose-paren-char "＃"
-  "`compose-region'で括弧を不可視にする場合、代替の1文字。
-ここで指定する文字が対応括弧の代わりる表示される。"
-  :type 'string
-  :group 'japanlaw)
-
 ;;;
 ;;; Internal variables
 ;;;
@@ -2918,6 +2897,13 @@ FULL が非-nilなら path/file を返す。"
 ;;
 
 
+;; paren
+(defcustom japanlaw-compose-paren-char "＃"
+  "`compose-region'で括弧を不可視にする場合、代替の1文字。
+ここで指定する文字が対応括弧の代わりる表示される。"
+  :type 'string
+  :group 'japanlaw)
+
 (defun japanlaw-compose-region (beg end)
   (or (looking-at japanlaw-paren-exclude-regexp)
       (compose-region beg end japanlaw-compose-paren-char)))
@@ -3287,6 +3273,17 @@ FULL が非-nilなら path/file を返す。"
 (defcustom japanlaw-w3m-command "w3m"
   "w3m プログラムへの path."
   :type 'string
+  :group 'japanlaw)
+
+(defcustom japanlaw-w3m-dump-cols 5000
+  "w3m で dump するときのカラム数。"
+  :type 'integer
+  :group 'japanlaw)
+
+;;TODO not w3m
+(defcustom japanlaw-table-pixel 550
+  "w3m で dump するときのテーブルのピクセル数。"
+  :type 'integer
   :group 'japanlaw)
 
 (defun japanlaw-url-retrieve-wget (url)
