@@ -473,22 +473,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 ;; Common
 ;;
 
-(defmacro japanlaw--draw-buffer (&rest forms)
-  "バッファの未編集とリードオンリー状態を保持してFORMSを評価する。"
-  `(progn
-     (unless (eq major-mode 'japanlaw-index-mode)
-       (error "ERROR: major-mode is not japanlaw-index-mode."))
-     (let ((inhibit-read-only t))
-       (unwind-protect
-           (save-excursion ,@forms)
-         (set-buffer-modified-p nil)))))
-
-(defun japanlaw--get-plist ()
-  (save-excursion
-    (forward-line 0)
-    (let ((plist (get-text-property (point) 'japanlaw-item-plist)))
-      plist)))
-
 (defun japanlaw-any-function (funcs)
   "FUNCSの中で初めに非nilを返した関数を返す。
 FUNCSは引数を取らない関数のリスト。"
@@ -3687,6 +3671,24 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(list `(,japanlaw-anchor-name-face-regexp2 ,(japanlaw-set-mouse-face-2 2))
 	      `(,japanlaw-anchor-article-face-regexp3 ,(japanlaw-set-mouse-face-2 1))
 	      `("同法" ,(japanlaw-set-mouse-face-2 0)))))
+
+;;
+;; Drawing / Read buffer
+;;
+
+(defmacro japanlaw--draw-buffer (&rest forms)
+  "バッファの未編集とリードオンリー状態を保持してFORMSを評価する。"
+  `(progn
+     (unless (eq major-mode 'japanlaw-index-mode)
+       (error "ERROR: major-mode is not japanlaw-index-mode."))
+     (let ((inhibit-read-only t))
+       (unwind-protect
+           (save-excursion ,@forms)
+         (set-buffer-modified-p nil)))))
+
+(defun japanlaw--get-plist ()
+  (let ((plist (get-text-property (point-at-bol) 'japanlaw-item-plist)))
+    plist))
 
 ;;
 ;; Window configuration
