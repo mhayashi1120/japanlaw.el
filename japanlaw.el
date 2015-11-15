@@ -487,113 +487,8 @@ FUNCSは引数を取らない関数のリスト。"
           (japanlaw-recent-alist))))))
 
 ;;
-;; Scroll commands
+;; TODO not categorized
 ;;
-
-(defun japanlaw-index-move-to-column ()
-  "フォルダの開閉を表わすマーク位置に移動する関数。"
-  (forward-line 0)
-  (re-search-forward "[+-]" nil t)
-  (ignore-errors (backward-char 1)))
-
-(defun japanlaw-index-previous-line (n)
-  "前の行に移動するコマンド。"
-  (interactive "p")
-  (let ((p (point)))
-    (if (> 0 (forward-line (- n)))
-	(goto-char p)
-      (japanlaw-index-move-to-column))))
-
-(defun japanlaw-index-next-line (n)
-  "次の行に移動するコマンド。"
-  (interactive "p")
-  (forward-line n)
-  (when (eobp) (forward-line -1))
-  (japanlaw-index-move-to-column))
-
-(defun japanlaw-index-scroll-up-line (n)
-  "N行前方にスクロールするコマンド。"
-  (interactive "p")
-  (ignore-errors
-    (scroll-up n)
-    (japanlaw-index-move-to-column)))
-
-(defun japanlaw-index-scroll-down-line (n)
-  "N行後方にスクロールするコマンド。"
-  (interactive "p")
-  (ignore-errors
-    (scroll-down n)
-    (japanlaw-index-move-to-column)))
-
-(defun japanlaw-index-previous-folder ()
-  "ポイントと同じレベルの前のフォルダに移動する。"
-  (interactive)
-  (japanlaw-index-next-folder t))
-
-(defun japanlaw-index-next-folder (&optional previous)
-  "ポイントと同じレベルの次のフォルダに移動する。"
-  (interactive)
-  (let ((func (japanlaw-any-function
-	       '(japanlaw-index-folder-level-0
-		 japanlaw-index-folder-level-1
-		 japanlaw-index-folder-level-2
-		 japanlaw-index-folder-level-3)))
-	(move-to (point)))
-    (when (functionp func)
-      (save-excursion
-	(forward-line (if previous -1 1))
-	(while (not (or (funcall func)
-			(eobp)
-			(bobp)))
-	  (forward-line (if previous -1 1)))
-	(when (funcall func)
-	  (japanlaw-index-move-to-column)
-	  (setq move-to (point))))
-      (goto-char move-to))))
-
-(defun japanlaw-completion-list (afunc)
-  "補完リストを返す関数。AFUNCは連想リストを返す関数。"
-  (cl-do ((xs (funcall afunc) (cdr xs))
-          (result nil (cons (caar xs) result)))
-      ((null xs) result)))
-
-(defun japanlaw-index-goto-folder (folder)
-  "補完リストから、最上位の階層に選択的に移動するコマンド。
-`japanlaw-use-iswitchb'がtなら`iswitchb'を利用する。"
-  (interactive
-   (list (funcall
-	  (if japanlaw-use-iswitchb
-	      #'japanlaw-icompleting-read
-	    #'completing-read)
-	  (if (memq japanlaw-menuview--current-item '(Index Directory Abbrev))
-	      "Goto folder: " "Goto name: ")
-	  (japanlaw-completion-list
-	   (cond ((eq japanlaw-menuview--current-item 'Index)     #'japanlaw-load--index-view)
-		 ((eq japanlaw-menuview--current-item 'Directory) #'japanlaw-load--directory-view)
-		 ((eq japanlaw-menuview--current-item 'Abbrev)    #'japanlaw-load--abbrev-view)
-		 ((eq japanlaw-menuview--current-item 'Bookmark)
-		  (lambda () (japanlaw-make-alist-from-name #'japanlaw-load--bookmark-view)))
-		 ((eq japanlaw-menuview--current-item 'Recent)
-		  (lambda () (japanlaw-make-alist-from-name #'japanlaw-recent-alist)))
-		 ((eq japanlaw-menuview--current-item 'Opened)    #'japanlaw-opened-alist)
-		 (t (error "Not supported.")))))))
-  (unless (string= folder "")
-    (goto-char
-     (save-excursion
-       (goto-char (point-min))
-       (re-search-forward (format "[+-]\" \"%s\"" folder))))
-    (japanlaw-index-move-to-column)))
-
-(defun japanlaw-index-beginning-of-buffer ()
-  (interactive)
-  (goto-char (point-min))
-  (japanlaw-index-move-to-column))
-
-(defun japanlaw-index-end-of-buffer ()
-  (interactive)
-  (goto-char (point-max))
-  (forward-line -1)
-  (japanlaw-index-move-to-column))
 
 ;; display icon on mode-line
 (defun japanlaw-online-or-offline ()
@@ -1862,7 +1757,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;;
 
 ;;
-;; Scroll
+;; Scroll (TODO)
 ;;
 
 (defun japanlaw-scroll-up-screen (n)
@@ -4740,6 +4635,116 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
   "`Abbrev'で、すべてのフォルダの開閉をする。"
   (japanlaw-index-index-oc-all-function
    open #'japanlaw-load--abbrev-view #'japanlaw-index-insert-abbrev))
+
+
+;;
+;; Move
+;;
+
+(defun japanlaw-index-move-to-column ()
+  "フォルダの開閉を表わすマーク位置に移動する関数。"
+  (forward-line 0)
+  (re-search-forward "[+-]" nil t)
+  (ignore-errors (backward-char 1)))
+
+(defun japanlaw-index-previous-line (n)
+  "前の行に移動するコマンド。"
+  (interactive "p")
+  (let ((p (point)))
+    (if (> 0 (forward-line (- n)))
+	(goto-char p)
+      (japanlaw-index-move-to-column))))
+
+(defun japanlaw-index-next-line (n)
+  "次の行に移動するコマンド。"
+  (interactive "p")
+  (forward-line n)
+  (when (eobp) (forward-line -1))
+  (japanlaw-index-move-to-column))
+
+(defun japanlaw-index-scroll-up-line (n)
+  "N行前方にスクロールするコマンド。"
+  (interactive "p")
+  (ignore-errors
+    (scroll-up n)
+    (japanlaw-index-move-to-column)))
+
+(defun japanlaw-index-scroll-down-line (n)
+  "N行後方にスクロールするコマンド。"
+  (interactive "p")
+  (ignore-errors
+    (scroll-down n)
+    (japanlaw-index-move-to-column)))
+
+(defun japanlaw-index-previous-folder ()
+  "ポイントと同じレベルの前のフォルダに移動する。"
+  (interactive)
+  (japanlaw-index-next-folder t))
+
+(defun japanlaw-index-next-folder (&optional previous)
+  "ポイントと同じレベルの次のフォルダに移動する。"
+  (interactive)
+  (let ((func (japanlaw-any-function
+	       '(japanlaw-index-folder-level-0
+		 japanlaw-index-folder-level-1
+		 japanlaw-index-folder-level-2
+		 japanlaw-index-folder-level-3)))
+	(move-to (point)))
+    (when (functionp func)
+      (save-excursion
+	(forward-line (if previous -1 1))
+	(while (not (or (funcall func)
+			(eobp)
+			(bobp)))
+	  (forward-line (if previous -1 1)))
+	(when (funcall func)
+	  (japanlaw-index-move-to-column)
+	  (setq move-to (point))))
+      (goto-char move-to))))
+
+(defun japanlaw-completion-list (afunc)
+  "補完リストを返す関数。AFUNCは連想リストを返す関数。"
+  (cl-do ((xs (funcall afunc) (cdr xs))
+          (result nil (cons (caar xs) result)))
+      ((null xs) result)))
+
+(defun japanlaw-index-goto-folder (folder)
+  "補完リストから、最上位の階層に選択的に移動するコマンド。
+`japanlaw-use-iswitchb'がtなら`iswitchb'を利用する。"
+  (interactive
+   (list (funcall
+	  (if japanlaw-use-iswitchb
+	      #'japanlaw-icompleting-read
+	    #'completing-read)
+	  (if (memq japanlaw-menuview--current-item '(Index Directory Abbrev))
+	      "Goto folder: " "Goto name: ")
+	  (japanlaw-completion-list
+	   (cond ((eq japanlaw-menuview--current-item 'Index)     #'japanlaw-load--index-view)
+		 ((eq japanlaw-menuview--current-item 'Directory) #'japanlaw-load--directory-view)
+		 ((eq japanlaw-menuview--current-item 'Abbrev)    #'japanlaw-load--abbrev-view)
+		 ((eq japanlaw-menuview--current-item 'Bookmark)
+		  (lambda () (japanlaw-make-alist-from-name #'japanlaw-load--bookmark-view)))
+		 ((eq japanlaw-menuview--current-item 'Recent)
+		  (lambda () (japanlaw-make-alist-from-name #'japanlaw-recent-alist)))
+		 ((eq japanlaw-menuview--current-item 'Opened)    #'japanlaw-opened-alist)
+		 (t (error "Not supported.")))))))
+  (unless (string= folder "")
+    (goto-char
+     (save-excursion
+       (goto-char (point-min))
+       (re-search-forward (format "[+-]\" \"%s\"" folder))))
+    (japanlaw-index-move-to-column)))
+
+(defun japanlaw-index-beginning-of-buffer ()
+  (interactive)
+  (goto-char (point-min))
+  (japanlaw-index-move-to-column))
+
+(defun japanlaw-index-end-of-buffer ()
+  (interactive)
+  (goto-char (point-max))
+  (forward-line -1)
+  (japanlaw-index-move-to-column))
 
 ;;
 ;; Command
