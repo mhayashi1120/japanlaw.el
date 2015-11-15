@@ -415,11 +415,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 ;;; japanlaw-data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun japanlaw-make-backup-file (file)
-  (let ((version-control t))
-    (when (file-exists-p file)
-      (rename-file file (car (find-backup-file-name file))))))
-
 (defun japanlaw-solve-backward-compatibility ()
   (cond
    ((file-exists-p japanlaw-path))
@@ -3533,12 +3528,23 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (make-obsolete-variable 'japanlaw-index-file nil "0.8.11")
 (make-obsolete-variable 'japanlaw-htmldata-path nil "0.8.11")
 
+;;
+;; File IO
+;;
+
 (defun japanlaw-make-directory (dir)
   (unless (and (file-exists-p dir)
 	       (file-directory-p dir))
     (when (file-regular-p dir)
       (error "File `%s' exists!" dir))
     (make-directory dir 'parent)))
+
+(defun japanlaw-make-backup-file (file)
+  ;;TODO why version control?
+  (let ((version-control t))
+    (when (file-exists-p file)
+      (let ((backups (find-backup-file-name file)))
+        (rename-file file (car backups))))))
 
 ;;
 ;; Index
