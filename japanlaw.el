@@ -698,7 +698,7 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
 ;; Common
 ;;
 
-(defmacro japanlaw-with-buffer-read-only (&rest forms)
+(defmacro japanlaw--draw-buffer (&rest forms)
   "バッファの未編集とリードオンリー状態を保持してFORMSを評価する。"
   `(progn
      (unless (eq major-mode 'japanlaw-index-mode)
@@ -1064,7 +1064,7 @@ FUNCSは引数を取らない関数のリスト。"
 (defun japanlaw-index-insert-contents (mode)
   "各モードごとにツリーの挿入処理を分岐する。"
   ;;(japanlaw-save-)
-  (japanlaw-with-buffer-read-only
+  (japanlaw--draw-buffer
    (erase-buffer))
   (cl-case mode
     (Opened	(japanlaw-index-insert-opened))
@@ -1095,7 +1095,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
   (let ((alist (funcall func)))
     (cl-case japanlaw-menuview--current-item
       ((Index Directory)
-       (japanlaw-with-buffer-read-only
+       (japanlaw--draw-buffer
         ;; Test:
         ;; (error Lisp nesting exceeds `max-lisp-eval-depth')
         ;; (japanlaw-index-search-insert-func alist)
@@ -1106,7 +1106,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
               (dolist (x (cddr cell))
                 (japanlaw-index-insert-line 2 nil (car x) (cdr x))))))))
       ((Abbrev)
-       (japanlaw-with-buffer-read-only
+       (japanlaw--draw-buffer
 	;; Test:
 	;; (error Lisp nesting exceeds `max-lisp-eval-depth')
 	;; (japanlaw-index-search-insert-func alist)
@@ -1121,11 +1121,11 @@ LFUNCは、NAMEからなるリストを返す関数。"
 		    (dolist (z (cddr y))
 		      (japanlaw-index-insert-line 4 nil (car z) (cdr z)))))))))))
       ((Bookmark Opened Recent)
-       (japanlaw-with-buffer-read-only
+       (japanlaw--draw-buffer
 	(dolist (cell alist)
           (japanlaw-index-insert-line 1 nil (car cell) (cdr cell)))))
       ((Search)
-       (japanlaw-with-buffer-read-only
+       (japanlaw--draw-buffer
 	(japanlaw-index-search-insert-func alist))
        (japanlaw-index-highlight-search-buffer)))))
 
@@ -1386,7 +1386,7 @@ FUNCは連想リストを返す関数。"
   "`Index'と`Directory'で、フォルダの開閉を処理する関数。"
   (let ((cell (japanlaw-index-set-alist name opened func)))
     (if opened
-        (japanlaw-with-buffer-read-only
+        (japanlaw--draw-buffer
          (let ((start (progn (forward-line 1) (point)))
                (end (progn (while (and (not (eobp))
                                        (not (japanlaw-index-folder-level-0)))
@@ -1397,7 +1397,7 @@ FUNCは連想リストを返す関数。"
              (forward-line -1)
              (japanlaw-index-folder-toggle-state))))
       ;; closed
-      (japanlaw-with-buffer-read-only
+      (japanlaw--draw-buffer
        (japanlaw-index-folder-toggle-state)
        (forward-line 1)
        (dolist (x cell)
@@ -1444,7 +1444,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
     (cl-do ((alist (funcall afunc) (cdr alist)))
 	((null alist))
       (setcar (cdar alist) open))
-    (japanlaw-with-buffer-read-only
+    (japanlaw--draw-buffer
      (erase-buffer))
     (funcall ifunc)))
 
@@ -1480,7 +1480,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 	       (not opened))))
   (unless (japanlaw-index-goto-mode 'Search)
     (let ((line (line-number-at-pos)))
-      (japanlaw-with-buffer-read-only
+      (japanlaw--draw-buffer
        (erase-buffer)
        (japanlaw-index-search-insert-func (japanlaw-search-alist)))
       (japanlaw-index-highlight-search-buffer)
@@ -1549,7 +1549,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
       ;; folder 最下層
       )
      (opened
-      (japanlaw-with-buffer-read-only
+      (japanlaw--draw-buffer
        (let ((start (progn (forward-line 1) (point)))
              (end (progn (while (and (not (eobp))
                                      (not (if sub
@@ -1563,7 +1563,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
            (japanlaw-index-folder-toggle-state)))))
      (t
       ;; closed
-      (japanlaw-with-buffer-read-only
+      (japanlaw--draw-buffer
        (japanlaw-index-folder-toggle-state)
        (forward-line 1)
        (if sub
@@ -1664,7 +1664,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
     ;; バッファ更新
     ;; japanlaw-index-goto-mode: Return nil if same local-mode.
     (unless (japanlaw-index-goto-mode 'Search)
-      (japanlaw-with-buffer-read-only
+      (japanlaw--draw-buffer
        (erase-buffer))
       (japanlaw-index-insert-alist-function #'japanlaw-search-alist))
     (message "%sdone" (current-message))))
@@ -1746,7 +1746,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
   "Bookmark,Opened,Recentで削除マークを付ける。"
   (interactive)
   (when (member japanlaw-menuview--current-item '(Opened Recent Bookmark))
-    (japanlaw-with-buffer-read-only
+    (japanlaw--draw-buffer
      (forward-line 0)
      (when (re-search-forward "\\([ D]\\)-" (point-at-eol) t)
        (replace-match
@@ -1785,7 +1785,7 @@ Openedの場合、ファイルを閉じる。"
         (delalist 'japanlaw-menuview--bookmark-data
                   '(mapcar (lambda (x) (upcase x))
                            (japanlaw-index-get-cells 'marks))))
-       (japanlaw-with-buffer-read-only
+       (japanlaw--draw-buffer
         (erase-buffer))
        (japanlaw-index-insert-bookmark))
       (Opened
@@ -1794,7 +1794,7 @@ Openedの場合、ファイルを閉じる。"
                 (get-file-buffer (japanlaw-expand-data-file cel))))
              ;; mapc(delalist) returns it's arg identical.
              (funcall (delalist 'japanlaw-menuview--opened-data)))
-       (japanlaw-with-buffer-read-only
+       (japanlaw--draw-buffer
         (erase-buffer))
        (japanlaw-index-insert-opened))
       (Recent
@@ -1802,7 +1802,7 @@ Openedの場合、ファイルを閉じる。"
         (delalist 'japanlaw-menuview--recent-data
                   '(mapcar (lambda (x) (upcase x))
                            (japanlaw-index-get-cells 'marks))))
-       (japanlaw-with-buffer-read-only
+       (japanlaw--draw-buffer
         (erase-buffer))
        (japanlaw-index-insert-recent)))))
 
@@ -1815,7 +1815,7 @@ Openedの場合、ファイルを閉じる。"
   "項目を1行下に移動する。"
   (interactive)
   (when (eq japanlaw-menuview--current-item 'Bookmark)
-    (japanlaw-with-buffer-read-only
+    (japanlaw--draw-buffer
      (let* ((start (progn (forward-line 0) (point)))
 	    (end   (progn (forward-line 1) (point)))
 	    (line  (buffer-substring start end)))
@@ -2966,7 +2966,7 @@ FULL が非-nilなら path/file を返す。"
 ;;   (interactive)
 ;;   (pop-to-buffer
 ;;    (with-current-buffer (get-buffer-create "*JapanLawInfo*")
-;;      (japanlaw-with-buffer-read-only
+;;      (japanlaw--draw-buffer
 ;;       (insert
 ;;        (apply #'format
 ;; 	      (mapconcat (lambda (s) (format "%-20s%%s" s))
