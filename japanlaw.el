@@ -700,15 +700,13 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
 
 (defmacro japanlaw-with-buffer-read-only (&rest forms)
   "バッファの未編集とリードオンリー状態を保持してFORMSを評価する。"
-  '(unless (eq major-mode 'japanlaw-index-mode)
-     (error "ERROR: major-mode is not japanlaw-index-mode."))
   `(progn
-     (setq buffer-read-only nil)
-     (unwind-protect
-         (save-excursion ,@forms)
-       (progn
-	 (setq buffer-read-only t)
-	 (set-buffer-modified-p nil)))))
+     (unless (eq major-mode 'japanlaw-index-mode)
+       (error "ERROR: major-mode is not japanlaw-index-mode."))
+     (let ((inhibit-read-only t))
+       (unwind-protect
+           (save-excursion ,@forms)
+         (set-buffer-modified-p nil)))))
 
 (defun japanlaw--get-plist ()
   (save-excursion
@@ -1066,7 +1064,8 @@ FUNCSは引数を取らない関数のリスト。"
 (defun japanlaw-index-insert-contents (mode)
   "各モードごとにツリーの挿入処理を分岐する。"
   ;;(japanlaw-save-)
-  (japanlaw-with-buffer-read-only (erase-buffer))
+  (japanlaw-with-buffer-read-only
+   (erase-buffer))
   (cl-case mode
     (Opened	(japanlaw-index-insert-opened))
     (Recent	(japanlaw-index-insert-recent))
@@ -1445,7 +1444,8 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
     (cl-do ((alist (funcall afunc) (cdr alist)))
 	((null alist))
       (setcar (cdar alist) open))
-    (japanlaw-with-buffer-read-only (erase-buffer))
+    (japanlaw-with-buffer-read-only
+     (erase-buffer))
     (funcall ifunc)))
 
 ;; Opened
@@ -1664,7 +1664,8 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
     ;; バッファ更新
     ;; japanlaw-index-goto-mode: Return nil if same local-mode.
     (unless (japanlaw-index-goto-mode 'Search)
-      (japanlaw-with-buffer-read-only (erase-buffer))
+      (japanlaw-with-buffer-read-only
+       (erase-buffer))
       (japanlaw-index-insert-alist-function #'japanlaw-search-alist))
     (message "%sdone" (current-message))))
 
@@ -1784,7 +1785,8 @@ Openedの場合、ファイルを閉じる。"
         (delalist 'japanlaw-menuview--bookmark-data
                   '(mapcar (lambda (x) (upcase x))
                            (japanlaw-index-get-cells 'marks))))
-       (japanlaw-with-buffer-read-only (erase-buffer))
+       (japanlaw-with-buffer-read-only
+        (erase-buffer))
        (japanlaw-index-insert-bookmark))
       (Opened
        (mapc (lambda (cel)
@@ -1792,14 +1794,16 @@ Openedの場合、ファイルを閉じる。"
                 (get-file-buffer (japanlaw-expand-data-file cel))))
              ;; mapc(delalist) returns it's arg identical.
              (funcall (delalist 'japanlaw-menuview--opened-data)))
-       (japanlaw-with-buffer-read-only (erase-buffer))
+       (japanlaw-with-buffer-read-only
+        (erase-buffer))
        (japanlaw-index-insert-opened))
       (Recent
        (funcall
         (delalist 'japanlaw-menuview--recent-data
                   '(mapcar (lambda (x) (upcase x))
                            (japanlaw-index-get-cells 'marks))))
-       (japanlaw-with-buffer-read-only (erase-buffer))
+       (japanlaw-with-buffer-read-only
+        (erase-buffer))
        (japanlaw-index-insert-recent)))))
 
 (defun japanlaw-index-bookmark-move-up ()
