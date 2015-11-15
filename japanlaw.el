@@ -916,247 +916,6 @@ LFUNCは、NAMEからなるリストを返す関数。"
   "Abbrevで、バッファにツリーを挿入する。"
   (japanlaw-index-insert-alist-function #'japanlaw-load--abbrev-view))
 
-;;
-;; Open or close
-;;
-
-;; Common
-(defsubst japanlaw-index-folder-level ()
-  (let* ((plist (japanlaw--get-plist))
-         (flag (plist-get plist :open-flag))
-         (level (member
-                 flag
-                 '("+" "-"
-                   "  +" "  -"
-                   "    +" "    -" "      -"))))
-    (if level
-	(/ (1- (length (car level))) 2)
-      -1)))
-
-(defsubst japanlaw-index-folder-level-0 ()
-  "folderの階層が最上位なら非nilを返す。"
-  (zerop (japanlaw-index-folder-level)))
-
-(defsubst japanlaw-index-folder-level-1 ()
-  "folderの階層が1番目なら非nilを返す。"
-  (= (japanlaw-index-folder-level) 1))
-
-(defsubst japanlaw-index-folder-level-2 ()
-  "フォルダの階層が2番目なら非nilを返す。"
-  (= (japanlaw-index-folder-level) 2))
-
-(defsubst japanlaw-index-folder-level-3 ()
-  "フォルダの階層が3番目なら非nilを返す。"
-  (= (japanlaw-index-folder-level) 3))
-
-(defsubst japanlaw-index-not-folder-p ()
-  "アイテムがフォルダでないとき真を返す。"
-  (and (not (japanlaw-index-folder-level-0))
-       (not (japanlaw-index-folder-level-1))
-       (not (japanlaw-index-folder-level-2))))
-
-(defsubst japanlaw-index-folder-open-p ()
-  "folderが開いていれば非nilを、閉じていればnilを返す。"
-  (save-excursion
-    (forward-line 0)
-    (and (re-search-forward " *-" (point-at-eol) t) t)))
-
-(defun japanlaw-index-open-or-close ()
-  "フォルダなら開閉し、法令ならその法令を開くコマンド。"
-  (interactive)
-  (apply #'funcall
-	 (let ((mode japanlaw-menuview--current-item))
-	   (cl-case mode
-	     (Opened		`(japanlaw-index-opened-oc))
-	     (Recent		`(japanlaw-index-recent-oc))
-	     (Search		`(japanlaw-index-search-oc))
-	     (Bookmark		`(japanlaw-index-bookmark-oc))
-	     (Index		`(japanlaw-index-index-oc))
-	     (Directory		`(japanlaw-index-directory-oc))
-	     (Abbrev		`(japanlaw-index-abbrev-oc)))))
-  ;; 開いた場合、次が実行されるのは問題か。
-  (japanlaw-index-move-to-column))
-
-(defun japanlaw-index-browse-at-point ()
-  ;; メニューコマンド
-  (interactive)
-  (let ((id (plist-get (japanlaw--get-plist) :id)))
-    (if id
-	(browse-url (japanlaw-expand-htmldata-url id))
-      (message "No url at point."))))
-
-(defun japanlaw-index-mouse-open-or-close (event)
-  "マウスでフォルダの開閉、法令を開くコマンド。"
-  (interactive "e")
-  (set-buffer (window-buffer (posn-window (event-end event))))
-  (goto-char (posn-point (event-end event)))
-  (japanlaw-index-open-or-close)
-  (when (japanlaw-index-folder-level-0) (recenter 0)))
-
-(defun japanlaw-retrieve-index ()
-  "インデックスファイルを取得し直す。最後に取得してから更新があっ
-た場合、番号付きバックアップを生成する。"
-  (interactive)
-  (unless (eq major-mode 'japanlaw-index-mode)
-    (error "Try in japanlaw-index-mode."))
-  (let ((updated (japanlaw-make-index-files 'regenerate))
-	msg)
-    ;; Mishikou
-    (cond
-     ((nth 2 updated)
-      (push "Mishikou was updated." msg))
-     (t
-      (push "Mishikou was not updated." msg)))
-    ;; Abbreves
-    (cond
-     ((nth 1 updated)
-      (setq japanlaw-menuview--abbrev-data nil)
-      (push "Abbrevs was updated." msg))
-     (t
-      (push "Abbrevs was not updated." msg)))
-    ;; Index
-    (cond
-     ((nth 0 updated)
-      (setq japanlaw-index--main-data nil)
-      (push "Index was updated." msg))
-     (t
-      (push "Index was not updated." msg)))
-    (when (and (japanlaw:filter 'identity updated)
-	       (get-buffer japanlaw-index--buffer-name))
-      (kill-buffer japanlaw-index--buffer-name)
-      (japanlaw-index))
-    (message "%s" (mapconcat 'identity msg "  "))))
-
-(defun japanlaw-index-open-all ()
-  "`Index'で、すべてのフォルダを開くコマンド。"
-  (interactive)
-  (apply #'funcall
-	 (let ((mode japanlaw-menuview--current-item))
-	   (cl-case mode
-	     ;;(Opened `(japanlaw-index-opened-oc ,mode))
-	     ;;(Recent `(japanlaw-index-recent-oc ,mode))
-	     ;;(Search `(japanlaw-index-search-oc ,mode))
-	     ;;(Bookmark `(japanlaw-index-bookmark-oc ,mode))
-	     (Index `(japanlaw-index-index-oc-all t))
-	     (Directory `(japanlaw-index-directory-oc-all t))
-	     (Abbrev `(japanlaw-index-abbrev-oc-all t))
-	     (t (error "Not supported."))))))
-
-(defun japanlaw-index-close-all ()
-  "`Index'で、すべてのフォルダを閉じるコマンド。"
-  (interactive)
-  (apply #'funcall
-	 (let ((mode japanlaw-menuview--current-item))
-	   (cl-case mode
-	     ;;(Opened `(japanlaw-index-opened-oc nil))
-	     ;;(Recent `(japanlaw-index-recent-oc nil))
-	     ;;(Search `(japanlaw-index-search-oc nil))
-	     ;;(Bookmark `(japanlaw-index-bookmark-oc nil))
-	     (Index `(japanlaw-index-index-oc-all nil))
-	     (Directory `(japanlaw-index-directory-oc-all nil))
-	     (Abbrev `(japanlaw-index-abbrev-oc-all nil))
-	     (t (error "Not supported."))))))
-
-(defun japanlaw-index-folder-toggle-state ()
-  "フォルダの開閉フラグをトグルする。"
-  (forward-line 0)
-  (when (re-search-forward "[+-]" (point-at-eol) t)
-    (let* ((curr-char (string-to-char (match-string 0)))
-           (next-char (if (eq curr-char ?+) ?- ?+))
-           (next (char-to-string next-char))
-           (props (text-properties-at (point)))
-           (plist (get-text-property (point) 'japanlaw-item-plist))
-           (current2 (plist-get plist :open-flag))
-           (next2 (subst-char-in-string curr-char next-char current2)))
-      (replace-match next)
-      (set-text-properties
-       (point-at-bol) (point-at-eol)
-       props)
-      (plist-put plist :open-flag next2))))
-
-(defun japanlaw-index-upper-level ()
-  "ひとつ上の階層に移動するコマンド。"
-  (interactive)
-  (let ((level (japanlaw-index-folder-level)))
-    (when (> level 0)
-      (while (> (1+ (japanlaw-index-folder-level)) level)
-	(forward-line -1))
-      (japanlaw-index-move-to-column))))
-
-;; Index and Directory
-(defun japanlaw-index-set-alist (name opened func)
-  "連想リストのキーがNAMEのフォルダの開閉フラグを(not opened)にセットする。
-FUNCは連想リストを返す関数。"
-  (let ((cell (cdr (assoc name (funcall func)))))
-    (setcar cell (not opened))
-    (cdr cell)))
-
-(defun japanlaw-index-folder (name opened func)
-  "`Index'と`Directory'で、フォルダの開閉を処理する関数。"
-  (let ((cell (japanlaw-index-set-alist name opened func)))
-    (if opened
-        (japanlaw--draw-buffer
-         (let ((start (progn (forward-line 1) (point)))
-               (end (progn (while (and (not (eobp))
-                                       (not (japanlaw-index-folder-level-0)))
-                             (forward-line 1))
-                           (point))))
-           (unless (= start end)
-             (delete-region start end)
-             (forward-line -1)
-             (japanlaw-index-folder-toggle-state))))
-      ;; closed
-      (japanlaw--draw-buffer
-       (japanlaw-index-folder-toggle-state)
-       (forward-line 1)
-       (dolist (x cell)
-         (japanlaw-index-insert-line 2 nil (car x) (cdr x)))
-       (japanlaw-index-upper-level)))))
-
-(defun japanlaw-open-file (id)
-  (let* ((file (japanlaw-expand-data-file id))
-	 (buffer (get-file-buffer file)))
-    (unless (file-exists-p file)
-      ;;TODO hack
-      (cond
-       ((string-match "-mishikou\\'" id)
-        (let* ((pair (assoc id japanlaw-index--mishikou-url-alist))
-               (url (cdr pair)))
-          (japanlaw-make-data id 'force url)))
-       (t
-        (japanlaw-make-data id 'force))))
-    (unless buffer
-      (setq buffer (find-file-noselect file))
-      (set-buffer buffer)
-      (japanlaw-mode))
-    (switch-to-buffer buffer)
-    (japanlaw-recent-add)))
-
-(defun japanlaw-index-index-oc-function (func)
-  "`Index',`Directory'で、フォルダなら開閉をし法令名なら開く。"
-  (let* ((plist (japanlaw--get-plist))
-	 (name (plist-get plist :name))
-	 (id (plist-get plist :id)))
-    (if (japanlaw-index-folder-level-0)
-	;; folder open or close
-	(japanlaw-index-folder name (japanlaw-index-folder-open-p) func)
-      ;; file open
-      (unless id (error "Not a law data."))
-      (save-excursion
-	(forward-line 0)
-	(japanlaw-open-file id)))))
-
-(defun japanlaw-index-index-oc-all-function (open afunc ifunc)
-  "`Index',`Directory'で、すべてのフォルダの開閉をする。
-AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をする関数。"
-  (save-excursion
-    (cl-do ((alist (funcall afunc) (cdr alist)))
-	((null alist))
-      (setcar (cdar alist) open))
-    (japanlaw--draw-buffer
-     (erase-buffer))
-    (funcall ifunc)))
-
 ;; Opened
 
 ;; Recent
@@ -4724,7 +4483,248 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
 (defalias 'japanlaw-index-update 'japanlaw-menuview-update)
 
 ;;
-;; menu
+;; Open / Close
+;;
+
+;; Common
+(defsubst japanlaw-index-folder-level ()
+  (let* ((plist (japanlaw--get-plist))
+         (flag (plist-get plist :open-flag))
+         (level (member
+                 flag
+                 '("+" "-"
+                   "  +" "  -"
+                   "    +" "    -" "      -"))))
+    (if level
+	(/ (1- (length (car level))) 2)
+      -1)))
+
+(defsubst japanlaw-index-folder-level-0 ()
+  "folderの階層が最上位なら非nilを返す。"
+  (zerop (japanlaw-index-folder-level)))
+
+(defsubst japanlaw-index-folder-level-1 ()
+  "folderの階層が1番目なら非nilを返す。"
+  (= (japanlaw-index-folder-level) 1))
+
+(defsubst japanlaw-index-folder-level-2 ()
+  "フォルダの階層が2番目なら非nilを返す。"
+  (= (japanlaw-index-folder-level) 2))
+
+(defsubst japanlaw-index-folder-level-3 ()
+  "フォルダの階層が3番目なら非nilを返す。"
+  (= (japanlaw-index-folder-level) 3))
+
+(defsubst japanlaw-index-not-folder-p ()
+  "アイテムがフォルダでないとき真を返す。"
+  (and (not (japanlaw-index-folder-level-0))
+       (not (japanlaw-index-folder-level-1))
+       (not (japanlaw-index-folder-level-2))))
+
+(defsubst japanlaw-index-folder-open-p ()
+  "folderが開いていれば非nilを、閉じていればnilを返す。"
+  (save-excursion
+    (forward-line 0)
+    (and (re-search-forward " *-" (point-at-eol) t) t)))
+
+(defun japanlaw-index-open-or-close ()
+  "フォルダなら開閉し、法令ならその法令を開くコマンド。"
+  (interactive)
+  (apply #'funcall
+	 (let ((mode japanlaw-menuview--current-item))
+	   (cl-case mode
+	     (Opened		`(japanlaw-index-opened-oc))
+	     (Recent		`(japanlaw-index-recent-oc))
+	     (Search		`(japanlaw-index-search-oc))
+	     (Bookmark		`(japanlaw-index-bookmark-oc))
+	     (Index		`(japanlaw-index-index-oc))
+	     (Directory		`(japanlaw-index-directory-oc))
+	     (Abbrev		`(japanlaw-index-abbrev-oc)))))
+  ;; 開いた場合、次が実行されるのは問題か。
+  (japanlaw-index-move-to-column))
+
+(defun japanlaw-index-browse-at-point ()
+  ;; メニューコマンド
+  (interactive)
+  (let ((id (plist-get (japanlaw--get-plist) :id)))
+    (if id
+	(browse-url (japanlaw-expand-htmldata-url id))
+      (message "No url at point."))))
+
+(defun japanlaw-index-mouse-open-or-close (event)
+  "マウスでフォルダの開閉、法令を開くコマンド。"
+  (interactive "e")
+  (set-buffer (window-buffer (posn-window (event-end event))))
+  (goto-char (posn-point (event-end event)))
+  (japanlaw-index-open-or-close)
+  (when (japanlaw-index-folder-level-0) (recenter 0)))
+
+(defun japanlaw-retrieve-index ()
+  "インデックスファイルを取得し直す。最後に取得してから更新があっ
+た場合、番号付きバックアップを生成する。"
+  (interactive)
+  (unless (eq major-mode 'japanlaw-index-mode)
+    (error "Try in japanlaw-index-mode."))
+  (let ((updated (japanlaw-make-index-files 'regenerate))
+	msg)
+    ;; Mishikou
+    (cond
+     ((nth 2 updated)
+      (push "Mishikou was updated." msg))
+     (t
+      (push "Mishikou was not updated." msg)))
+    ;; Abbreves
+    (cond
+     ((nth 1 updated)
+      (setq japanlaw-menuview--abbrev-data nil)
+      (push "Abbrevs was updated." msg))
+     (t
+      (push "Abbrevs was not updated." msg)))
+    ;; Index
+    (cond
+     ((nth 0 updated)
+      (setq japanlaw-index--main-data nil)
+      (push "Index was updated." msg))
+     (t
+      (push "Index was not updated." msg)))
+    (when (and (japanlaw:filter 'identity updated)
+	       (get-buffer japanlaw-index--buffer-name))
+      (kill-buffer japanlaw-index--buffer-name)
+      (japanlaw-index))
+    (message "%s" (mapconcat 'identity msg "  "))))
+
+(defun japanlaw-index-open-all ()
+  "`Index'で、すべてのフォルダを開くコマンド。"
+  (interactive)
+  (apply #'funcall
+	 (let ((mode japanlaw-menuview--current-item))
+	   (cl-case mode
+	     ;;(Opened `(japanlaw-index-opened-oc ,mode))
+	     ;;(Recent `(japanlaw-index-recent-oc ,mode))
+	     ;;(Search `(japanlaw-index-search-oc ,mode))
+	     ;;(Bookmark `(japanlaw-index-bookmark-oc ,mode))
+	     (Index `(japanlaw-index-index-oc-all t))
+	     (Directory `(japanlaw-index-directory-oc-all t))
+	     (Abbrev `(japanlaw-index-abbrev-oc-all t))
+	     (t (error "Not supported."))))))
+
+(defun japanlaw-index-close-all ()
+  "`Index'で、すべてのフォルダを閉じるコマンド。"
+  (interactive)
+  (apply #'funcall
+	 (let ((mode japanlaw-menuview--current-item))
+	   (cl-case mode
+	     ;;(Opened `(japanlaw-index-opened-oc nil))
+	     ;;(Recent `(japanlaw-index-recent-oc nil))
+	     ;;(Search `(japanlaw-index-search-oc nil))
+	     ;;(Bookmark `(japanlaw-index-bookmark-oc nil))
+	     (Index `(japanlaw-index-index-oc-all nil))
+	     (Directory `(japanlaw-index-directory-oc-all nil))
+	     (Abbrev `(japanlaw-index-abbrev-oc-all nil))
+	     (t (error "Not supported."))))))
+
+(defun japanlaw-index-folder-toggle-state ()
+  "フォルダの開閉フラグをトグルする。"
+  (forward-line 0)
+  (when (re-search-forward "[+-]" (point-at-eol) t)
+    (let* ((curr-char (string-to-char (match-string 0)))
+           (next-char (if (eq curr-char ?+) ?- ?+))
+           (next (char-to-string next-char))
+           (props (text-properties-at (point)))
+           (plist (get-text-property (point) 'japanlaw-item-plist))
+           (current2 (plist-get plist :open-flag))
+           (next2 (subst-char-in-string curr-char next-char current2)))
+      (replace-match next)
+      (set-text-properties
+       (point-at-bol) (point-at-eol)
+       props)
+      (plist-put plist :open-flag next2))))
+
+(defun japanlaw-index-upper-level ()
+  "ひとつ上の階層に移動するコマンド。"
+  (interactive)
+  (let ((level (japanlaw-index-folder-level)))
+    (when (> level 0)
+      (while (> (1+ (japanlaw-index-folder-level)) level)
+	(forward-line -1))
+      (japanlaw-index-move-to-column))))
+
+;; Index and Directory
+(defun japanlaw-index-set-alist (name opened func)
+  "連想リストのキーがNAMEのフォルダの開閉フラグを(not opened)にセットする。
+FUNCは連想リストを返す関数。"
+  (let ((cell (cdr (assoc name (funcall func)))))
+    (setcar cell (not opened))
+    (cdr cell)))
+
+(defun japanlaw-index-folder (name opened func)
+  "`Index'と`Directory'で、フォルダの開閉を処理する関数。"
+  (let ((cell (japanlaw-index-set-alist name opened func)))
+    (if opened
+        (japanlaw--draw-buffer
+         (let ((start (progn (forward-line 1) (point)))
+               (end (progn (while (and (not (eobp))
+                                       (not (japanlaw-index-folder-level-0)))
+                             (forward-line 1))
+                           (point))))
+           (unless (= start end)
+             (delete-region start end)
+             (forward-line -1)
+             (japanlaw-index-folder-toggle-state))))
+      ;; closed
+      (japanlaw--draw-buffer
+       (japanlaw-index-folder-toggle-state)
+       (forward-line 1)
+       (dolist (x cell)
+         (japanlaw-index-insert-line 2 nil (car x) (cdr x)))
+       (japanlaw-index-upper-level)))))
+
+(defun japanlaw-open-file (id)
+  (let* ((file (japanlaw-expand-data-file id))
+	 (buffer (get-file-buffer file)))
+    (unless (file-exists-p file)
+      ;;TODO hack
+      (cond
+       ((string-match "-mishikou\\'" id)
+        (let* ((pair (assoc id japanlaw-index--mishikou-url-alist))
+               (url (cdr pair)))
+          (japanlaw-make-data id 'force url)))
+       (t
+        (japanlaw-make-data id 'force))))
+    (unless buffer
+      (setq buffer (find-file-noselect file))
+      (set-buffer buffer)
+      (japanlaw-mode))
+    (switch-to-buffer buffer)
+    (japanlaw-recent-add)))
+
+(defun japanlaw-index-index-oc-function (func)
+  "`Index',`Directory'で、フォルダなら開閉をし法令名なら開く。"
+  (let* ((plist (japanlaw--get-plist))
+	 (name (plist-get plist :name))
+	 (id (plist-get plist :id)))
+    (if (japanlaw-index-folder-level-0)
+	;; folder open or close
+	(japanlaw-index-folder name (japanlaw-index-folder-open-p) func)
+      ;; file open
+      (unless id (error "Not a law data."))
+      (save-excursion
+	(forward-line 0)
+	(japanlaw-open-file id)))))
+
+(defun japanlaw-index-index-oc-all-function (open afunc ifunc)
+  "`Index',`Directory'で、すべてのフォルダの開閉をする。
+AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をする関数。"
+  (save-excursion
+    (cl-do ((alist (funcall afunc) (cdr alist)))
+	((null alist))
+      (setcar (cdar alist) open))
+    (japanlaw--draw-buffer
+     (erase-buffer))
+    (funcall ifunc)))
+
+;;
+;; Command
 ;;
 
 (easy-menu-define japanlaw-index-mode-menu
