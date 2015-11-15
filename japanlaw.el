@@ -826,88 +826,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	nil
       (regexp-opt result))))
 
-(defun japanlaw-write-init-file (out h-path iimagep force)
-  (if (or force (not (file-exists-p out)))
-      (let ((regexps (japanlaw-make-font-lock-regexp-in-buffer h-path)))
-	(with-temp-file out
-	  ;; 正規表現文字列、冒頭の未施行法令等とその参照先URLのcons、imageが
-	  ;; 含まれているかどうか。
-	  (insert ";;; `japanlaw-mode' japanlaw-font-lock-keywords-2 file.\n")
-	  (insert (format "%S" (list regexps h-path iimagep)))
-	  (message "Wrote %s" out)))))
-
-(defun japanlaw-read-init-file ()
-  ;; 生成されたファイル情報を読み込む。
-  (let ((file (japanlaw-expand-init-file
-	       (file-name-sans-extension
-		(file-name-nondirectory (buffer-file-name))))))
-    (if (file-exists-p file)
-	(with-temp-buffer
-	  (insert-file-contents file)
-	  (read (current-buffer)))
-      (message "Not exists japanlaw-read-init-file file `%s'" file)
-      nil)))
-
-(defun japanlaw-make-data (id &optional force url)
-  "htmlデータをw3mでダンプする。FORCEが非nilならIDをGET、nilなら既
-にGETしたHTMLを対象とする。また、font-lockのためのタグの埋め込み等
-の加工を行なう。
-生成されたファイルの名前を返す。"
-  (unless japanlaw-online-mode
-    (japanlaw-online-mode-message #'error))
-  (message "Getting file and converting...")
-  (let ((temp (concat (japanlaw-temp-path) "/temp.html"))
-	;; htmldata を取得。
-	(html (japanlaw-htmldata-retrieve id nil url))
-	(file (japanlaw-expand-data-file id))
-	(regfile (japanlaw-expand-init-file id))
-	(coding-system-for-write japanlaw-coding-system-for-write)
-	alist images h-path)
-    (with-temp-file temp
-      (japanlaw-make-directory (file-name-directory temp))
-      ;; バッファにhtmlを取得する。
-      (message "Getting htmldata...")
-      (let ((coding-system-for-read 'raw-text)
-            format-alist)
-        (insert-file-contents html))
-      (message "%s done." (current-message))
-      ;; イメージデータの取得。
-      (setq images (japanlaw-make-images-list))
-      (when (and force images)
-	(message "Getting images...")
-	(japanlaw-images-retrieve images)
-	(message "Getting images... done."))
-      ;; `H_PATH'の取得。
-      (setq h-path (japanlaw-html-get-h-path))
-      ;; htmlタグの置換。テンポラリファイルに書き出す。
-      ;; テンポラリファイルは削除せずに残す。
-      (goto-char (point-min))
-      (message "Replacing tag's value in htmldata...")
-      (japanlaw-replace-table-value)
-      ;; イメージを置換する。
-      (when images (japanlaw-replace-image-tags images))
-      )
-    (message "%s done." (current-message))
-    ;; テンポラリファイルを対象にw3mでダンプする。
-    (with-temp-file file
-      (japanlaw-make-directory (file-name-directory file))
-      (message "Extracting data from htmldata...")
-      (japanlaw-w3m-dump temp)
-      (message "%s done." (current-message))
-      ;; 半角空白2個を全角空白に置換する。
-      (message "Replacing spaces...")
-      (japanlaw-replace-zspc)
-      (message "%s done." (current-message))
-      ;; バッファ内の法令名を取得し、正規表現を生成する。
-      (message "Scanning law names...")
-      ;; 情報を書き込む。
-      (japanlaw-write-init-file regfile h-path (if images t nil) force)
-      (message "%s done." (current-message))
-      (message "Scanning law names...done")
-      (message "Getting file and converting...done")
-      ;; 生成されたファイルの名前を返す。
-      file)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; japanlaw-index
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3788,6 +3706,96 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (make-obsolete-variable 'japanlaw-abbrev-file nil "0.8.11")
 (make-obsolete-variable 'japanlaw-index-file nil "0.8.11")
 (make-obsolete-variable 'japanlaw-htmldata-path nil "0.8.11")
+
+;;
+;; Index
+;;
+
+;;
+;; Law
+;;
+
+(defun japanlaw-write-init-file (out h-path iimagep force)
+  (if (or force (not (file-exists-p out)))
+      (let ((regexps (japanlaw-make-font-lock-regexp-in-buffer h-path)))
+	(with-temp-file out
+	  ;; 正規表現文字列、冒頭の未施行法令等とその参照先URLのcons、imageが
+	  ;; 含まれているかどうか。
+	  (insert ";;; `japanlaw-mode' japanlaw-font-lock-keywords-2 file.\n")
+	  (insert (format "%S" (list regexps h-path iimagep)))
+	  (message "Wrote %s" out)))))
+
+(defun japanlaw-read-init-file ()
+  ;; 生成されたファイル情報を読み込む。
+  (let ((file (japanlaw-expand-init-file
+	       (file-name-sans-extension
+		(file-name-nondirectory (buffer-file-name))))))
+    (if (file-exists-p file)
+	(with-temp-buffer
+	  (insert-file-contents file)
+	  (read (current-buffer)))
+      (message "Not exists japanlaw-read-init-file file `%s'" file)
+      nil)))
+
+(defun japanlaw-make-data (id &optional force url)
+  "htmlデータをw3mでダンプする。FORCEが非nilならIDをGET、nilなら既
+にGETしたHTMLを対象とする。また、font-lockのためのタグの埋め込み等
+の加工を行なう。
+生成されたファイルの名前を返す。"
+  (unless japanlaw-online-mode
+    (japanlaw-online-mode-message #'error))
+  (message "Getting file and converting...")
+  (let ((temp (concat (japanlaw-temp-path) "/temp.html"))
+	;; htmldata を取得。
+	(html (japanlaw-htmldata-retrieve id nil url))
+	(file (japanlaw-expand-data-file id))
+	(regfile (japanlaw-expand-init-file id))
+	(coding-system-for-write japanlaw-coding-system-for-write)
+	alist images h-path)
+    (with-temp-file temp
+      (japanlaw-make-directory (file-name-directory temp))
+      ;; バッファにhtmlを取得する。
+      (message "Getting htmldata...")
+      (let ((coding-system-for-read 'raw-text)
+            format-alist)
+        (insert-file-contents html))
+      (message "%s done." (current-message))
+      ;; イメージデータの取得。
+      (setq images (japanlaw-make-images-list))
+      (when (and force images)
+	(message "Getting images...")
+	(japanlaw-images-retrieve images)
+	(message "Getting images... done."))
+      ;; `H_PATH'の取得。
+      (setq h-path (japanlaw-html-get-h-path))
+      ;; htmlタグの置換。テンポラリファイルに書き出す。
+      ;; テンポラリファイルは削除せずに残す。
+      (goto-char (point-min))
+      (message "Replacing tag's value in htmldata...")
+      (japanlaw-replace-table-value)
+      ;; イメージを置換する。
+      (when images (japanlaw-replace-image-tags images))
+      )
+    (message "%s done." (current-message))
+    ;; テンポラリファイルを対象にw3mでダンプする。
+    (with-temp-file file
+      (japanlaw-make-directory (file-name-directory file))
+      (message "Extracting data from htmldata...")
+      (japanlaw-w3m-dump temp)
+      (message "%s done." (current-message))
+      ;; 半角空白2個を全角空白に置換する。
+      (message "Replacing spaces...")
+      (japanlaw-replace-zspc)
+      (message "%s done." (current-message))
+      ;; バッファ内の法令名を取得し、正規表現を生成する。
+      (message "Scanning law names...")
+      ;; 情報を書き込む。
+      (japanlaw-write-init-file regfile h-path (if images t nil) force)
+      (message "%s done." (current-message))
+      (message "Scanning law names...done")
+      (message "Getting file and converting...done")
+      ;; 生成されたファイルの名前を返す。
+      file)))
 
 ;;;;
 ;;;; UI
