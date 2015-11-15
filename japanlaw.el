@@ -214,39 +214,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   :type 'string
   :group 'japanlaw)
 
-;;
-;; external commands
-;;
-
-(defcustom japanlaw-url-wget-program "wget"
-  "wget プログラムへの path."
-  :type 'file
-  :group 'japanlaw)
-
-(defcustom japanlaw-url-curl-program "curl"
-  "curl プログラムへの path."
-  :type 'file
-  :group 'japanlaw)
-
-(defcustom japanlaw-url-retrieve-function
-  (cond
-   ((executable-find japanlaw-url-curl-program)
-    'japanlaw-url-retrieve-curl)
-   ((executable-find japanlaw-url-wget-program)
-    'japanlaw-url-retrieve-wget)
-   (t
-    ;; url.el has the lowest priority
-    'url-retrieve-synchronously))
-  "URL 引数をひとつ受け付け、HTTP Response の Header と Body を保持するバッファ
-を返す関数。返されたバッファは parse された後で削除される。"
-  :type 'function
-  :group 'japanlaw)
-
-(defcustom japanlaw-w3m-command "w3m"
-  "w3m プログラムへの path."
-  :type 'string
-  :group 'japanlaw)
-
 ;;;
 ;;; Internal variables
 ;;;
@@ -522,45 +489,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
           (message "Process has completed.")
           (sit-for 1)))
       (list index-updatedp abbrev-updatedp mishikou-updatedp))))
-
-(defun japanlaw-url-retrieve-wget (url)
-  (let ((buf (generate-new-buffer " *Japanlaw wget* ")))
-    (with-current-buffer buf
-      (set-buffer-multibyte nil)
-      (call-process japanlaw-url-wget-program
-                    nil t nil
-                    "--quiet"
-                    "--output-document" "-"
-                    "--save-headers"
-                    url))
-    buf))
-
-(defun japanlaw-url-retrieve-curl (url)
-  (let ((buf (generate-new-buffer " *Japanlaw curl* ")))
-    (with-current-buffer buf
-      (set-buffer-multibyte nil)
-      (call-process japanlaw-url-curl-program
-                    nil t nil
-                    "--silent"
-                    "--dump-header" "-"
-                    ;; seems curl is rejected by law.e-gov.go.jp
-                    "--user-agent" ""
-                    url))
-    buf))
-
-(defun japanlaw-url-retrieve (url)
-  "HTTP URL を GET する。"
-  (save-current-buffer
-    (with-current-buffer
-	(condition-case err
-	    (funcall japanlaw-url-retrieve-function url)
-	  (error
-	   (error "Cannot retrieve URL: %s" url)))
-      (let ((coding (detect-coding-region (point-min) (point-max) t)))
-	(decode-coding-region (point-min) (point-max) coding)
-	(set-buffer-multibyte t)
-	(goto-char (point-min))
-	(current-buffer)))))
 
 (defun japanlaw-get-dirname (id)
   "GETしたIDの保存先ディレクトリを返す。"
@@ -918,18 +846,6 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	    (let ((s (japanlaw-url-decode-string (match-string 1))))
 	      (push (cons s path) h-path)))))
       (nreverse h-path))))
-
-(defun japanlaw-w3m-dump (htmldata &rest args)
-  (apply 'call-process
-         japanlaw-w3m-command nil (current-buffer) nil
-         "-dump"
-         "-cols" (number-to-string japanlaw-w3m-dump-cols)
-         (append args (list htmldata))))
-
-(defun japanlaw-replace-zspc ()
-  (goto-char (point-min))
-  (while (search-forward "  " nil t)
-    (replace-match "　")))
 
 (defun japanlaw-make-font-lock-regexp-in-buffer (h-path)
   ;; japanlaw-name-search-in-buffer
@@ -3677,6 +3593,99 @@ FULL が非-nilなら path/file を返す。"
 	(message "Already exists in Bookmark.")
       (push id japanlaw-menuview--bookmark-data)
       (message "Add to Bookmark `%s'" (japanlaw-current-buffer-law-name)))))
+
+;;;;
+;;;; Basic
+;;;;
+
+;;
+;; external commands
+;;
+
+(defcustom japanlaw-url-wget-program "wget"
+  "wget プログラムへの path."
+  :type 'file
+  :group 'japanlaw)
+
+(defcustom japanlaw-url-curl-program "curl"
+  "curl プログラムへの path."
+  :type 'file
+  :group 'japanlaw)
+
+(defcustom japanlaw-url-retrieve-function
+  (cond
+   ((executable-find japanlaw-url-curl-program)
+    'japanlaw-url-retrieve-curl)
+   ((executable-find japanlaw-url-wget-program)
+    'japanlaw-url-retrieve-wget)
+   (t
+    ;; url.el has the lowest priority
+    'url-retrieve-synchronously))
+  "URL 引数をひとつ受け付け、HTTP Response の Header と Body を保持するバッファ
+を返す関数。返されたバッファは parse された後で削除される。"
+  :type 'function
+  :group 'japanlaw)
+
+(defcustom japanlaw-w3m-command "w3m"
+  "w3m プログラムへの path."
+  :type 'string
+  :group 'japanlaw)
+
+(defun japanlaw-url-retrieve-wget (url)
+  (let ((buf (generate-new-buffer " *Japanlaw wget* ")))
+    (with-current-buffer buf
+      (set-buffer-multibyte nil)
+      (call-process japanlaw-url-wget-program
+                    nil t nil
+                    "--quiet"
+                    "--output-document" "-"
+                    "--save-headers"
+                    url))
+    buf))
+
+(defun japanlaw-url-retrieve-curl (url)
+  (let ((buf (generate-new-buffer " *Japanlaw curl* ")))
+    (with-current-buffer buf
+      (set-buffer-multibyte nil)
+      (call-process japanlaw-url-curl-program
+                    nil t nil
+                    "--silent"
+                    "--dump-header" "-"
+                    ;; seems curl is rejected by law.e-gov.go.jp
+                    "--user-agent" ""
+                    url))
+    buf))
+
+(defun japanlaw-url-retrieve (url)
+  "HTTP URL を GET する。"
+  (save-current-buffer
+    (with-current-buffer
+	(condition-case err
+	    (funcall japanlaw-url-retrieve-function url)
+	  (error
+	   (error "Cannot retrieve URL: %s" url)))
+      (let ((coding (detect-coding-region (point-min) (point-max) t)))
+	(decode-coding-region (point-min) (point-max) coding)
+	(set-buffer-multibyte t)
+	(goto-char (point-min))
+	(current-buffer)))))
+
+
+(defun japanlaw-w3m-dump (htmldata &rest args)
+  (apply 'call-process
+         japanlaw-w3m-command nil (current-buffer) nil
+         "-dump"
+         "-cols" (number-to-string japanlaw-w3m-dump-cols)
+         (append args (list htmldata))))
+
+;;
+;; String
+;;
+
+(defun japanlaw-replace-zspc ()
+  (goto-char (point-min))
+  (while (search-forward "  " nil t)
+    (replace-match "　")))
 
 ;;;;
 ;;;; Data
