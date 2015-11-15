@@ -464,34 +464,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 (defvar japanlaw-setup-p t
   "Non-nil means do setup, else not setup.")
 
-;; japanlaw-index-mode
-(defvar japanlaw-menuview--mode-name "JapanLaw"
-  "`japanlaw-index-mode'のモード名。")
-
-(defvar japanlaw-menuview--buffer-name "*JapanLaw*"
-  "`japanlaw-index-mode'のバッファ名。")
-
-;; NOTE: 頭文字を Key に割り当てているので、
-;;  他の単語と頭文字も重複しないようにすること。
-(defconst japanlaw-menuview--header-items
-  '("Opened"
-    "Recent"
-    "Search"
-    "Bookmark"
-    "Index"
-    "Directory"
-    "Abbrev")
-  "`japanlaw-index-mode'のヘッダラインのモードを表わす項目。")
-
-;; menu item のそれぞれの表示状態を退避保存する変数
-(defvar japanlaw-menuview--opened-data nil) ;;TODO not used?
-(defvar japanlaw-menuview--recent-data nil)
-(defvar japanlaw-menuview--search-data nil)
-(defvar japanlaw-menuview--bookmark-data nil)
-(defvar japanlaw-menuview--index-data nil)
-(defvar japanlaw-menuview--directory-data nil)
-(defvar japanlaw-menuview--abbrev-data nil)
-
 ;; TODO
 (defvar japanlaw-search-history nil)
 
@@ -4722,10 +4694,6 @@ migemoとiswitchbの設定が必要。"
     ["Close Index"		bury-buffer t]
     ["JapanLaw Exit"		japanlaw-exit t]))
 
-;;
-;; Index mode
-;;
-
 (defun japanlaw-index-mode ()
   "`japanlaw-index'のためのメジャーモード。"
   (kill-all-local-variables)
@@ -4748,6 +4716,38 @@ migemoとiswitchbの設定が必要。"
        (setq mode-line-buffer-identification japanlaw-mode-line))
   (run-hooks 'japanlaw-index-mode-hook)
   )
+
+;;
+;; menuview
+;;
+
+;; japanlaw-index-mode
+(defvar japanlaw-menuview--mode-name "JapanLaw"
+  "`japanlaw-index-mode'のモード名。")
+
+(defvar japanlaw-menuview--buffer-name "*JapanLaw*"
+  "`japanlaw-index-mode'のバッファ名。")
+
+;; NOTE: 頭文字を Key に割り当てているので、
+;;  他の単語と頭文字も重複しないようにすること。
+(defconst japanlaw-menuview--header-items
+  '("Opened"
+    "Recent"
+    "Search"
+    "Bookmark"
+    "Index"
+    "Directory"
+    "Abbrev")
+  "`japanlaw-index-mode'のヘッダラインのモードを表わす項目。")
+
+;; menu item のそれぞれの表示状態を退避保存する変数
+(defvar japanlaw-menuview--opened-data nil) ;;TODO not used?
+(defvar japanlaw-menuview--recent-data nil)
+(defvar japanlaw-menuview--search-data nil)
+(defvar japanlaw-menuview--bookmark-data nil)
+(defvar japanlaw-menuview--index-data nil)
+(defvar japanlaw-menuview--directory-data nil)
+(defvar japanlaw-menuview--abbrev-data nil)
 
 ;;;;
 ;;;; Initialize / Finalize
