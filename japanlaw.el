@@ -45,6 +45,15 @@
 
 ;;     M-x japanlaw
 
+;;; History:
+
+;; - 0.9.2
+;;    未施行法律を表示するため、多くの refactoring を行いました。
+;;    + namespace の整理に伴う関数名の変更
+;;    + cl から cl-lib への変更
+;;    + list 内データアクセス を可視化するため do -> loop マクロへ
+;;    TODO
+
 ;;; Code:
 
 (require 'cl-lib)
@@ -2988,6 +2997,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 
 (defmacro japanlaw--draw-buffer (&rest forms)
   "バッファの未編集とリードオンリー状態を保持してFORMSを評価する。"
+  (declare (debug t))
   `(progn
      (unless (eq major-mode 'japanlaw-index-mode)
        (error "ERROR: major-mode is not japanlaw-index-mode."))
@@ -3793,6 +3803,8 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
     (japanlaw-menuview--goto-mode japanlaw-menuview--current-item 'update)
     (message "Updating %s...done" japanlaw-menuview--current-item)))
 
+;; for backward compatibility
+(defalias 'japanlaw-index-goto-mode 'japanlaw-menuview--goto-mode)
 (defalias 'japanlaw-index-update 'japanlaw-menuview-update)
 
 ;; Index
@@ -4654,9 +4666,9 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 	   (japanlaw-index-upper-level)
            ;;TODO test
 	   (let* ((plist (japanlaw--get-plist))
-                  (name (plist-get plist :name))
+                  (name0 (plist-get plist :name))
                   (cell
-                   (cdr (assoc name (japanlaw-load--abbrev-view)))))
+                   (cdr (assoc name0 (japanlaw-load--abbrev-view)))))
 	     (let ((cell (cdr (assoc name cell))))
 	       (setcar cell (not opened))
 	       (cdr cell)))))
@@ -4693,18 +4705,14 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
        (forward-line 1)
        (if sub
            ;; sub folder
-           (cl-do ((zs cell (cdr zs)))
-               ((null zs))
-             (japanlaw-index-insert-line 4 nil (caar zs) (cdar zs)))
+           (cl-loop for z in cell
+                    do (japanlaw-index-insert-line 4 nil (car z) (cdr z)))
          ;; folder
-         (cl-do ((ys cell (cdr ys)))
-             ((null ys))
-           (let ((opened (car (cdar ys))))
-             (japanlaw-index-insert-line 2 (not opened) (caar ys))
-             (when opened
-               (cl-do ((zs (cdr (cdar ys)) (cdr zs)))
-                   ((null zs))
-                 (japanlaw-index-insert-line 4 nil (caar zs) (cdar zs)))))))
+         (cl-loop for (name opened . contents) in cell
+                  do (japanlaw-index-insert-line 2 (not opened) name)
+                  when opened
+                  do (cl-loop for (name2 . rest) in contents
+                              do (japanlaw-index-insert-line 4 nil name2 rest))))
        (japanlaw-index-upper-level))))))
 
 (defun japanlaw-index-insert-line (level flag name &optional id)
