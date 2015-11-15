@@ -519,9 +519,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 	(push (match-string 1) result))
       (nreverse result))))
 
-(defun japanlaw-expand-image-file-url (path)
-  (concat japanlaw-egov-url (substring path 1)))
-
 (defun japanlaw-images-retrieve (ls)
   (save-current-buffer
     (mapcar #'(lambda (path)
@@ -3423,6 +3420,9 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     (let ((filename (concat (upcase id) ".html"))
           (yeardir (upcase (substring id 0 3))))
       (concat japanlaw-egov-htmldata-url yeardir "/" filename)))))
+
+(defun japanlaw-expand-image-file-url (path)
+  (concat japanlaw-egov-url (substring path 1)))
 
 ;;
 ;; Physical filename
