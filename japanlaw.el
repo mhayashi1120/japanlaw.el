@@ -723,18 +723,6 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
          (sexp (if id (list flag name id) (list flag name))))
     sexp))
 
-;;TODO make obsolete
-(defsubst japanlaw-get-values (&optional pointer)
-  "バッファのinvisibleなS式のデータをリストで返す。
-関数POINTERが与えられれば、POINTERが指す値を返す。
-\(japanlaw-read\)のエラーを把捉したらnilを返す。"
-  (condition-case err
-      (cl-destructuring-bind (flag name . id) (japanlaw-read)
-	(if (functionp pointer)
-	    (funcall pointer (list flag name id))
-	  (list flag name id)))
-    (error nil)))
-
 (defsubst japanlaw-any-function (funcs)
   "FUNCSの中で初めに非nilを返した関数を返す。
 FUNCSは引数を取らない関数のリスト。"
@@ -1222,7 +1210,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
 (defun japanlaw-index-browse-at-point ()
   ;; メニューコマンド
   (interactive)
-  (let ((id (car (nth 2 (japanlaw-get-values)))))
+  (let ((id (plist-get (japanlaw--get-plist) :id)))
     (if id
 	(browse-url (japanlaw-expand-htmldata-url id))
       (message "No url at point."))))
@@ -1274,7 +1262,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
 た場合、番号付きバックアップを生成する。"
   (interactive)
   (let ((id (cond ((eq major-mode 'japanlaw-index-mode)
-		   (car (nth 2 (japanlaw-get-values))))
+		   (plist-get (japanlaw--get-plist) :id))
 		  ((eq major-mode 'japanlaw-mode)
 		   (upcase (japanlaw-file-sans-name (buffer-file-name))))
 		  (t (error "Try in japanlaw-index-mode or japanlaw-mode.")))))
@@ -1505,8 +1493,11 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
 	 ;; sub folder
 	 (save-excursion
 	   (japanlaw-index-upper-level)
-	   (let ((cell
-		  (cdr (assoc (japanlaw-get-values #'cadr) (japanlaw-load--abbrev-view)))))
+           ;;TODO test
+	   (let* ((plist (japanlaw--get-plist))
+                  (name (plist-get plist :name))
+                  (cell
+                   (cdr (assoc name (japanlaw-load--abbrev-view)))))
 	     (let ((cell (cdr (assoc name cell))))
 	       (setcar cell (not opened))
 	       (cdr cell)))))
@@ -1708,13 +1699,14 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
   (interactive)
   (unless (eq japanlaw-menuview--current-item 'Bookmark)
     (condition-case err
-	(cl-destructuring-bind (flag name id) (japanlaw-get-values)
-	  (unless id (error "Not a law data."))
-	  (let ((id (car id)))
+        (let ((plist (japanlaw--get-plist)))
+	  (unless plist
+            (error "Not a law data."))
+	  (let ((id (plist-get plist :id)))
 	    (if (member id (japanlaw-load--bookmark-view))
 		(message "Already exists in Bookmark.")
 	      (push id japanlaw-menuview--bookmark-data)
-	      (message "Add to Bookmark `%s'" name))))
+	      (message "Add to Bookmark `%s'" (plist-get plist :name)))))
       (error nil))))
 
 (defun japanlaw-index-put-deletion-flag ()
@@ -1724,11 +1716,13 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
     (japanlaw--draw-buffer
      (forward-line 0)
      (when (re-search-forward "\\([ D]\\)-" (point-at-eol) t)
-       (replace-match
-	(string (+ (- ?D (string-to-char (match-string 1))) ?\ ))
-	nil nil nil 1)))
+       (let ((current (match-string 1)))
+         (replace-match
+          (string (+ ?\s (- ?D) (string-to-char current)))
+          nil nil nil 1))))
     (forward-line 1)
-    (when (eobp) (goto-char (point-min)))
+    (when (eobp)
+      (goto-char (point-min)))
     (japanlaw-index-move-to-column)))
 
 (defun japanlaw-index-get-cells (&optional marks)
@@ -1738,8 +1732,8 @@ MARKSが非nilなら削除マークが付いた項目のみ。"
     (let ((result nil))
       (goto-char (point-min))
       (while (search-forward (if marks "\"D-" " -") nil t)
-	(cl-destructuring-bind (flag name id) (japanlaw-get-values)
-	  (push (car id) result)))
+	(let ((id (plist-get (japanlaw--get-plist) :id)))
+	  (push id result)))
       (nreverse result))))
 
 (defun japanlaw-index-do-delete-marks ()
