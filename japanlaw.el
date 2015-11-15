@@ -431,79 +431,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     ;; デフォルト値で作成されている場合
     (rename-file "~/.laws.d" japanlaw-path))))
 
-(defun japanlaw-make-index-files (&optional regenerate)
-  (unless japanlaw-online-mode
-    (japanlaw-online-mode-message #'error))
-  (cl-labels
-      ((make-index
-        (file new-alist-func old-alist-func)
-        ;; インデックスファイルを生成する関数。FILEに、NEW-ALIST-FUNCの
-        ;; 返すALISTを出力する。ALISTがOLD-ALIST-FUNCの返す値と同じなら
-        ;; 出力しない。出力する場合、番号付きバックアップファイルを生成
-        ;; する。戻り値は出力した場合はTを返し、出力しなければNILを返す。
-        (let ((new (funcall new-alist-func))
-              (old (funcall old-alist-func)))
-          (cond
-           ((equal new old)
-            nil)
-           (t
-            (japanlaw-make-backup-file file)
-            (with-temp-file file
-              (insert (format "%S" new)))
-            (message "Wrote %s" file)
-            t)))))
-    (let (index-updatedp abbrev-updatedp
-                         mishikou-updatedp)
-
-      ;; 過去のバージョンで作られたインデックスがあれば再利用する
-      (japanlaw-solve-backward-compatibility)
-
-      (japanlaw-make-directory japanlaw-path)
-
-      ;; 再取得で更新する場合
-      ;; indexファイルが存在しない場合
-      (when (or regenerate (not (file-exists-p (japanlaw-index-file))))
-        (cond
-         ((y-or-n-p "Make index files? "))
-         (regenerate
-          (error "Cancel."))
-         (t
-          (error "First of all, you have to make the index file.")))
-        (setq index-updatedp
-              (make-index (japanlaw-index-file) #'japanlaw-get-index #'japanlaw-load--main-data))
-        (message "Process has completed."))
-      ;; 再取得で更新する場合
-      ;; abbrevファイルが存在しない場合
-      (let ((file (japanlaw-abbrev-file)))
-        (when (or regenerate (not (file-exists-p file)))
-          (setq abbrev-updatedp
-                (make-index file #'japanlaw-make-abbrev-index #'japanlaw-load--abbrev-data))
-          (message "Process has completed.")
-          (sit-for 1)))
-      ;; 再取得で更新する場合
-      ;; mishikouファイルが存在しない場合
-      (let ((file (japanlaw-mishikou-file)))
-        (when (or regenerate (not (file-exists-p file)))
-          (setq mishikou-updatedp
-                (make-index file #'japanlaw-make-mishikou-index #'japanlaw-load--mishikou-data))
-          (message "Process has completed.")
-          (sit-for 1)))
-      (list index-updatedp abbrev-updatedp mishikou-updatedp))))
-
-(defun japanlaw-get-dirname (id)
-  "GETしたIDの保存先ディレクトリを返す。"
-  (concat (japanlaw-htmldata-path) "/" (upcase (substring id 0 3))))
-
-(defun japanlaw--split-fullname (fullname)
-  (cond
-   ((string-match "\\(?:\\(([^)]+)\\)\\|\\(（[^）]+）\\)\\)\\'" fullname)
-    (let ((name1 (substring fullname 0 (match-beginning 0)))
-          (name2 (or (match-string 1 fullname)
-                     (match-string 2 fullname))))
-      (list name1 name2)))
-   (t
-    (list fullname ""))))
-
 (defun japanlaw-request-uri-list ()
   "URLリスト"
   (cl-loop for (cid . name) in japanlaw-jikoubetsu-index-alist
@@ -3597,6 +3524,11 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   ;;TODO expand
   (concat japanlaw-path path))
 
+;;TODO expand
+(defun japanlaw-get-dirname (id)
+  "GETしたIDの保存先ディレクトリを返す。"
+  (concat (japanlaw-htmldata-path) "/" (upcase (substring id 0 3))))
+
 (make-obsolete-variable 'japanlaw-recent-file nil "0.8.11")
 (make-obsolete-variable 'japanlaw-data-path nil "0.8.11")
 (make-obsolete-variable 'japanlaw-temp-path nil "0.8.11")
@@ -3710,6 +3642,75 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
                   (push obj res))))))))
     (kill-buffer buffer)
     (nreverse res)))
+
+(defun japanlaw-make-index-files (&optional regenerate)
+  (unless japanlaw-online-mode
+    (japanlaw-online-mode-message #'error))
+  (cl-labels
+      ((make-index
+        (file new-alist-func old-alist-func)
+        ;; インデックスファイルを生成する関数。FILEに、NEW-ALIST-FUNCの
+        ;; 返すALISTを出力する。ALISTがOLD-ALIST-FUNCの返す値と同じなら
+        ;; 出力しない。出力する場合、番号付きバックアップファイルを生成
+        ;; する。戻り値は出力した場合はTを返し、出力しなければNILを返す。
+        (let ((new (funcall new-alist-func))
+              (old (funcall old-alist-func)))
+          (cond
+           ((equal new old)
+            nil)
+           (t
+            (japanlaw-make-backup-file file)
+            (with-temp-file file
+              (insert (format "%S" new)))
+            (message "Wrote %s" file)
+            t)))))
+    (let (index-updatedp abbrev-updatedp
+                         mishikou-updatedp)
+
+      ;; 過去のバージョンで作られたインデックスがあれば再利用する
+      (japanlaw-solve-backward-compatibility)
+
+      (japanlaw-make-directory japanlaw-path)
+
+      ;; 再取得で更新する場合
+      ;; indexファイルが存在しない場合
+      (when (or regenerate (not (file-exists-p (japanlaw-index-file))))
+        (cond
+         ((y-or-n-p "Make index files? "))
+         (regenerate
+          (error "Cancel."))
+         (t
+          (error "First of all, you have to make the index file.")))
+        (setq index-updatedp
+              (make-index (japanlaw-index-file) #'japanlaw-get-index #'japanlaw-load--main-data))
+        (message "Process has completed."))
+      ;; 再取得で更新する場合
+      ;; abbrevファイルが存在しない場合
+      (let ((file (japanlaw-abbrev-file)))
+        (when (or regenerate (not (file-exists-p file)))
+          (setq abbrev-updatedp
+                (make-index file #'japanlaw-make-abbrev-index #'japanlaw-load--abbrev-data))
+          (message "Process has completed.")
+          (sit-for 1)))
+      ;; 再取得で更新する場合
+      ;; mishikouファイルが存在しない場合
+      (let ((file (japanlaw-mishikou-file)))
+        (when (or regenerate (not (file-exists-p file)))
+          (setq mishikou-updatedp
+                (make-index file #'japanlaw-make-mishikou-index #'japanlaw-load--mishikou-data))
+          (message "Process has completed.")
+          (sit-for 1)))
+      (list index-updatedp abbrev-updatedp mishikou-updatedp))))
+
+(defun japanlaw--split-fullname (fullname)
+  (cond
+   ((string-match "\\(?:\\(([^)]+)\\)\\|\\(（[^）]+）\\)\\)\\'" fullname)
+    (let ((name1 (substring fullname 0 (match-beginning 0)))
+          (name2 (or (match-string 1 fullname)
+                     (match-string 2 fullname))))
+      (list name1 name2)))
+   (t
+    (list fullname ""))))
 
 ;;
 ;; Law
