@@ -896,7 +896,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
       (message "%s done." (current-message))
       ;; 半角空白2個を全角空白に置換する。
       (message "Replacing spaces...")
-      (save-excursion (japanlaw-replace-zspc))
+      (japanlaw-replace-zspc)
       (message "%s done." (current-message))
       ;; バッファ内の法令名を取得し、正規表現を生成する。
       (message "Scanning law names...")
@@ -3642,10 +3642,13 @@ FULL が非-nilなら path/file を返す。"
 ;; String / Region
 ;;
 
-(defun japanlaw-replace-zspc ()
-  (goto-char (point-min))
-  (while (search-forward "  " nil t)
-    (replace-match "　")))
+(defun japanlaw-replace-zspc (&optional start end)
+  (save-excursion
+    (save-restriction
+      (narrow-to-region (or start (point-min)) (or end (point-max)))
+      (goto-char (point-min))
+      (while (search-forward "  " nil t)
+        (replace-match "　")))))
 
 (defun japanlaw-detect-coding-region (start end priority-list)
   ;; `w3m-detect-coding-region'(w3m-fsf.el)の関数名のみ変更。
