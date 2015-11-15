@@ -516,16 +516,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
                   (spc 1))))
              japanlaw-menuview--header-items ""))))
 
-(defun japanlaw-menuview-update ()
-  "現在のモードの表示を更新する。
-更新するのは、Opened,Recent,Bookmarkの場合。それ以外のモードでは更新しない。"
-  (interactive)
-  (when (memq japanlaw-menuview--current-item '(Opened Recent Bookmark))
-    (japanlaw-menuview--goto-mode japanlaw-menuview--current-item 'update)
-    (message "Updating %s...done" japanlaw-menuview--current-item)))
-
-(defalias 'japanlaw-index-update 'japanlaw-menuview-update)
-
 (defun japanlaw-menuview--update-config ()
   "現在のバッファの情報を保存する。"
   (setq japanlaw-menuview--current-config
@@ -562,6 +552,16 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
       (force-mode-line-update)
       (japanlaw-index-insert-contents mode)
       (japanlaw-menuview--restore-config))))
+
+(defun japanlaw-menuview-update ()
+  "現在のモードの表示を更新する。
+更新するのは、Opened,Recent,Bookmarkの場合。それ以外のモードでは更新しない。"
+  (interactive)
+  (when (memq japanlaw-menuview--current-item '(Opened Recent Bookmark))
+    (japanlaw-menuview--goto-mode japanlaw-menuview--current-item 'update)
+    (message "Updating %s...done" japanlaw-menuview--current-item)))
+
+(defalias 'japanlaw-index-update 'japanlaw-menuview-update)
 
 ;;
 ;; Common
