@@ -415,13 +415,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 ;; Common
 ;;
 
-(defun japanlaw-any-function (funcs)
-  "FUNCSの中で初めに非nilを返した関数を返す。
-FUNCSは引数を取らない関数のリスト。"
-  (cl-block nil
-    (mapc (lambda (f) (and (funcall f) (cl-return f)))
-	  funcs)))
-
 (defun japanlaw-goto-line (line)
   (goto-char (point-min))
   (forward-line (1- line)))
@@ -518,19 +511,6 @@ FUNCSは引数を取らない関数のリスト。"
   (mouse-set-point e)
   (call-interactively 'japanlaw-search-or-push-anchor))
 
-(defun japanlaw-search-or-push-anchor (n)
-  (interactive "p")
-  (if current-prefix-arg
-      ;; search
-      (let ((kanji (japanlaw-to-kanji-number n)))
-	(when kanji
-	  (goto-char
-	   (save-excursion
-	     (japanlaw-move-to-article `(,(format "^第%s条" kanji)))))
-	  (japanlaw-winconf-add 'force)))
-    ;; anchor push
-    (japanlaw-push-anchor)))
-
 (defun japanlaw-push-anchor (&optional new-window)
   (interactive "P")
   (cond ( ;; リージョンが活性の場合(罫線表内部で実行)
@@ -550,6 +530,19 @@ FUNCSは引数を取らない関数のリスト。"
 	 (japanlaw-outline-header-p)
 	 (japanlaw-heading-jump))
 	(t (princ "No anchor at point."))))
+
+(defun japanlaw-search-or-push-anchor (n)
+  (interactive "p")
+  (if current-prefix-arg
+      ;; search
+      (let ((kanji (japanlaw-to-kanji-number n)))
+	(when kanji
+	  (goto-char
+	   (save-excursion
+	     (japanlaw-move-to-article `(,(format "^第%s条" kanji)))))
+	  (japanlaw-winconf-add 'force)))
+    ;; anchor push
+    (japanlaw-push-anchor)))
 
 (defun japanlaw-rectangle-anchor (start end)
   "罫線表の中の複数行に跨ったリージョンから法令名・条文番号等を文
@@ -4673,10 +4666,17 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
   (interactive)
   (japanlaw-index-next-folder t))
 
+(defun japanlaw--any-function (funcs)
+  "FUNCSの中で初めに非nilを返した関数を返す。
+FUNCSは引数を取らない関数のリスト。"
+  (cl-block nil
+    (mapc (lambda (f) (and (funcall f) (cl-return f)))
+	  funcs)))
+
 (defun japanlaw-index-next-folder (&optional previous)
   "ポイントと同じレベルの次のフォルダに移動する。"
   (interactive)
-  (let ((func (japanlaw-any-function
+  (let ((func (japanlaw--any-function
 	       '(japanlaw-index-folder-level-0
 		 japanlaw-index-folder-level-1
 		 japanlaw-index-folder-level-2
