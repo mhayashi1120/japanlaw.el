@@ -489,7 +489,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (let ((plist (get-text-property (point) 'japanlaw-item-plist)))
       plist)))
 
-(defsubst japanlaw-any-function (funcs)
+(defun japanlaw-any-function (funcs)
   "FUNCSの中で初めに非nilを返した関数を返す。
 FUNCSは引数を取らない関数のリスト。"
   (cl-block nil
@@ -2872,7 +2872,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
         (rename-file file (car backups))))))
 
 ;;
-;; Index
+;; Index File
 ;;
 
 (defun japanlaw-get-index ()
@@ -3047,7 +3047,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     (list fullname ""))))
 
 ;;
-;; Law
+;; Law File
 ;;
 
 (defun japanlaw-write-init-file (out h-path iimagep force)
@@ -4487,7 +4487,7 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
 ;;
 
 ;; Common
-(defsubst japanlaw-index-folder-level ()
+(defun japanlaw-index-folder-level ()
   (let* ((plist (japanlaw--get-plist))
          (flag (plist-get plist :open-flag))
          (level (member
@@ -4499,29 +4499,29 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
 	(/ (1- (length (car level))) 2)
       -1)))
 
-(defsubst japanlaw-index-folder-level-0 ()
+(defun japanlaw-index-folder-level-0 ()
   "folderの階層が最上位なら非nilを返す。"
   (zerop (japanlaw-index-folder-level)))
 
-(defsubst japanlaw-index-folder-level-1 ()
+(defun japanlaw-index-folder-level-1 ()
   "folderの階層が1番目なら非nilを返す。"
   (= (japanlaw-index-folder-level) 1))
 
-(defsubst japanlaw-index-folder-level-2 ()
+(defun japanlaw-index-folder-level-2 ()
   "フォルダの階層が2番目なら非nilを返す。"
   (= (japanlaw-index-folder-level) 2))
 
-(defsubst japanlaw-index-folder-level-3 ()
+(defun japanlaw-index-folder-level-3 ()
   "フォルダの階層が3番目なら非nilを返す。"
   (= (japanlaw-index-folder-level) 3))
 
-(defsubst japanlaw-index-not-folder-p ()
+(defun japanlaw-index-not-folder-p ()
   "アイテムがフォルダでないとき真を返す。"
   (and (not (japanlaw-index-folder-level-0))
        (not (japanlaw-index-folder-level-1))
        (not (japanlaw-index-folder-level-2))))
 
-(defsubst japanlaw-index-folder-open-p ()
+(defun japanlaw-index-folder-open-p ()
   "folderが開いていれば非nilを、閉じていればnilを返す。"
   (save-excursion
     (forward-line 0)
