@@ -2561,96 +2561,6 @@ Openedの場合、ファイルを閉じる。"
   (forward-line -1)
   (japanlaw-index-move-to-column))
 
-;;
-;; japanlaw index menu
-;;
-(easy-menu-define japanlaw-index-mode-menu
-  japanlaw-index-mode-map
-  "japanlaw-index-menu"
-  '("JapanLaw"
-    ["Open or Close Item"	japanlaw-index-open-or-close t]
-    ["Browse This URL"		japanlaw-index-browse-at-point t]
-    ["Search Law Name"		japanlaw-index-search t]
-    ["JapanLaw Iswitchb"		japanlaw-iswitchb t]
-    "-"
-    ["Update Buffer"		japanlaw-index-update t]
-    "-"
-    ["Bookmark Add"		japanlaw-index-bookmark-add t]
-    ["Move Up Bookmark Item"	japanlaw-index-bookmark-move-up t]
-    ["Move Down Bookmark Item"	japanlaw-index-bookmark-move-down t]
-    "-"
-    ["Put Deletion Mark"	japanlaw-index-put-deletion-flag t]
-    ["Delete Marked Items"	japanlaw-index-do-delete-marks t]
-    "-"
-    ["Upper Level"		japanlaw-index-upper-level t]
-    ["Previous Same Level"	japanlaw-index-previous-folder t]
-    ["Next Same Level"		japanlaw-index-next-folder t]
-    ["Select Folder"		japanlaw-index-goto-folder t]
-    "-"
-    ["Open All Folder"		japanlaw-index-open-all t]
-    ["Close All Folder"		japanlaw-index-close-all t]
-    "-"
-    ["Previous Item"		japanlaw-index-previous-line t]
-    ["Next Item"		japanlaw-index-next-line t]
-    ["Scroll Up Line"		japanlaw-index-scroll-up-line t]
-    ["Scroll Down Line"		japanlaw-index-scroll-down-line t]
-    ;;     ["Beginning of Buffer"	japanlaw-index-beginning-of-buffer t]
-    ;;     ["End of Buffer"		japanlaw-index-end-of-buffer t]
-    "-"
-    ["Help"			japanlaw-index-help t]
-    ("Other"
-     ["Make Index Files"	japanlaw-retrieve-index t]
-     "-"
-     ["Retrieve HTML Data"	 japanlaw-retrieve-html t]
-     ;;["法令ファイルの再作成"	 japanlaw-menu-data-create t]
-     )
-    "-"
-    ["Close Index"		bury-buffer t]
-    ["JapanLaw Exit"		japanlaw-exit t]))
-
-;;
-;; Index mode
-;;
-;;;###autoload
-(defalias 'japanlaw 'japanlaw-index)
-
-;;;###autoload
-(defun japanlaw-index ()
-  "法令データにアクセスするためのインターフェイス。"
-  (interactive)
-  (unless (file-exists-p (japanlaw-index-file))
-    (unless japanlaw-online-mode
-      (error "Try `M-x japanlaw-online-or-offline', and turn to online mode."))
-    (japanlaw-make-index-files))
-  (switch-to-buffer
-   (or (get-buffer japanlaw-menuview--buffer-name)
-       (prog1
-	   (set-buffer (get-buffer-create japanlaw-menuview--buffer-name))
-	 (japanlaw-index-mode)))))
-
-(defun japanlaw-index-mode ()
-  "`japanlaw-index'のためのメジャーモード。"
-  (kill-all-local-variables)
-  (use-local-map japanlaw-index-mode-map)
-  (setq mode-name japanlaw-menuview--mode-name)
-  (setq major-mode 'japanlaw-index-mode)
-  ;;TODO should not local
-  (set (make-local-variable 'japanlaw-menuview--current-item)
-       japanlaw-index-initial-mode)
-  (set (make-local-variable 'japanlaw-menuview--current-config) nil)
-  (set (make-local-variable 'japanlaw-index-search-overlaies) nil)
-  (japanlaw-index-goto-mode japanlaw-index-initial-mode)
-  (setq buffer-read-only t)
-  (set (make-local-variable 'font-lock-defaults)
-       '(japanlaw-index-font-lock-keywords))
-  (turn-on-font-lock)
-  (setq truncate-lines t)
-  (easy-menu-add japanlaw-index-mode-menu)
-  (and japanlaw-mode-line
-       (setq mode-line-buffer-identification japanlaw-mode-line))
-  (run-hooks 'japanlaw-index-mode-hook)
-  )
-
 ;; display icon on mode-line
 (defun japanlaw-online-or-offline ()
   "Turn on or off `japanlaw-online-mode'."
@@ -4765,6 +4675,80 @@ migemoとiswitchbの設定が必要。"
        (setq mode-line-buffer-identification japanlaw-mode-line))
   (run-hooks 'japanlaw-mode-hook))
 
+;;
+;; japanlaw index menu
+;;
+(easy-menu-define japanlaw-index-mode-menu
+  japanlaw-index-mode-map
+  "japanlaw-index-menu"
+  '("JapanLaw"
+    ["Open or Close Item"	japanlaw-index-open-or-close t]
+    ["Browse This URL"		japanlaw-index-browse-at-point t]
+    ["Search Law Name"		japanlaw-index-search t]
+    ["JapanLaw Iswitchb"		japanlaw-iswitchb t]
+    "-"
+    ["Update Buffer"		japanlaw-index-update t]
+    "-"
+    ["Bookmark Add"		japanlaw-index-bookmark-add t]
+    ["Move Up Bookmark Item"	japanlaw-index-bookmark-move-up t]
+    ["Move Down Bookmark Item"	japanlaw-index-bookmark-move-down t]
+    "-"
+    ["Put Deletion Mark"	japanlaw-index-put-deletion-flag t]
+    ["Delete Marked Items"	japanlaw-index-do-delete-marks t]
+    "-"
+    ["Upper Level"		japanlaw-index-upper-level t]
+    ["Previous Same Level"	japanlaw-index-previous-folder t]
+    ["Next Same Level"		japanlaw-index-next-folder t]
+    ["Select Folder"		japanlaw-index-goto-folder t]
+    "-"
+    ["Open All Folder"		japanlaw-index-open-all t]
+    ["Close All Folder"		japanlaw-index-close-all t]
+    "-"
+    ["Previous Item"		japanlaw-index-previous-line t]
+    ["Next Item"		japanlaw-index-next-line t]
+    ["Scroll Up Line"		japanlaw-index-scroll-up-line t]
+    ["Scroll Down Line"		japanlaw-index-scroll-down-line t]
+    ;;     ["Beginning of Buffer"	japanlaw-index-beginning-of-buffer t]
+    ;;     ["End of Buffer"		japanlaw-index-end-of-buffer t]
+    "-"
+    ["Help"			japanlaw-index-help t]
+    ("Other"
+     ["Make Index Files"	japanlaw-retrieve-index t]
+     "-"
+     ["Retrieve HTML Data"	 japanlaw-retrieve-html t]
+     ;;["法令ファイルの再作成"	 japanlaw-menu-data-create t]
+     )
+    "-"
+    ["Close Index"		bury-buffer t]
+    ["JapanLaw Exit"		japanlaw-exit t]))
+
+;;
+;; Index mode
+;;
+
+(defun japanlaw-index-mode ()
+  "`japanlaw-index'のためのメジャーモード。"
+  (kill-all-local-variables)
+  (use-local-map japanlaw-index-mode-map)
+  (setq mode-name japanlaw-menuview--mode-name)
+  (setq major-mode 'japanlaw-index-mode)
+  ;;TODO should not local
+  (set (make-local-variable 'japanlaw-menuview--current-item)
+       japanlaw-index-initial-mode)
+  (set (make-local-variable 'japanlaw-menuview--current-config) nil)
+  (set (make-local-variable 'japanlaw-index-search-overlaies) nil)
+  (japanlaw-index-goto-mode japanlaw-index-initial-mode)
+  (setq buffer-read-only t)
+  (set (make-local-variable 'font-lock-defaults)
+       '(japanlaw-index-font-lock-keywords))
+  (turn-on-font-lock)
+  (setq truncate-lines t)
+  (easy-menu-add japanlaw-index-mode-menu)
+  (and japanlaw-mode-line
+       (setq mode-line-buffer-identification japanlaw-mode-line))
+  (run-hooks 'japanlaw-index-mode-hook)
+  )
+
 ;;;;
 ;;;; Initialize / Finalize
 ;;;;
@@ -4827,6 +4811,23 @@ migemoとiswitchbの設定が必要。"
 
 (add-hook 'japanlaw-index-mode-hook 'japanlaw-setup)
 (add-hook 'japanlaw-mode-hook 'japanlaw-setup)
+
+;;;###autoload
+(defalias 'japanlaw 'japanlaw-index)
+
+;;;###autoload
+(defun japanlaw-index ()
+  "法令データにアクセスするためのインターフェイス。"
+  (interactive)
+  (unless (file-exists-p (japanlaw-index-file))
+    (unless japanlaw-online-mode
+      (error "Try `M-x japanlaw-online-or-offline', and turn to online mode."))
+    (japanlaw-make-index-files))
+  (switch-to-buffer
+   (or (get-buffer japanlaw-menuview--buffer-name)
+       (prog1
+	   (set-buffer (get-buffer-create japanlaw-menuview--buffer-name))
+	 (japanlaw-index-mode)))))
 
 
 
