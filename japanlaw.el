@@ -479,56 +479,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
           (acc nil (cl-acons (car ls) (cdr (assoc (car ls) index)) acc)))
       ((null ls) acc)))
 
-(defun japanlaw-expand-htmldata-url (id)
-  "ID(のファイル名部分`M29HO089'などの形式)から、法令名のURLを返す。"
-  (cond
-   ((> 3 (length id))
-    "")
-   (t
-    (let ((filename (concat (upcase id) ".html"))
-          (yeardir (upcase (substring id 0 3))))
-      (concat japanlaw-egov-htmldata-url yeardir "/" filename)))))
-
-(defun japanlaw-expand-htmldata-file (id)
-  "ID(のファイル名部分)から、GETしたHTMLの保存先パスファイルを返す。"
-  (cond
-   ((> 3 (length id))
-    "")
-   (t
-    (let* ((filename (concat (upcase id) ".html"))
-           (yeardir (upcase (substring id 0 3)))
-           (relpath (concat yeardir "/" filename)))
-      (expand-file-name relpath (japanlaw-htmldata-path))))))
-
-(defun japanlaw-expand-data-file (id)
-  "ID(のファイル名部分)から、ダンプしたデータの保存先パスファイル名を返す。"
-  (cond
-   ((> 3 (length id))
-    "")
-   (t
-    (let* ((filename (concat (downcase id) japanlaw-extention))
-           (yeardir (downcase (substring id 0 3)))
-           (relpath (concat yeardir "/" filename)))
-      (expand-file-name relpath (japanlaw-data-path))))))
-
-(defun japanlaw-expand-init-file (id)
-  ;; ID は "h01ho042.law" のような文字列
-  (cond
-   ((> 3 (length id))
-    "")
-   (t
-    (let* ((filename (concat "." (downcase id)))
-           (yeardir (downcase (substring id 0 3)))
-           (relpath (concat yeardir "/" filename)))
-      (expand-file-name relpath (japanlaw-data-path))))))
-
-(defun japanlaw-make-directory (dir)
-  (unless (and (file-exists-p dir)
-	       (file-directory-p dir))
-    (when (file-regular-p dir)
-      (error "File `%s' exists!" dir))
-    (make-directory dir 'parent)))
-
 (defun japanlaw-htmldata-retrieve (id force &optional url)
   "IDのHTMLデータが存在しない場合と、FORCEが非nilの場合に取得する。最後
 に取得した時から変更があった場合、番号付きバックアップファイルを生成する。
@@ -3462,6 +3412,16 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (defconst japanlaw-egov-htmldata-url "http://law.e-gov.go.jp/htmldata/"
   "法令データ提供システムから html を取得する基本となる URL。")
 
+(defun japanlaw-expand-htmldata-url (id)
+  "ID(のファイル名部分`M29HO089'などの形式)から、法令名のURLを返す。"
+  (cond
+   ((> 3 (length id))
+    "")
+   (t
+    (let ((filename (concat (upcase id) ".html"))
+          (yeardir (upcase (substring id 0 3))))
+      (concat japanlaw-egov-htmldata-url yeardir "/" filename)))))
+
 ;;
 ;; Physical filename
 ;;
@@ -3529,6 +3489,39 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   "GETしたIDの保存先ディレクトリを返す。"
   (concat (japanlaw-htmldata-path) "/" (upcase (substring id 0 3))))
 
+(defun japanlaw-expand-htmldata-file (id)
+  "ID(のファイル名部分)から、GETしたHTMLの保存先パスファイルを返す。"
+  (cond
+   ((> 3 (length id))
+    "")
+   (t
+    (let* ((filename (concat (upcase id) ".html"))
+           (yeardir (upcase (substring id 0 3)))
+           (relpath (concat yeardir "/" filename)))
+      (expand-file-name relpath (japanlaw-htmldata-path))))))
+
+(defun japanlaw-expand-data-file (id)
+  "ID(のファイル名部分)から、ダンプしたデータの保存先パスファイル名を返す。"
+  (cond
+   ((> 3 (length id))
+    "")
+   (t
+    (let* ((filename (concat (downcase id) japanlaw-extention))
+           (yeardir (downcase (substring id 0 3)))
+           (relpath (concat yeardir "/" filename)))
+      (expand-file-name relpath (japanlaw-data-path))))))
+
+(defun japanlaw-expand-init-file (id)
+  ;; ID は "h01ho042.law" のような文字列
+  (cond
+   ((> 3 (length id))
+    "")
+   (t
+    (let* ((filename (concat "." (downcase id)))
+           (yeardir (downcase (substring id 0 3)))
+           (relpath (concat yeardir "/" filename)))
+      (expand-file-name relpath (japanlaw-data-path))))))
+
 (make-obsolete-variable 'japanlaw-recent-file nil "0.8.11")
 (make-obsolete-variable 'japanlaw-data-path nil "0.8.11")
 (make-obsolete-variable 'japanlaw-temp-path nil "0.8.11")
@@ -3536,6 +3529,13 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (make-obsolete-variable 'japanlaw-abbrev-file nil "0.8.11")
 (make-obsolete-variable 'japanlaw-index-file nil "0.8.11")
 (make-obsolete-variable 'japanlaw-htmldata-path nil "0.8.11")
+
+(defun japanlaw-make-directory (dir)
+  (unless (and (file-exists-p dir)
+	       (file-directory-p dir))
+    (when (file-regular-p dir)
+      (error "File `%s' exists!" dir))
+    (make-directory dir 'parent)))
 
 ;;
 ;; Index
