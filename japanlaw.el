@@ -476,16 +476,16 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 ;;
 ;; Header line
 ;;
-(defun japanlaw-index-mode-header-line-keymap (mode)
+(defun japanlaw-menuview--header-line-keymap (mode)
   "ヘッダラインのキーマップを返す。"
   (let ((map (make-sparse-keymap)))
     (define-key map [header-line mouse-1]
       `(lambda (e) (interactive "e")
          (set-buffer (window-buffer (posn-window (event-end e))))
-         (japanlaw-index-goto-mode (intern ,mode))))
+         (japanlaw-menuview--goto-mode (intern ,mode))))
     map))
 
-(defun japanlaw-index-header-line-format (mode)
+(defun japanlaw-menuview--header-line-format (mode)
   "`japanlaw-index-mode'の。`header-line-format'"
   (cl-labels
       ((spc (n)
@@ -512,7 +512,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
                                 japanlaw-index-header-foreground-face))
                    'mouse-face 'highlight
                    'help-echo (format "mouse-1: Goto `%s' mode" s)
-                   'local-map (japanlaw-index-mode-header-line-keymap s))
+                   'local-map (japanlaw-menuview--header-line-keymap s))
                   (spc 1))))
              japanlaw-menuview--header-items ""))))
 
@@ -521,28 +521,30 @@ Opened Recent Search Bookmark Index Directory Abbrev"
 更新するのは、Opened,Recent,Bookmarkの場合。それ以外のモードでは更新しない。"
   (interactive)
   (when (memq japanlaw-menuview--current-item '(Opened Recent Bookmark))
-    (japanlaw-index-goto-mode japanlaw-menuview--current-item 'update)
+    (japanlaw-menuview--goto-mode japanlaw-menuview--current-item 'update)
     (message "Updating %s...done" japanlaw-menuview--current-item)))
 
-(defun japanlaw-index-goto-mode (mode &optional update)
+(defalias 'japanlaw-index-update 'japanlaw-menuview-update)
+
+(defun japanlaw-menuview--goto-mode (mode &optional update)
   "`japanlaw-index-mode'の各、個別のモード`japanlaw-menuview--current-item'に遷移する。
 MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')。"
-  (japanlaw-index-set-mode-conf)
+  (japanlaw-menuview--update-config)
   (let ((name (lambda (mode)
 		(format "%s:%s" japanlaw-index--mode-name mode))))
     (unless (and (not update) (string= mode-name (funcall name mode)))
       (setq header-line-format
 	    (if japanlaw-use-index-header-line
-		(japanlaw-index-header-line-format mode)
+		(japanlaw-menuview--header-line-format mode)
 	      nil))
       (setq mode-name (funcall name mode)
 	    japanlaw-menuview--current-item mode)
       (force-mode-line-update)
       (japanlaw-index-insert-contents mode)
-      (japanlaw-index-restore-mode-conf))))
+      (japanlaw-menuview--restore-config))))
 
 ;; Buffer configuration
-(defun japanlaw-index-set-mode-conf ()
+(defun japanlaw-menuview--update-config ()
   "現在のバッファの情報を保存する。"
   (setq japanlaw-menuview--current-config
 	(delete (assoc japanlaw-menuview--current-item japanlaw-menuview--current-config)
@@ -552,7 +554,7 @@ MODEが現在のMODEと同じ場合、nilを返す(see. `japanlaw-index-search')
 	  ,(window-start))
 	japanlaw-menuview--current-config))
 
-(defun japanlaw-index-restore-mode-conf ()
+(defun japanlaw-menuview--restore-config ()
   "以前のバッファの状態を復元する。"
   (let ((cel (assoc japanlaw-menuview--current-item japanlaw-menuview--current-config)))
     (when cel
@@ -1277,7 +1279,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
     (1 (setcar (cdr (assoc name cell)) (not opened)))
     (2 (setcar (cdr (assoc name (cdr (assoc (cadr keys) cell))))
 	       (not opened))))
-  (unless (japanlaw-index-goto-mode 'Search)
+  (unless (japanlaw-menuview--goto-mode 'Search)
     (let ((line (line-number-at-pos)))
       (japanlaw--draw-buffer
        (erase-buffer)
@@ -1465,7 +1467,7 @@ AFUNCは連想リストを返す関数。IFUNCはツリーの挿入処理をす�
      japanlaw-menuview--search-data)
     ;; バッファ更新
     ;; japanlaw-index-goto-mode: Return nil if same local-mode.
-    (unless (japanlaw-index-goto-mode 'Search)
+    (unless (japanlaw-menuview--goto-mode 'Search)
       (japanlaw--draw-buffer
        (erase-buffer))
       (japanlaw-index-insert-alist-function #'japanlaw-search-alist))
@@ -4268,7 +4270,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   (let ((map (make-sparse-keymap)))
     (mapc (lambda (mode)
 	    (define-key map (vector (downcase (aref mode 0)))
-	      `(lambda () (interactive) (japanlaw-index-goto-mode (intern ,mode)))))
+	      `(lambda () (interactive) (japanlaw-menuview--goto-mode (intern ,mode)))))
 	  japanlaw-menuview--header-items)
     (define-key map [mouse-2] 'japanlaw-index-mouse-open-or-close)
     (define-key map [follow-link] 'mouse-face)
@@ -4784,7 +4786,7 @@ migemoとiswitchbの設定が必要。"
        japanlaw-index-initial-mode)
   (set (make-local-variable 'japanlaw-menuview--current-config) nil)
   (set (make-local-variable 'japanlaw-index-search-overlaies) nil)
-  (japanlaw-index-goto-mode japanlaw-index-initial-mode)
+  (japanlaw-menuview--goto-mode japanlaw-index-initial-mode)
   (setq buffer-read-only t)
   (set (make-local-variable 'font-lock-defaults)
        '(japanlaw-index-font-lock-keywords))
