@@ -494,108 +494,6 @@ Opened Recent Search Bookmark Index Directory Abbrev"
   "GETしたIDの保存先ディレクトリを返す。"
   (concat (japanlaw-htmldata-path) "/" (upcase (substring id 0 3))))
 
-(defun japanlaw-get-index ()
-  "事項別分類索引をGETして、法令名とIDのalistのリストを生成して返す。"
-  (cl-labels
-      ((split (m)
-              (save-match-data
-                ;; htmldata
-                ;; 1. 法令名文字列の末尾が半角空白の場合がある。
-                ;; 2. （）が複数の場合があるが、0個の場合はない。
-                (let ((s (replace-regexp-in-string "[\r\n\t]+" "" m)))
-                  (when (string-match "^\\(.+?\\)\\(　抄\\)?\\(（.+?）*\\) *$" s)
-                    (cons (match-string 1 s) (concat (match-string 2 s)
-                                                     (match-string 3 s))))))))
-    (save-current-buffer
-      (japanlaw:map #'(lambda (request index)
-                        (let ((case-fold-search t)
-                              (result nil))
-                          (with-current-buffer
-                              (japanlaw-url-retrieve (concat japanlaw-egov "?" request))
-                            (message "Reading [text/html]... %2d of 50 (%d%%)"
-                                     (car index) (* (/ (car index) 50.0) 100))
-                            (while (re-search-forward
-                                    "H_FILE_NAME=\\([^&]+\\)&[^>]+>\\([^<]+\\)</" nil t)
-                              (push (cons (split (match-string 2)) (match-string 1))
-                                    result))
-                            (kill-buffer (current-buffer))
-                            (cons (cdr index) (nreverse result)))))
-                    (japanlaw-request-uri-list) japanlaw-jikoubetsu-index-alist))))
-
-(defun japanlaw-make-abbrev-index ()
-  "略称法令名をGETして、連想リストを返す。"
-  (with-current-buffer (japanlaw-url-retrieve japanlaw-ryaku-url)
-    (let ((rx-a "<A NAME=\"[0-9]+\"><B>\\(.+?\\)</B>")
-	  (rx-b "<B>\\(.+?\\)</B>")
-	  (rx-c "<A HREF=\".+?H_FILE_NAME=\\([^&]+\\)&.+?\">\\(.+?\\)</A>"))
-      (let ((result-a nil))
-	(while (re-search-forward rx-a nil t)
-	  (push
-	   (let ((lim (save-match-data
-			(save-excursion
-			  (or (and (re-search-forward rx-a nil t)
-				   (point-at-bol))
-			      (point-max))))))
-	     (cons (match-string 1)
-		   (save-match-data
-		     (let ((result-b nil))
-		       (while (re-search-forward rx-b lim t)
-			 (let ((lim (save-match-data
-				      (save-excursion
-					(or (and (re-search-forward rx-b lim t)
-						 (point-at-bol))
-					    lim)))))
-			   (push
-			    (cons (match-string 1)
-				  (save-match-data
-				    (let ((result-c nil))
-				      (while (re-search-forward rx-c lim t)
-					(push (cons (match-string 2)
-						    (match-string 1))
-					      result-c))
-				      (nreverse result-c))))
-			    result-b)))
-		       (nreverse result-b)))))
-	   result-a))
-	(nreverse result-a)))))
-
-(defun japanlaw-make-mishikou-index ()
-  (let* ((res '())
-         (url japanlaw-mishikou-index-url)
-         (buffer (japanlaw-url-retrieve url))
-         (base-urldir (and (string-match "\\`\\(.+/\\)[^/]+\\'" url)
-                           (match-string 1 url))))
-    (with-current-buffer buffer
-      (goto-char (point-min))
-      (re-search-forward "^<li><p><a name=\"miseko\"" nil t)
-      (forward-line 1)
-      (unless (looking-at "^<ol>")
-        (error "Can't find start tag"))
-      (let (start end)
-        (forward-line 1)
-        (setq start (point))
-        (unless (re-search-forward "</ol>" nil t)
-          (error "Cant find end tag"))
-        (setq end (point))
-        (save-restriction
-          (narrow-to-region start end)
-          (goto-char (point-min))
-          (while (re-search-forward "<li>.*?<a.*href=\"\\([^\"]+\\)\"[^>]*>\\([^<]+\\)"
-                                    nil t)
-            (let* ((href (match-string 1))
-                   (fullname (match-string 2))
-                   (url (url-expand-file-name href base-urldir)))
-              (cl-destructuring-bind (name1 name2)
-                  (japanlaw--split-fullname fullname)
-                (unless (string-match "\\([^/]+\\)\\.html?\\'" url)
-                  (error "Unable parse url"))
-                (let* ((baseid (match-string 1 url))
-                       (id (concat baseid "-mishikou"))
-                       (obj (list id name1 name2 url)))
-                  (push obj res))))))))
-    (kill-buffer buffer)
-    (nreverse res)))
-
 (defun japanlaw--split-fullname (fullname)
   (cond
    ((string-match "\\(?:\\(([^)]+)\\)\\|\\(（[^）]+）\\)\\)\\'" fullname)
@@ -3710,6 +3608,108 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;;
 ;; Index
 ;;
+
+(defun japanlaw-get-index ()
+  "事項別分類索引をGETして、法令名とIDのalistのリストを生成して返す。"
+  (cl-labels
+      ((split (m)
+              (save-match-data
+                ;; htmldata
+                ;; 1. 法令名文字列の末尾が半角空白の場合がある。
+                ;; 2. （）が複数の場合があるが、0個の場合はない。
+                (let ((s (replace-regexp-in-string "[\r\n\t]+" "" m)))
+                  (when (string-match "^\\(.+?\\)\\(　抄\\)?\\(（.+?）*\\) *$" s)
+                    (cons (match-string 1 s) (concat (match-string 2 s)
+                                                     (match-string 3 s))))))))
+    (save-current-buffer
+      (japanlaw:map #'(lambda (request index)
+                        (let ((case-fold-search t)
+                              (result nil))
+                          (with-current-buffer
+                              (japanlaw-url-retrieve (concat japanlaw-egov "?" request))
+                            (message "Reading [text/html]... %2d of 50 (%d%%)"
+                                     (car index) (* (/ (car index) 50.0) 100))
+                            (while (re-search-forward
+                                    "H_FILE_NAME=\\([^&]+\\)&[^>]+>\\([^<]+\\)</" nil t)
+                              (push (cons (split (match-string 2)) (match-string 1))
+                                    result))
+                            (kill-buffer (current-buffer))
+                            (cons (cdr index) (nreverse result)))))
+                    (japanlaw-request-uri-list) japanlaw-jikoubetsu-index-alist))))
+
+(defun japanlaw-make-abbrev-index ()
+  "略称法令名をGETして、連想リストを返す。"
+  (with-current-buffer (japanlaw-url-retrieve japanlaw-ryaku-url)
+    (let ((rx-a "<A NAME=\"[0-9]+\"><B>\\(.+?\\)</B>")
+	  (rx-b "<B>\\(.+?\\)</B>")
+	  (rx-c "<A HREF=\".+?H_FILE_NAME=\\([^&]+\\)&.+?\">\\(.+?\\)</A>"))
+      (let ((result-a nil))
+	(while (re-search-forward rx-a nil t)
+	  (push
+	   (let ((lim (save-match-data
+			(save-excursion
+			  (or (and (re-search-forward rx-a nil t)
+				   (point-at-bol))
+			      (point-max))))))
+	     (cons (match-string 1)
+		   (save-match-data
+		     (let ((result-b nil))
+		       (while (re-search-forward rx-b lim t)
+			 (let ((lim (save-match-data
+				      (save-excursion
+					(or (and (re-search-forward rx-b lim t)
+						 (point-at-bol))
+					    lim)))))
+			   (push
+			    (cons (match-string 1)
+				  (save-match-data
+				    (let ((result-c nil))
+				      (while (re-search-forward rx-c lim t)
+					(push (cons (match-string 2)
+						    (match-string 1))
+					      result-c))
+				      (nreverse result-c))))
+			    result-b)))
+		       (nreverse result-b)))))
+	   result-a))
+	(nreverse result-a)))))
+
+(defun japanlaw-make-mishikou-index ()
+  (let* ((res '())
+         (url japanlaw-mishikou-index-url)
+         (buffer (japanlaw-url-retrieve url))
+         (base-urldir (and (string-match "\\`\\(.+/\\)[^/]+\\'" url)
+                           (match-string 1 url))))
+    (with-current-buffer buffer
+      (goto-char (point-min))
+      (re-search-forward "^<li><p><a name=\"miseko\"" nil t)
+      (forward-line 1)
+      (unless (looking-at "^<ol>")
+        (error "Can't find start tag"))
+      (let (start end)
+        (forward-line 1)
+        (setq start (point))
+        (unless (re-search-forward "</ol>" nil t)
+          (error "Cant find end tag"))
+        (setq end (point))
+        (save-restriction
+          (narrow-to-region start end)
+          (goto-char (point-min))
+          (while (re-search-forward "<li>.*?<a.*href=\"\\([^\"]+\\)\"[^>]*>\\([^<]+\\)"
+                                    nil t)
+            (let* ((href (match-string 1))
+                   (fullname (match-string 2))
+                   (url (url-expand-file-name href base-urldir)))
+              (cl-destructuring-bind (name1 name2)
+                  (japanlaw--split-fullname fullname)
+                (unless (string-match "\\([^/]+\\)\\.html?\\'" url)
+                  (error "Unable parse url"))
+                (let* ((baseid (match-string 1 url))
+                       (id (concat baseid "-mishikou"))
+                       (obj (list id name1 name2 url)))
+                  (push obj res))))))))
+    (kill-buffer buffer)
+    (nreverse res)))
 
 ;;
 ;; Law
