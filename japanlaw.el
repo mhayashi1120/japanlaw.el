@@ -4352,7 +4352,8 @@ LFUNCは、NAMEからなるリストを返す関数。"
   (set-buffer (window-buffer (posn-window (event-end event))))
   (goto-char (posn-point (event-end event)))
   (japanlaw-index-open-or-close)
-  (when (japanlaw-index-folder-level-0) (recenter 0)))
+  (when (japanlaw-index-folder-level-0)
+    (recenter 0)))
 
 (defun japanlaw-retrieve-index ()
   "インデックスファイルを取得し直す。最後に取得してから更新があっ
@@ -4365,12 +4366,15 @@ LFUNCは、NAMEからなるリストを返す関数。"
     ;; Mishikou
     (cond
      ((nth 2 updated)
+      ;; TODO
+      (setq japanlaw-index--mishikou-data nil)
       (push "Mishikou was updated." msg))
      (t
       (push "Mishikou was not updated." msg)))
     ;; Abbreves
     (cond
      ((nth 1 updated)
+      ;; TODO
       (setq japanlaw-menuview--abbrev-data nil)
       (push "Abbrevs was updated." msg))
      (t
@@ -4378,6 +4382,7 @@ LFUNCは、NAMEからなるリストを返す関数。"
     ;; Index
     (cond
      ((nth 0 updated)
+      ;; TODO
       (setq japanlaw-index--main-data nil)
       (push "Index was updated." msg))
      (t
@@ -4870,6 +4875,7 @@ FUNCSは引数を取らない関数のリスト。"
         japanlaw-menuview--abbrev-data nil)
   (setq japanlaw-index--main-data nil
 	japanlaw-index--abbrev-data nil
+        japanlaw-index--mishikou-data nil
 	japanlaw-winconf--list nil
 	japanlaw-winconf--index 0
 	japanlaw-winconf--display-toggle nil
