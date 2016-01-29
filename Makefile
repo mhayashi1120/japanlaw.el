@@ -1,5 +1,5 @@
 EMACS = emacs
-EMACS_MAJOR_VERSION ::= `$(EMACS) -version | sed -n -e "s/.*?GNU Emacs \([0-9][0-9]*\).*/\1/p"`
+EMACS_MAJOR_VERSION ::= `$(EMACS) -version | sed -n -e "s/.*GNU Emacs \([0-9][0-9]*\).*/\1/p"`
 
 check: compile
 	if [ $(EMACS_MAJOR_VERSION) -gt 23 ] ; then \
