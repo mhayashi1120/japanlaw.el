@@ -654,7 +654,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
      (list article paragraph item)
      1)
     (sit-for 0.1)			;Test:
-    (if (eq (japanlaw-compare-winconf)
+    (if (eq (japanlaw-winconf-compare)
 	    'different)
 	(japanlaw-winconf-add 'force)
       (princ '==))))
@@ -1178,18 +1178,18 @@ FULL が非-nilなら path/file を返す。"
 
 (defun japanlaw-display-toggle ()
   (interactive)
-  (if (and (one-window-p) japanlaw-display-toggle-winconf)
+  (if (and (one-window-p) japanlaw-winconf--display-toggle)
       ;; restore
       (let ((buffer (current-buffer))
 	    (winstart (window-start))
 	    (pos (point)))
-	(japanlaw-restore-winconf japanlaw-display-toggle-winconf)
+	(japanlaw-restore-winconf japanlaw-winconf--display-toggle)
 	(set-window-buffer (selected-window) buffer)
 	(set-window-start (selected-window) winstart)
 	(goto-char pos))
     ;; store
     (when (not (one-window-p))
-      (setq japanlaw-display-toggle-winconf (japanlaw-current-winconf))
+      (setq japanlaw-winconf--display-toggle (japanlaw-current-winconf))
       (delete-other-windows))))
 
 ;;
@@ -1632,7 +1632,7 @@ FULL が非-nilなら path/file を返す。"
   :type 'integer
   :group 'japanlaw)
 
-;;TODO not w3m
+;;TODO Should not categorize w3m
 (defcustom japanlaw-table-pixel 550
   "w3m で dump するときのテーブルのピクセル数。"
   :type 'integer
@@ -1859,7 +1859,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 
 (defun japanlaw-expand-image-file-name (path)
   ;;TODO expand
-  (concat japanlaw-path path))
+  (expand-file-name japanlaw-path path))
 
 ;;TODO expand
 (defun japanlaw-get-dirname (id)
@@ -2895,11 +2895,11 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;;
 
 ;; Winconf
-(defvar japanlaw-winconf-list '())
+(defvar japanlaw-winconf--list '())
 
-(defvar japanlaw-winconf-index 0)
+(defvar japanlaw-winconf--index 0)
 
-(defvar japanlaw-display-toggle-winconf nil
+(defvar japanlaw-winconf--display-toggle nil
   "For japanlaw-display-toggle.")
 
 (defalias 'japanlaw-current-winconf 'current-window-configuration)
@@ -2907,27 +2907,27 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 
 (defun japanlaw-winconf-override ()
   (interactive)
-  (if (and japanlaw-winconf-list
+  (if (and japanlaw-winconf--list
 	   (not (japanlaw-winconf-equalp))
 	   (y-or-n-p (format "%s Override winconf? "
 			     (progn (japanlaw-winconf-message)
 				    (current-message)))))
       (progn
-	(setcar (nthcdr japanlaw-winconf-index japanlaw-winconf-list)
+	(setcar (nthcdr japanlaw-winconf--index japanlaw-winconf--list)
 		(japanlaw-current-winconf))
 	(japanlaw-winconf-message '=))
     (japanlaw-winconf-message)))
 
 (defun japanlaw-winconf-insert ()
   (interactive)
-  (if (and japanlaw-winconf-list
+  (if (and japanlaw-winconf--list
 	   (not (japanlaw-winconf-equalp))
 	   (y-or-n-p "Insert winconf? "))
       (progn
 	(push (japanlaw-current-winconf)
-	      (nthcdr japanlaw-winconf-index japanlaw-winconf-list))
-	(when (/= japanlaw-winconf-index 0)
-	  (setq japanlaw-winconf-index (- japanlaw-winconf-index 1)))
+	      (nthcdr japanlaw-winconf--index japanlaw-winconf--list))
+	(when (/= japanlaw-winconf--index 0)
+	  (setq japanlaw-winconf--index (- japanlaw-winconf--index 1)))
 	(japanlaw-winconf-message '+))
     (japanlaw-winconf-message)))
 
@@ -2937,112 +2937,112 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	   (or force (y-or-n-p "Add winconf? ")))
       (progn
 	(push (japanlaw-current-winconf)
-	      (nthcdr (+ japanlaw-winconf-index
-			 (or (and (= (length japanlaw-winconf-list) 0) 0)
+	      (nthcdr (+ japanlaw-winconf--index
+			 (or (and (= (length japanlaw-winconf--list) 0) 0)
 			     1))
-		      japanlaw-winconf-list))
-	(setq japanlaw-winconf-index
-	      (+ japanlaw-winconf-index
-		 (or (and (= (length japanlaw-winconf-list) 1) 0)
+		      japanlaw-winconf--list))
+	(setq japanlaw-winconf--index
+	      (+ japanlaw-winconf--index
+		 (or (and (= (length japanlaw-winconf--list) 1) 0)
 		     1)))
 	(japanlaw-winconf-message '+))
     (japanlaw-winconf-message)))
 
 (defun japanlaw-winconf-delete ()
   (interactive)
-  (if (and japanlaw-winconf-list
+  (if (and japanlaw-winconf--list
 	   (y-or-n-p "Delete winconf? "))
       (progn
-	(setf (nthcdr japanlaw-winconf-index japanlaw-winconf-list)
-	      (nthcdr (+ japanlaw-winconf-index 1) japanlaw-winconf-list))
-	(when (and (= (length japanlaw-winconf-list) japanlaw-winconf-index)
-		   (/= japanlaw-winconf-index 0))
-	  (setq japanlaw-winconf-index (- japanlaw-winconf-index 1)))
+	(setf (nthcdr japanlaw-winconf--index japanlaw-winconf--list)
+	      (nthcdr (+ japanlaw-winconf--index 1) japanlaw-winconf--list))
+	(when (and (= (length japanlaw-winconf--list) japanlaw-winconf--index)
+		   (/= japanlaw-winconf--index 0))
+	  (setq japanlaw-winconf--index (- japanlaw-winconf--index 1)))
 	(japanlaw-winconf-message '-))
     (japanlaw-winconf-message)))
 
 (defun japanlaw-winconf-delete-all ()
   (interactive)
-  (if (and japanlaw-winconf-list
+  (if (and japanlaw-winconf--list
 	   (y-or-n-p "Delete all winconf? "))
-      (progn (setq japanlaw-winconf-list nil
-		   japanlaw-winconf-index 0)
+      (progn (setq japanlaw-winconf--list nil
+		   japanlaw-winconf--index 0)
 	     (princ 'Done))
     (japanlaw-winconf-message)))
 
 (defun japanlaw-winconf-backward-delete ()
   (interactive)
-  (if (and japanlaw-winconf-list
-	   (/= japanlaw-winconf-index 0)
+  (if (and japanlaw-winconf--list
+	   (/= japanlaw-winconf--index 0)
 	   (y-or-n-p "Delete backward winconf? "))
       (progn
-	(setf (nthcdr (- japanlaw-winconf-index 1) japanlaw-winconf-list)
-	      (nthcdr japanlaw-winconf-index japanlaw-winconf-list))
-	(setq japanlaw-winconf-index (- japanlaw-winconf-index 1))
+	(setf (nthcdr (- japanlaw-winconf--index 1) japanlaw-winconf--list)
+	      (nthcdr japanlaw-winconf--index japanlaw-winconf--list))
+	(setq japanlaw-winconf--index (- japanlaw-winconf--index 1))
 	(japanlaw-winconf-message '-))
     (japanlaw-winconf-message)))
 
-(defun japanlaw-forward-winconf ()
+(defun japanlaw-winconf-forward ()
   (interactive)
-  (if japanlaw-winconf-list
-      (if (= (- (length japanlaw-winconf-list) 1)
-	     japanlaw-winconf-index)
+  (if japanlaw-winconf--list
+      (if (= (- (length japanlaw-winconf--list) 1)
+	     japanlaw-winconf--index)
 	  (japanlaw-winconf-message)
 	(japanlaw-restore-winconf
-	 (nth (+ japanlaw-winconf-index 1) japanlaw-winconf-list))
-	(setq japanlaw-winconf-index (+ japanlaw-winconf-index 1))
+	 (nth (+ japanlaw-winconf--index 1) japanlaw-winconf--list))
+	(setq japanlaw-winconf--index (+ japanlaw-winconf--index 1))
 	(japanlaw-winconf-message))
     (japanlaw-winconf-message)))
 
-(defun japanlaw-backward-winconf ()
+(defun japanlaw-winconf-backward ()
   (interactive)
-  (if japanlaw-winconf-list
-      (if (= japanlaw-winconf-index 0)
+  (if japanlaw-winconf--list
+      (if (= japanlaw-winconf--index 0)
 	  (japanlaw-winconf-message)
 	(japanlaw-restore-winconf
-	 (nth (- japanlaw-winconf-index 1) japanlaw-winconf-list))
-	(setq japanlaw-winconf-index (- japanlaw-winconf-index 1))
+	 (nth (- japanlaw-winconf--index 1) japanlaw-winconf--list))
+	(setq japanlaw-winconf--index (- japanlaw-winconf--index 1))
 	(japanlaw-winconf-message))
     (japanlaw-winconf-message)))
 
-(defun japanlaw-restore-current-winconf ()
+(defun japanlaw-winconf-restore-current ()
   (interactive)
-  (if japanlaw-winconf-list
+  (if japanlaw-winconf--list
       (progn (japanlaw-restore-winconf
-	      (nth japanlaw-winconf-index japanlaw-winconf-list))
+	      (nth japanlaw-winconf--index japanlaw-winconf--list))
 	     (japanlaw-winconf-message '=))
     (japanlaw-winconf-message)))
 
-(defun japanlaw-restore-first-winconf ()
+(defun japanlaw-winconf-restore-first ()
   (interactive)
-  (if japanlaw-winconf-list
-      (progn (japanlaw-restore-winconf (nth 0 japanlaw-winconf-list))
-	     (setq japanlaw-winconf-index 0)
+  (if japanlaw-winconf--list
+      (progn (japanlaw-restore-winconf (nth 0 japanlaw-winconf--list))
+	     (setq japanlaw-winconf--index 0)
 	     (japanlaw-winconf-message))
     (japanlaw-winconf-message)))
 
-(defun japanlaw-restore-last-winconf ()
+(defun japanlaw-winconf-restore-last ()
   (interactive)
-  (if japanlaw-winconf-list
+  (if japanlaw-winconf--list
       (progn (japanlaw-restore-winconf
-	      (nth (- (length japanlaw-winconf-list) 1)
-		   japanlaw-winconf-list))
-	     (setq japanlaw-winconf-index (- (length japanlaw-winconf-list) 1))
+	      (nth (- (length japanlaw-winconf--list) 1)
+		   japanlaw-winconf--list))
+	     (setq japanlaw-winconf--index (- (length japanlaw-winconf--list) 1))
 	     (japanlaw-winconf-message))
     (japanlaw-winconf-message)))
 
 (defun japanlaw-winconf-equalp ()
   (when (equal
-	 (nth japanlaw-winconf-index japanlaw-winconf-list)
+	 (nth japanlaw-winconf--index japanlaw-winconf--list)
 	 (japanlaw-current-winconf))
     (message "==")
     (sit-for 0.5)))
 
-(defun japanlaw-compare-winconf ()
-  (let ((stored (nth japanlaw-winconf-index japanlaw-winconf-list))
+(defun japanlaw-winconf-compare ()
+  (let ((stored (nth japanlaw-winconf--index japanlaw-winconf--list))
 	(current (japanlaw-current-winconf)))
     (cond
-     ((and (equal (nth japanlaw-winconf-index japanlaw-winconf-list)
+     ((and (equal (nth japanlaw-winconf--index japanlaw-winconf--list)
                   (japanlaw-current-winconf))
            'identical))
      ((null stored)
@@ -3103,15 +3103,22 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (defun japanlaw-winconf-message (&optional arg)
   (interactive)
   (message
-   (if japanlaw-winconf-list
+   (if japanlaw-winconf--list
        (format "%s[%d/%d]"
 	       (if arg (concat "(" (symbol-name arg) ")") "")
-	       (+ japanlaw-winconf-index
-		  (if japanlaw-winconf-list
+	       (+ japanlaw-winconf--index
+		  (if japanlaw-winconf--list
 		      1
 		    0))
-	       (length japanlaw-winconf-list))
+	       (length japanlaw-winconf--list))
      "Not stored.")))
+
+;; For compatibility
+(defalias 'japanlaw-backward-winconf japanlaw-winconf-backward)
+(defalias 'japanlaw-forward-winconf 'japanlaw-winconf-forward)
+(defalias 'japanlaw-restore-current-winconf 'japanlaw-winconf-restore-current)
+(defalias 'japanlaw-restore-first-winconf 'japanlaw-winconf-restore-first)
+(defalias 'japanlaw-restore-last-winconf 'japanlaw-winconf-restore-last)
 
 ;;
 ;; User visibility
@@ -3189,21 +3196,21 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     (define-key map "v" 'japanlaw-display-toggle)
     (define-key map "o" 'japanlaw-other-window)
     ;; winconf
-    (define-key map "wp" 'japanlaw-backward-winconf)
-    (define-key map "wn" 'japanlaw-forward-winconf)
+    (define-key map "wp" 'japanlaw-winconf-backward)
+    (define-key map "wn" 'japanlaw-winconf-forward)
     (define-key map "wi" 'japanlaw-winconf-insert)
     (define-key map "wa" 'japanlaw-winconf-add)
     (define-key map "wo" 'japanlaw-winconf-override)
     (define-key map "wd" 'japanlaw-winconf-delete)
     (define-key map "wD" 'japanlaw-winconf-delete-all)
     (define-key map "wh" 'japanlaw-winconf-backward-delete)
-    (define-key map "wf" 'japanlaw-restore-first-winconf)
-    (define-key map "wl" 'japanlaw-restore-last-winconf)
-    (define-key map "wc" 'japanlaw-restore-current-winconf)
-    (define-key map "," 'japanlaw-backward-winconf)
-    (define-key map "." 'japanlaw-forward-winconf)
-    (define-key map "<" 'japanlaw-restore-first-winconf)
-    (define-key map ">" 'japanlaw-restore-last-winconf)
+    (define-key map "wf" 'japanlaw-winconf-restore-first)
+    (define-key map "wl" 'japanlaw-winconf-restore-last)
+    (define-key map "wc" 'japanlaw-winconf-restore-current)
+    (define-key map "," 'japanlaw-winconf-backward)
+    (define-key map "." 'japanlaw-winconf-forward)
+    (define-key map "<" 'japanlaw-winconf-restore-first)
+    (define-key map ">" 'japanlaw-winconf-restore-last)
     (define-key map "wm" 'japanlaw-winconf-message)
     ;; paren
     (define-key map "e" 'japanlaw-fontify-or-defontify-paren)
@@ -3483,11 +3490,11 @@ migemoとiswitchbの設定が必要。"
     ["Winconf Delete All" japanlaw-winconf-delete-all t]
     ["Winconf Message" japanlaw-winconf-message t]
     "-"
-    ["Restore Current Winconf" japanlaw-restore-current-winconf t]
-    ["Restore First Winconf" japanlaw-restore-first-winconf t]
-    ["Restore Last Winconf" japanlaw-restore-last-winconf t]
-    ["Forward Winconf" japanlaw-forward-winconf t]
-    ["Backward Winconf" japanlaw-backward-winconf t]
+    ["Restore Current Winconf" japanlaw-winconf-restore-current t]
+    ["Restore First Winconf" japanlaw-winconf-restore-first t]
+    ["Restore Last Winconf" japanlaw-winconf-restore-last t]
+    ["Forward Winconf" japanlaw-winconf-forward t]
+    ["Backward Winconf" japanlaw-winconf-backward t]
     "-"
     ["Display Other buffer" japanlaw-display-toggle t]
     ["Other Window" japanlaw-other-window t]
@@ -4064,7 +4071,10 @@ Openedの場合、ファイルを閉じる。"
                            file))
                 (delete nil (mapcar #'buffer-file-name (buffer-list)))))))))
 
+;;
 ;; Recent
+;;
+
 (defun japanlaw-recent-alist ()
   "最近開いたファイルの連想リストを返す。"
   (or japanlaw-menuview--recent-data
@@ -4860,9 +4870,9 @@ FUNCSは引数を取らない関数のリスト。"
         japanlaw-menuview--abbrev-data nil)
   (setq japanlaw-index--main-data nil
 	japanlaw-index--abbrev-data nil
-	japanlaw-winconf-list nil
-	japanlaw-winconf-index 0
-	japanlaw-display-toggle-winconf nil
+	japanlaw-winconf--list nil
+	japanlaw-winconf--index 0
+	japanlaw-winconf--display-toggle nil
 	japanlaw-iswitchb-present-list nil)
   (setq japanlaw-setup-p t)
   (message "Initialize japanlaw variables...done")
