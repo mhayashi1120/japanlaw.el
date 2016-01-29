@@ -632,8 +632,8 @@ Opened Recent Search Bookmark Index Directory Abbrev"
         ((assoc name japanlaw-mishikou-list)
          ;; 未施行法令への anchor (取得 URL が異なる)
          ;; FIXME:
-         ;; 未施行法令を htmldata にファイルを保存するのはあんまりよくないけど。。
-         ;; 後からゴミになる。何かのタイミングで削除するか、あるいは気にしないか。
+         ;; 未施行法令を htmldata にファイルを保存するのは後からゴミになるので
+         ;; あんまりよくない。。しかし、気にしないこととする。
          (let ((mishikou (assoc name japanlaw-mishikou-list)))
            (setq id (concat (japanlaw-file-sans-name (cdr mishikou)) "-mishikou"))
            (setq file (japanlaw-expand-data-file id))
