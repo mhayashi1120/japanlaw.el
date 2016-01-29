@@ -53,6 +53,11 @@
 ;;    + cl から cl-lib への変更
 ;;    + 無名 list 内データを可視化するため do -> loop マクロへ
 ;;    TODO
+;;
+;; - 1.0.0 までの予定
+;;   Bookmark, Recent index 機能の削除 (Emacs の Bookmark と Recentf で代用可能なため)
+;;   iswitchb 非依存 (iswitchb obsolete のため)
+;;   winconf 機能の削除
 
 ;;; Code:
 
