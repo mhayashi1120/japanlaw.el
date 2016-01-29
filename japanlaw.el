@@ -1858,13 +1858,13 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   (expand-file-name ".recent" japanlaw-path))
 
 (defun japanlaw-expand-image-file-name (path)
-  ;;TODO expand
-  (expand-file-name japanlaw-path path))
+  (expand-file-name path japanlaw-path))
 
-;;TODO expand
 (defun japanlaw-get-dirname (id)
   "GETしたIDの保存先ディレクトリを返す。"
-  (concat (japanlaw-htmldata-path) "/" (upcase (substring id 0 3))))
+  (expand-file-name
+   (upcase (substring id 0 3))
+   (japanlaw-htmldata-path)))
 
 (defun japanlaw-expand-htmldata-file (id)
   "ID(のファイル名部分)から、GETしたHTMLの保存先パスファイルを返す。"
