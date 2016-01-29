@@ -3114,7 +3114,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
      "Not stored.")))
 
 ;; For compatibility
-(defalias 'japanlaw-backward-winconf japanlaw-winconf-backward)
+(defalias 'japanlaw-backward-winconf 'japanlaw-winconf-backward)
 (defalias 'japanlaw-forward-winconf 'japanlaw-winconf-forward)
 (defalias 'japanlaw-restore-current-winconf 'japanlaw-winconf-restore-current)
 (defalias 'japanlaw-restore-first-winconf 'japanlaw-winconf-restore-first)
