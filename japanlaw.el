@@ -1160,7 +1160,7 @@ Opened Recent Search Bookmark Index Directory Abbrev"
     (file-name-nondirectory (file-name-sans-extension file))))
 
 (defun japanlaw-buffer-file-laws-name (&optional full)
-  "buffer-file-nameからdirectoryとextentionを除いた法令名を返す。
+  "buffer-file-nameからdirectoryとextensionを除いた法令名を返す。
 FULL が非-nilなら path/file を返す。"
   (let ((visitp (buffer-file-name)))
     (or (and (not visitp)
@@ -1816,7 +1816,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   :type 'directory
   :group 'japanlaw)
 
-(defcustom japanlaw-extention ".law"
+(defcustom japanlaw-extension ".law"
   "法令データファイルの拡張子。`auto-mode-alist'に追加される。"
   :type 'string
   :group 'japanlaw)
@@ -1888,7 +1888,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
    ((> 3 (length id))
     "")
    (t
-    (let* ((filename (concat (downcase id) japanlaw-extention))
+    (let* ((filename (concat (downcase id) japanlaw-extension))
            (yeardir (downcase (substring id 0 3)))
            (relpath (concat yeardir "/" filename)))
       (expand-file-name relpath (japanlaw-data-path))))))
