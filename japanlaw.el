@@ -1820,6 +1820,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   "法令データファイルの拡張子。`auto-mode-alist'に追加される。"
   :type 'string
   :group 'japanlaw)
+(defvaralias 'japanlaw-extention 'japanlaw-extension)
 
 (defun japanlaw-htmldata-path ()
   "法令データ適用システムからダウンロードしたhtmldataの保存先ディレクトリ
