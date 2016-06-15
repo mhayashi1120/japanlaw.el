@@ -6,7 +6,7 @@
 ;; Author: Kazushi NODA (http://www.ne.jp/asahi/alpha/kazu/)
 ;; Maintainer: Masahiro Hayashi <mhayashi1120@gmail.com>
 ;; Created: 2007-10-31
-;; Version: 0.9.2
+;; Version: 0.9.3
 ;; Keywords: docs help
 ;; Package-Requires: ((cl-lib "0.5"))
 
@@ -3124,6 +3124,19 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (defalias 'japanlaw-restore-current-winconf 'japanlaw-winconf-restore-current)
 (defalias 'japanlaw-restore-first-winconf 'japanlaw-winconf-restore-first)
 (defalias 'japanlaw-restore-last-winconf 'japanlaw-winconf-restore-last)
+
+(make-obsolete 'japanlaw-winconf-override nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-insert nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-add nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-delete nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-delete-all nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-backward-delete nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-forward nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-backward nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-restore-current nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-restore-first nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-restore-last nil "0.9.3")
+(make-obsolete 'japanlaw-winconf-message nil "0.9.3")
 
 ;;
 ;; User visibility
