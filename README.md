@@ -1,3 +1,5 @@
+_e-gov.go.jp サイトの大幅な書式変更に伴い、このリポジトリは obsolete とします。_
+
 japanlaw.el
 ===========
 
